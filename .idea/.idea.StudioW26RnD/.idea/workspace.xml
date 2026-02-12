@@ -1,0 +1,736 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="fa14961c-680c-4353-bff4-f455f4453ca6" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrel_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrel_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrel_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrel_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrel_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrel_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrel_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrel_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrelsStacked_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrelsStacked_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrelsStacked_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrelsStacked_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrelsStacked_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrelsStacked_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrelsStacked_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrelsStacked_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrels_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrels_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrels_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrels_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrels_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrels_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrels_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/barrels_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/bridgeBroken_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/bridgeBroken_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/bridgeBroken_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/bridgeBroken_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/bridgeBroken_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/bridgeBroken_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/bridgeBroken_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/bridgeBroken_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/bridge_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/bridge_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/bridge_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/bridge_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/bridge_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/bridge_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/bridge_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/bridge_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chair_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chair_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chair_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chair_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chair_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chair_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chair_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chair_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chestClosed_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chestClosed_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chestClosed_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chestClosed_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chestClosed_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chestClosed_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chestClosed_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chestClosed_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chestOpen_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chestOpen_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chestOpen_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chestOpen_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chestOpen_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chestOpen_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chestOpen_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/chestOpen_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/dirtTiles_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/dirtTiles_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/dirtTiles_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/dirtTiles_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/dirtTiles_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/dirtTiles_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/dirtTiles_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/dirtTiles_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/dirt_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/dirt_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/dirt_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/dirt_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/dirt_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/dirt_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/dirt_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/dirt_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planksBroken_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planksBroken_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planksBroken_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planksBroken_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planksBroken_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planksBroken_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planksBroken_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planksBroken_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planksHole_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planksHole_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planksHole_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planksHole_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planksHole_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planksHole_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planksHole_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planksHole_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planks_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planks_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planks_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planks_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planks_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planks_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planks_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/planks_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsAged_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsAged_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsAged_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsAged_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsAged_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsAged_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsAged_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsAged_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsCorner_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsCorner_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsCorner_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsCorner_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsCorner_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsCorner_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsCorner_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsCorner_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsSpiral_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsSpiral_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsSpiral_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsSpiral_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsSpiral_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsSpiral_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsSpiral_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsSpiral_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairs_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairs_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairs_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairs_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairs_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairs_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairs_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stairs_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumnWood_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumnWood_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumnWood_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumnWood_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumnWood_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumnWood_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumnWood_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumnWood_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumn_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumn_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumn_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumn_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumn_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumn_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumn_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumn_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneCorner_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneCorner_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneCorner_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneCorner_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneCorner_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneCorner_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneCorner_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneCorner_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneInset_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneInset_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneInset_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneInset_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneInset_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneInset_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneInset_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneInset_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneLeft_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneLeft_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneLeft_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneLeft_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneLeft_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneLeft_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneLeft_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneLeft_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneMissingTiles_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneMissingTiles_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneMissingTiles_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneMissingTiles_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneMissingTiles_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneMissingTiles_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneMissingTiles_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneMissingTiles_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneRight_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneRight_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneRight_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneRight_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneRight_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneRight_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneRight_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneRight_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSideUneven_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSideUneven_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSideUneven_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSideUneven_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSideUneven_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSideUneven_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSideUneven_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSideUneven_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSide_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSide_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSide_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSide_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSide_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSide_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSide_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSide_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneStep_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneStep_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneStep_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneStep_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneStep_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneStep_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneStep_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneStep_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSteps_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSteps_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSteps_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSteps_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSteps_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSteps_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSteps_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSteps_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneTile_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneTile_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneTile_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneTile_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneTile_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneTile_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneTile_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneTile_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneUneven_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneUneven_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneUneven_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneUneven_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneUneven_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneUneven_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneUneven_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneUneven_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedLeft_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedLeft_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedLeft_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedLeft_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedLeft_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedLeft_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedLeft_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedLeft_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedRight_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedRight_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedRight_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedRight_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedRight_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedRight_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedRight_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedRight_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAged_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAged_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAged_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAged_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAged_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAged_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAged_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAged_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallArchway_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallArchway_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallArchway_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallArchway_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallArchway_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallArchway_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallArchway_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallArchway_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenLeft_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenLeft_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenLeft_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenLeft_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenLeft_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenLeft_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenLeft_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenLeft_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenRight_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenRight_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenRight_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenRight_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenRight_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenRight_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenRight_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenRight_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBroken_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBroken_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBroken_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBroken_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBroken_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBroken_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBroken_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBroken_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumnIn_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumnIn_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumnIn_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumnIn_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumnIn_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumnIn_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumnIn_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumnIn_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumn_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumn_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumn_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumn_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumn_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumn_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumn_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumn_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallCorner_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallCorner_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallCorner_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallCorner_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallCorner_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallCorner_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallCorner_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallCorner_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorBars_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorBars_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorBars_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorBars_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorBars_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorBars_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorBars_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorBars_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorClosed_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorClosed_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorClosed_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorClosed_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorClosed_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorClosed_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorClosed_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorClosed_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorOpen_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorOpen_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorOpen_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorOpen_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorOpen_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorOpen_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorOpen_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorOpen_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoor_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoor_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoor_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoor_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoor_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoor_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoor_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoor_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateBars_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateBars_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateBars_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateBars_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateBars_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateBars_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateBars_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateBars_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateClosed_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateClosed_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateClosed_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateClosed_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateClosed_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateClosed_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateClosed_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateClosed_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateOpen_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateOpen_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateOpen_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateOpen_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateOpen_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateOpen_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateOpen_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateOpen_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGate_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGate_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGate_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGate_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGate_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGate_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGate_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGate_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHalf_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHalf_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHalf_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHalf_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHalf_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHalf_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHalf_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHalf_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHole_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHole_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHole_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHole_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHole_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHole_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHole_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHole_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundBroken_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundBroken_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundBroken_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundBroken_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundBroken_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundBroken_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundBroken_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundBroken_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundWindow_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundWindow_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundWindow_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundWindow_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundWindow_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundWindow_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundWindow_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundWindow_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRound_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRound_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRound_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRound_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRound_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRound_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRound_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRound_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallStructure_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallStructure_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallStructure_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallStructure_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallStructure_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallStructure_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallStructure_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallStructure_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallTop_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallTop_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallTop_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallTop_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallTop_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallTop_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallTop_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallTop_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindowBars_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindowBars_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindowBars_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindowBars_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindowBars_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindowBars_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindowBars_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindowBars_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindow_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindow_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindow_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindow_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindow_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindow_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindow_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindow_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWall_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWall_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWall_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWall_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWall_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWall_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWall_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWall_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stone_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stone_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stone_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stone_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stone_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stone_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stone_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/stone_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableChairsBroken_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableChairsBroken_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableChairsBroken_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableChairsBroken_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableChairsBroken_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableChairsBroken_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableChairsBroken_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableChairsBroken_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundChairs_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundChairs_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundChairs_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundChairs_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundChairs_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundChairs_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundChairs_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundChairs_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundItemsChairs_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundItemsChairs_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundItemsChairs_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundItemsChairs_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundItemsChairs_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundItemsChairs_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundItemsChairs_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundItemsChairs_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRound_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRound_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRound_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRound_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRound_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRound_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRound_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRound_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShortChairs_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShortChairs_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShortChairs_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShortChairs_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShortChairs_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShortChairs_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShortChairs_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShortChairs_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShort_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShort_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShort_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShort_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShort_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShort_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShort_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShort_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrate_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrate_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrate_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrate_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrate_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrate_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrate_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrate_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrates_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrates_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrates_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrates_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrates_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrates_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrates_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrates_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenPile_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenPile_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenPile_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenPile_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenPile_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenPile_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenPile_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenPile_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportBeams_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportBeams_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportBeams_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportBeams_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportBeams_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportBeams_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportBeams_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportBeams_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBeam_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBeam_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBeam_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBeam_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBeam_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBeam_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBeam_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBeam_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBlock_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBlock_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBlock_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBlock_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBlock_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBlock_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBlock_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBlock_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupports_E.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupports_E.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupports_N.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupports_N.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupports_S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupports_S.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupports_W.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupports_W.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Prefabs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Prefabs/MapChunks.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scenes/MapGeneration.unity" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scenes/MapGeneration.unity.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/ChunkGen.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/ChunkGen.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/MapSpawner.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/MapSpawner.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/MapTesting.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/MapTesting.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/_Recovery.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/_Recovery/0 (1).unity" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/_Recovery/0 (1).unity.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/_Recovery/0 (2).unity" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/_Recovery/0 (2).unity.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/_Recovery/0.unity" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/_Recovery/0.unity.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ProjectSettings/SceneTemplateSettings.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/StudioW26RnD.slnx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Readme.asset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Readme.asset.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Placeholders.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorSettings.asset" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="4" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts.meta" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="39YqHsXPjMR4UqD6w1I1RcSD5g9" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "Merging main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
+    <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
+      <option name="EXE_PATH" value="/Applications/Unity/Hub/Editor/6000.3.6f1/Unity.app/Contents/MacOS/Unity" />
+      <option name="PROGRAM_PARAMETERS" value="-projectPath &quot;$PROJECT_DIR$&quot; -debugCodeOptimization" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="ENV_FILE_PATHS" value="" />
+      <option name="REDIRECT_INPUT_PATH" value="" />
+      <option name="MIXED_MODE_DEBUG" value="0" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Unit Tests (batch mode)" type="RunUnityExe" factoryName="Unity Executable">
+      <option name="EXE_PATH" value="/Applications/Unity/Hub/Editor/6000.3.6f1/Unity.app/Contents/MacOS/Unity" />
+      <option name="PROGRAM_PARAMETERS" value="-runTests -batchmode -projectPath &quot;$PROJECT_DIR$&quot; -testResults Logs/results.xml -logFile Logs/Editor.log -testPlatform EditMode -debugCodeOptimization" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="ENV_FILE_PATHS" value="" />
+      <option name="REDIRECT_INPUT_PATH" value="" />
+      <option name="MIXED_MODE_DEBUG" value="0" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost" useMixedMode="false">
+      <option name="allowRunningInParallel" value="false" />
+      <option name="listenPortForConnections" value="false" />
+      <option name="pid" />
+      <option name="projectPathOnTarget" />
+      <option name="runtimes">
+        <list />
+      </option>
+      <option name="selectedOptions">
+        <list />
+      </option>
+      <method v="2" />
+    </configuration>
+    <configuration name="Attach to" type="UnityDevicePlayer" factoryName="UnityAttachToDevicePlayer">
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="fa14961c-680c-4353-bff4-f455f4453ca6" name="Changes" comment="" />
+      <created>1770883267638</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1770883267638</updated>
+      <workItem from="1770883269597" duration="3000" />
+      <workItem from="1770883284829" duration="313000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnityProjectConfiguration" hasMinimizedUI="true" />
+  <component name="UnityProjectDiscoverer">
+    <option name="hasUnityReference" value="true" />
+    <option name="unityProject" value="true" />
+    <option name="unityProjectFolder" value="true" />
+  </component>
+  <component name="UnityUnitTestConfiguration" currentTestLauncher="Both" />
+  <component name="VcsManagerConfiguration">
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.OperationCanceledException" breakIfHandledByOtherCode="false" displayValue="System.OperationCanceledException" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.Tasks.TaskCanceledException" breakIfHandledByOtherCode="false" displayValue="System.Threading.Tasks.TaskCanceledException" />
+          <option name="timeStamp" value="2" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
+          <option name="timeStamp" value="3" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
