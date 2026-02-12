@@ -1,9 +1,10 @@
 using UnityEngine;
+using System.Collections.Generic;
 
-public class ChunkGen : MonoBehavior
+public class ChunkGen : MonoBehaviour
 {
     [Header("List of all possible map \"chunks\" to select from")]
-    [SerializeField] private list<GameObject> chunkPool; 
+    [SerializeField] private List<GameObject> chunkPool; 
     private ChunkGen instance;
     
     private int chunkLen;
@@ -16,6 +17,11 @@ public class ChunkGen : MonoBehavior
             Destroy(instance);
             instance = this;
         }
+
+        if (chunkPool == null || chunkPool.Count == 0)
+        {
+            Debug.LogError("Chunk pool is empty in ChunkGen.");
+        }
     }
 
     private void Start() {
@@ -24,7 +30,7 @@ public class ChunkGen : MonoBehavior
 
     public GameObject GetRandomMapChunk()
     {
-        int random = Random.range(0, chunkLen);
-        return chunks[random];
+        int random = Random.Range(0, chunkLen);
+        return chunkPool[random];
     }
 }
