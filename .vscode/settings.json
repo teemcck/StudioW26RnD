@@ -67,5 +67,6 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "W26RnD.slnx"
+    "dotnet.defaultSolution": "StudioW26RnD.slnx",
+    "dotnet.enableWorkspaceBasedDevelopment": false
 }
