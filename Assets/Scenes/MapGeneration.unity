@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9fa621047cf60b4e9d9cb470aede421, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapTesting
-  mapSpawner: {fileID: 0}
+  mapSpawner: {fileID: 2142850313}
 --- !u!1 &310585661
 GameObject:
   m_ObjectHideFlags: 0
@@ -476,7 +476,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cf746b42aea4d0458b2452c6a45e019, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChunkGen
-  chunkPool: []
+  chunkPool:
+  - {fileID: 7956394534131403230, guid: bb32e1c2febf41344bb5e09e561442e9, type: 3}
+  - {fileID: 5550807922539162780, guid: 0b28504439ca73b488acaade40e782e2, type: 3}
 --- !u!114 &2142850313
 MonoBehaviour:
   m_ObjectHideFlags: 0

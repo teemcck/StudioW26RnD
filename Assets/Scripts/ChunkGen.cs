@@ -22,9 +22,6 @@ public class ChunkGen : MonoBehaviour
         {
             Debug.LogError("Chunk pool is empty in ChunkGen.");
         }
-    }
-
-    private void Start() {
         chunkLen = chunkPool.Count;
     }
 

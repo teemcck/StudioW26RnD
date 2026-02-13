@@ -9,7 +9,7 @@ public class MapSpawner : MonoBehaviour
     [Header("Chunk Generation References")]
     [SerializeField] private ChunkGen chunkGen;
     [SerializeField] private Transform chunkContainer;
-    private List<GameObject> chunks;
+    private List<GameObject> chunks = new List<GameObject>();
     private float chunkOffset = 0; // Stores how much to offset the next chunk by.
 
     private void Awake()
