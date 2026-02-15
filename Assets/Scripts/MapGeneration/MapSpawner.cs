@@ -29,11 +29,13 @@ public class MapSpawner : MonoBehaviour
     {
         ResetMap();
         int numChunks = Random.Range(minNumChunks, maxNumChunks + 1);
+        Debug.Log("Generating " + numChunks + " chunks");
     
         for (int i = 0; i < numChunks; ++i)
         {
             GameObject chunkPrefab = chunkGen.GetRandomMapChunk();
             GameObject chunk = Instantiate(chunkPrefab, chunkContainer);
+            Debug.Log("Island " + i + ": " + chunk.name);
             
             chunk.transform.position = new Vector3(_chunkOffset, 0, 0);
             _chunks.Add(chunk);
@@ -53,7 +55,7 @@ public class MapSpawner : MonoBehaviour
             {
                 width = tm.localBounds.size.x;
             }
-            _chunkOffset += width + 20; 
+            _chunkOffset += width + 5; 
         }
         return _chunks;
     }
