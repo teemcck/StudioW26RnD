@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Tilemaps;
 
 public class MapSpawner : MonoBehaviour
 {
@@ -9,8 +10,8 @@ public class MapSpawner : MonoBehaviour
     [Header("Chunk Generation References")]
     [SerializeField] private ChunkGen chunkGen;
     [SerializeField] private Transform chunkContainer;
-    private List<GameObject> chunks = new List<GameObject>();
-    private float chunkOffset = 0; // Stores how much to offset the next chunk by.
+    private List<GameObject> _chunks = new List<GameObject>();
+    private float _chunkOffset;
 
     private void Awake()
     {
@@ -26,15 +27,44 @@ public class MapSpawner : MonoBehaviour
 
     public List<GameObject> GenerateSequence()
     {
+        ResetMap();
         int numChunks = Random.Range(minNumChunks, maxNumChunks + 1);
-        Debug.Log($"Generating {numChunks} chunks.");
+    
         for (int i = 0; i < numChunks; ++i)
         {
-            GameObject chunk = Instantiate(chunkGen.GetRandomMapChunk(), chunkContainer);
-            chunk.transform.position = new Vector3(chunkOffset, 0, 0);
-            chunks.Add(chunk);
-            chunkOffset += chunk.transform.localScale.x + 10; // Update offset for next chunk.
+            GameObject chunkPrefab = chunkGen.GetRandomMapChunk();
+            GameObject chunk = Instantiate(chunkPrefab, chunkContainer);
+            
+            chunk.transform.position = new Vector3(_chunkOffset, 0, 0);
+            _chunks.Add(chunk);
+
+            Tilemap tm = chunk.GetComponentInChildren<Tilemap>();
+            
+            // Calculate cumulative offset (since islands progress from origin to right).
+            // This will probably change later.
+            float width;
+            if (tm == null)
+            {
+                Debug.LogError("No Tilemap found for " + chunkPrefab.name + 
+                                 ", defaulting to 10 unit offset.");
+                width = 10f;
+            }
+            else
+            {
+                width = tm.localBounds.size.x;
+            }
+            _chunkOffset += width + 20; 
         }
-        return chunks;
+        return _chunks;
+    }
+
+    private void ResetMap()
+    {
+        foreach (GameObject chunk in _chunks)
+        {
+            Destroy(chunk);
+        }
+        _chunkOffset = 0; 
+        _chunks.Clear();
     }
 }

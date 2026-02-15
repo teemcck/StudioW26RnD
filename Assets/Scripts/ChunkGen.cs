@@ -21,8 +21,12 @@ public class ChunkGen : MonoBehaviour
         if (chunkPool == null || chunkPool.Count == 0)
         {
             Debug.LogError("Chunk pool is empty in ChunkGen.");
+            chunkLen = 0;
         }
-        chunkLen = chunkPool.Count;
+        else
+        {
+            chunkLen = chunkPool.Count;
+        }
     }
 
     public GameObject GetRandomMapChunk()
