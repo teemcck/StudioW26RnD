@@ -6,596 +6,16 @@
   <component name="ChangeListManager">
     <list default="true" id="fa14961c-680c-4353-bff4-f455f4453ca6" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.StudioW26RnD/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.StudioW26RnD/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrel_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrel_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrel_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrel_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrel_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrel_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrel_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrel_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrelsStacked_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrelsStacked_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrelsStacked_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrelsStacked_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrelsStacked_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrelsStacked_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrelsStacked_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrelsStacked_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrels_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrels_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrels_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrels_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrels_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrels_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrels_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/barrels_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/bridgeBroken_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/bridgeBroken_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/bridgeBroken_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/bridgeBroken_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/bridgeBroken_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/bridgeBroken_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/bridgeBroken_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/bridgeBroken_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/bridge_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/bridge_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/bridge_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/bridge_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/bridge_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/bridge_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/bridge_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/bridge_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chair_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chair_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chair_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chair_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chair_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chair_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chair_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chair_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chestClosed_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chestClosed_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chestClosed_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chestClosed_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chestClosed_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chestClosed_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chestClosed_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chestClosed_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chestOpen_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chestOpen_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chestOpen_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chestOpen_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chestOpen_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chestOpen_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chestOpen_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/chestOpen_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/dirtTiles_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/dirtTiles_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/dirtTiles_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/dirtTiles_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/dirtTiles_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/dirtTiles_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/dirtTiles_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/dirtTiles_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/dirt_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/dirt_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/dirt_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/dirt_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/dirt_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/dirt_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/dirt_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/dirt_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planksBroken_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planksBroken_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planksBroken_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planksBroken_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planksBroken_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planksBroken_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planksBroken_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planksBroken_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planksHole_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planksHole_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planksHole_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planksHole_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planksHole_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planksHole_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planksHole_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planksHole_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planks_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planks_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planks_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planks_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planks_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planks_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planks_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/planks_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsAged_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsAged_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsAged_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsAged_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsAged_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsAged_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsAged_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsAged_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsCorner_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsCorner_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsCorner_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsCorner_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsCorner_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsCorner_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsCorner_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsCorner_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsSpiral_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsSpiral_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsSpiral_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsSpiral_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsSpiral_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsSpiral_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsSpiral_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairsSpiral_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairs_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairs_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairs_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairs_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairs_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairs_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairs_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stairs_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumnWood_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumnWood_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumnWood_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumnWood_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumnWood_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumnWood_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumnWood_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumnWood_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumn_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumn_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumn_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumn_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumn_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumn_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumn_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneColumn_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneCorner_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneCorner_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneCorner_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneCorner_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneCorner_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneCorner_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneCorner_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneCorner_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneInset_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneInset_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneInset_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneInset_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneInset_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneInset_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneInset_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneInset_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneLeft_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneLeft_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneLeft_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneLeft_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneLeft_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneLeft_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneLeft_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneLeft_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneMissingTiles_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneMissingTiles_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneMissingTiles_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneMissingTiles_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneMissingTiles_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneMissingTiles_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneMissingTiles_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneMissingTiles_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneRight_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneRight_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneRight_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneRight_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneRight_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneRight_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneRight_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneRight_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSideUneven_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSideUneven_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSideUneven_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSideUneven_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSideUneven_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSideUneven_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSideUneven_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSideUneven_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSide_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSide_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSide_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSide_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSide_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSide_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSide_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSide_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneStep_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneStep_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneStep_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneStep_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneStep_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneStep_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneStep_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneStep_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSteps_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSteps_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSteps_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSteps_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSteps_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSteps_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSteps_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneSteps_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneTile_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneTile_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneTile_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneTile_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneTile_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneTile_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneTile_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneTile_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneUneven_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneUneven_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneUneven_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneUneven_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneUneven_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneUneven_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneUneven_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneUneven_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedLeft_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedLeft_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedLeft_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedLeft_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedLeft_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedLeft_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedLeft_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedLeft_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedRight_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedRight_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedRight_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedRight_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedRight_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedRight_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedRight_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAgedRight_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAged_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAged_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAged_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAged_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAged_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAged_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAged_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallAged_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallArchway_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallArchway_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallArchway_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallArchway_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallArchway_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallArchway_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallArchway_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallArchway_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenLeft_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenLeft_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenLeft_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenLeft_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenLeft_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenLeft_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenLeft_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenLeft_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenRight_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenRight_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenRight_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenRight_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenRight_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenRight_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenRight_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBrokenRight_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBroken_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBroken_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBroken_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBroken_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBroken_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBroken_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBroken_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallBroken_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumnIn_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumnIn_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumnIn_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumnIn_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumnIn_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumnIn_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumnIn_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumnIn_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumn_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumn_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumn_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumn_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumn_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumn_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumn_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallColumn_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallCorner_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallCorner_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallCorner_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallCorner_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallCorner_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallCorner_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallCorner_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallCorner_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorBars_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorBars_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorBars_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorBars_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorBars_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorBars_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorBars_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorBars_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorClosed_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorClosed_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorClosed_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorClosed_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorClosed_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorClosed_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorClosed_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorClosed_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorOpen_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorOpen_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorOpen_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorOpen_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorOpen_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorOpen_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorOpen_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoorOpen_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoor_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoor_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoor_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoor_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoor_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoor_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoor_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallDoor_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateBars_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateBars_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateBars_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateBars_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateBars_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateBars_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateBars_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateBars_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateClosed_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateClosed_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateClosed_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateClosed_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateClosed_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateClosed_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateClosed_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateClosed_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateOpen_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateOpen_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateOpen_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateOpen_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateOpen_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateOpen_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateOpen_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGateOpen_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGate_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGate_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGate_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGate_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGate_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGate_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGate_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallGate_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHalf_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHalf_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHalf_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHalf_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHalf_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHalf_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHalf_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHalf_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHole_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHole_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHole_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHole_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHole_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHole_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHole_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallHole_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundBroken_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundBroken_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundBroken_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundBroken_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundBroken_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundBroken_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundBroken_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundBroken_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundWindow_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundWindow_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundWindow_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundWindow_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundWindow_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundWindow_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundWindow_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRoundWindow_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRound_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRound_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRound_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRound_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRound_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRound_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRound_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallRound_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallStructure_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallStructure_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallStructure_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallStructure_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallStructure_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallStructure_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallStructure_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallStructure_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallTop_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallTop_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallTop_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallTop_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallTop_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallTop_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallTop_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallTop_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindowBars_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindowBars_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindowBars_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindowBars_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindowBars_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindowBars_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindowBars_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindowBars_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindow_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindow_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindow_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindow_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindow_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindow_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindow_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWallWindow_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWall_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWall_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWall_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWall_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWall_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWall_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWall_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stoneWall_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stone_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stone_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stone_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stone_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stone_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stone_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stone_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/stone_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableChairsBroken_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableChairsBroken_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableChairsBroken_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableChairsBroken_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableChairsBroken_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableChairsBroken_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableChairsBroken_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableChairsBroken_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundChairs_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundChairs_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundChairs_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundChairs_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundChairs_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundChairs_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundChairs_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundChairs_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundItemsChairs_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundItemsChairs_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundItemsChairs_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundItemsChairs_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundItemsChairs_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundItemsChairs_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundItemsChairs_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRoundItemsChairs_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRound_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRound_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRound_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRound_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRound_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRound_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRound_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableRound_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShortChairs_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShortChairs_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShortChairs_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShortChairs_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShortChairs_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShortChairs_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShortChairs_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShortChairs_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShort_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShort_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShort_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShort_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShort_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShort_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShort_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/tableShort_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrate_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrate_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrate_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrate_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrate_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrate_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrate_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrate_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrates_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrates_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrates_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrates_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrates_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrates_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrates_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenCrates_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenPile_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenPile_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenPile_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenPile_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenPile_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenPile_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenPile_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenPile_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportBeams_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportBeams_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportBeams_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportBeams_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportBeams_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportBeams_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportBeams_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportBeams_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBeam_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBeam_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBeam_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBeam_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBeam_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBeam_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBeam_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBeam_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBlock_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBlock_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBlock_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBlock_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBlock_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBlock_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBlock_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupportsBlock_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupports_E.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupports_E.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupports_N.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupports_N.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupports_S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupports_S.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupports_W.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/Map/woodenSupports_W.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Isometric Palette.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Isometric Palette.prefab.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/ChunkGen.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/ChunkGen.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/MapSpawner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/MapSpawner.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Recovery.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Recovery/0 (1).unity" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Recovery/0 (1).unity.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Recovery/0 (2).unity" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Recovery/0 (2).unity.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Recovery/0.unity" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Recovery/0.unity.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Placeholders/isometric-sandbox-sheet.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Placeholders/isometric-sandbox-sheet.png.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/MapChunks/Small1.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/MapChunks/Small1.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/PlayerMovementScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/PlayerMovementScene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Tiles/ChunkSet.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Tiles/ChunkSet.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -606,7 +26,6 @@
     <option name="firstShow" value="false" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="4" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -628,30 +47,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Device#class com.jetbrains.rider.plugins.unity.run.devices.UnityEditorDeviceKind#com.jetbrains.rider.plugins.unity.run.devices.UnityDevicesProvider#Unity Attach To: Attach to": "Unity Editor",
-    "DeviceKind#com.jetbrains.rider.plugins.unity.run.devices.UnityDevicesProvider": "Unity Editor",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "Unity Attach To.Attach to.executor": "Debug",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Device#class com.jetbrains.rider.plugins.unity.run.devices.UnityEditorDeviceKind#com.jetbrains.rider.plugins.unity.run.devices.UnityDevicesProvider#Unity Attach To: Attach to&quot;: &quot;Unity Editor&quot;,
+    &quot;DeviceKind#com.jetbrains.rider.plugins.unity.run.devices.UnityDevicesProvider&quot;: &quot;Unity Editor&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;Unity Attach To.Attach to.executor&quot;: &quot;Debug&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Unity Attach To.Attach to">
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\6000.3.6f1\Editor\Unity.exe" />
+      <option name="EXE_PATH" value="/Applications/Unity/Hub/Editor/6000.3.6f1/Unity.app/Contents/MacOS/Unity" />
       <option name="PROGRAM_PARAMETERS" value="-projectPath &quot;$PROJECT_DIR$&quot; -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -661,7 +80,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Unit Tests (batch mode)" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\6000.3.6f1\Editor\Unity.exe" />
+      <option name="EXE_PATH" value="/Applications/Unity/Hub/Editor/6000.3.6f1/Unity.app/Contents/MacOS/Unity" />
       <option name="PROGRAM_PARAMETERS" value="-runTests -batchmode -projectPath &quot;$PROJECT_DIR$&quot; -testResults Logs/results.xml -logFile Logs/Editor.log -testPlatform EditMode -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -732,40 +151,19 @@
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Assets/Scripts/MapSpawner.cs</url>
           <line>35</line>
-          <properties documentPath="C:\Users\bigbr\OneDrive\Desktop\StudioW26RnD\StudioW26RnD\Assets\Scripts\MapSpawner.cs" containingFunctionPresentation="Method 'GenerateSequence'">
-            <startOffsets>
-              <option value="1260" />
-            </startOffsets>
-            <endOffsets>
-              <option value="1309" />
-            </endOffsets>
-          </properties>
+          <properties documentPath="C:\Users\bigbr\OneDrive\Desktop\StudioW26RnD\StudioW26RnD\Assets\Scripts\MapSpawner.cs" containingFunctionPresentation="Method 'GenerateSequence'" />
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Assets/Scripts/ChunkGen.cs</url>
           <line>27</line>
-          <properties documentPath="C:\Users\bigbr\OneDrive\Desktop\StudioW26RnD\StudioW26RnD\Assets\Scripts\ChunkGen.cs" containingFunctionPresentation="Method 'Start'">
-            <startOffsets>
-              <option value="647" />
-            </startOffsets>
-            <endOffsets>
-              <option value="674" />
-            </endOffsets>
-          </properties>
+          <properties documentPath="C:\Users\bigbr\OneDrive\Desktop\StudioW26RnD\StudioW26RnD\Assets\Scripts\ChunkGen.cs" containingFunctionPresentation="Method 'Start'" />
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Assets/Scripts/ChunkGen.cs</url>
           <line>32</line>
-          <properties documentPath="C:\Users\bigbr\OneDrive\Desktop\StudioW26RnD\StudioW26RnD\Assets\Scripts\ChunkGen.cs" containingFunctionPresentation="Method 'GetRandomMapChunk'">
-            <startOffsets>
-              <option value="738" />
-            </startOffsets>
-            <endOffsets>
-              <option value="781" />
-            </endOffsets>
-          </properties>
+          <properties documentPath="C:\Users\bigbr\OneDrive\Desktop\StudioW26RnD\StudioW26RnD\Assets\Scripts\ChunkGen.cs" containingFunctionPresentation="Method 'GetRandomMapChunk'" />
           <option name="timeStamp" value="6" />
         </line-breakpoint>
       </breakpoints>
