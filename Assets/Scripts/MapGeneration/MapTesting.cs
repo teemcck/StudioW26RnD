@@ -16,28 +16,5 @@ public class MapTesting : MonoBehaviour
         if (mapSpawner == null || cameraController == null) return;
 
         _chunks = mapSpawner.GenerateSequence();
-
-        if (_chunks != null && _chunks.Count > 0)
-        {
-            StartCoroutine(PanThroughChunks());
-        }
-    }
-    
-    // Debug purposes until teleporters may trigger a pan.
-    private IEnumerator PanThroughChunks()
-    {
-        int currentIndex = 0;
-
-        while (true)
-        {
-            GameObject targetChunk = _chunks[currentIndex];
-            
-            cameraController.LockToTransform(targetChunk.transform);
-            cameraController.Shake(shakeIntensity);
-
-            yield return new WaitForSeconds(waitTime);
-
-            currentIndex = (currentIndex + 1) % _chunks.Count;
-        }
     }
 }
