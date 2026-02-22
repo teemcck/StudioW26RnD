@@ -3,7 +3,7 @@ using UnityEngine;
 public class ProjectileWeapon : WeaponBase
 {
     [Header("Projectile")]
-    [SerializeField] private SimpleProjectile projectilePrefab;
+    [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
     [SerializeField] private float projectileSpeedOverride = -1f;
 
@@ -18,7 +18,7 @@ public class ProjectileWeapon : WeaponBase
 
         var proj = Instantiate(projectilePrefab, spawnT.position, Quaternion.identity);
 
-        proj.Fire(direction.normalized);
+        proj.GetComponent<SimpleProjectile>().Fire(direction.normalized);
 
     }
 }

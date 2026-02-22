@@ -8,6 +8,9 @@ public class PlayerStats : MonoBehaviour, IDamageable
     [Header("Damage Tuning")]
     [Tooltip("Seconds of invulnerability after being hit.")]
     [SerializeField] private float invulnerableTime = 0.2f;
+    
+    [Header("VFX")]
+    [SerializeField] private DamageFlash damageFlash;
 
     public float CurrentHealth { get; private set; }
     public float MaxHealth => maxHealth;
@@ -17,6 +20,7 @@ public class PlayerStats : MonoBehaviour, IDamageable
     private void Awake()
     {
         CurrentHealth = maxHealth;
+        if (!damageFlash) damageFlash = GetComponent<DamageFlash>();
     }
 
     public void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce)
@@ -27,6 +31,7 @@ public class PlayerStats : MonoBehaviour, IDamageable
         _invulnerableUntil = Time.time + invulnerableTime;
 
         CurrentHealth = Mathf.Max(0f, CurrentHealth - damage);
+        if (damageFlash) damageFlash.Play();
         Debug.Log($"Player hit for {damage}. HP: {CurrentHealth}/{maxHealth}");
 
         if (CurrentHealth <= 0f)
