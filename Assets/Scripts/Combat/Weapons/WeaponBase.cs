@@ -17,6 +17,5 @@ public abstract class WeaponBase : MonoBehaviour
     public float GetRange() => range * RangeMult;
     public float GetCooldown() => 1f / CooldownMult;
 
-    // Called by controller when we want to attack toward a target.
     public abstract void Attack(Vector2 direction, LayerMask enemyLayer);
 }
