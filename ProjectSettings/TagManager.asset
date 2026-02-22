@@ -12,7 +12,7 @@ TagManager:
   - Water
   - UI
   - Ground
-  - 
+  - Enemy
   - 
   - 
   - 
@@ -49,6 +49,9 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 211765407
+    locked: 0
+  - name: VFX
+    uniqueID: 838984925
     locked: 0
   m_RenderingLayers:
   - Default

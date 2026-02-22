@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 _moveInput;
 
+    public Vector2 LastMoveDirection { get; private set; } = Vector2.right;
+
     private void Awake()
     {
         if (!rb) rb = GetComponent<Rigidbody2D>();
@@ -34,10 +36,13 @@ public class PlayerController : MonoBehaviour
         Vector2 camMoveDir = InputToCameraRelativeDirection(_moveInput);
         camMoveDir = SnapTo8Directions(camMoveDir);
 
+        if (camMoveDir.sqrMagnitude > 0.0001f)
+            LastMoveDirection = camMoveDir;
+
         Vector2 desiredVelocity = camMoveDir * moveSpeed;
 
         Vector2 current = rb.linearVelocity;
-        Vector2 next = Vector2.MoveTowards(current, desiredVelocity, acceleration * Time.fixedDeltaTime); 
+        Vector2 next = Vector2.MoveTowards(current, desiredVelocity, acceleration * Time.fixedDeltaTime);
         rb.linearVelocity = next;
     }
 
