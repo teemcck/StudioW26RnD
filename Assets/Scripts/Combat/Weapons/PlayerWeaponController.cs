@@ -10,7 +10,6 @@ public class PlayerWeaponController : MonoBehaviour
 
     [Header("Idle Attack")]
     [SerializeField] private LayerMask enemyLayer;
-    [SerializeField] private float detectRadius = 2.0f;
     [SerializeField] private float attacksPerSecond = 2.0f;
 
     private float _nextAttackTime;
@@ -35,12 +34,12 @@ public class PlayerWeaponController : MonoBehaviour
         primaryWeapon.Attack(dir.normalized, enemyLayer);
 
         float cooldown = attacksPerSecond <= 0f ? 999f : (1f / attacksPerSecond);
-        _nextAttackTime = Time.time + cooldown;
+        _nextAttackTime = Time.time + (cooldown * primaryWeapon.GetCooldown());
     }
 
     private Transform FindClosestEnemy()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectRadius, enemyLayer);
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, primaryWeapon.GetRange(), enemyLayer);
 
         float best = float.PositiveInfinity;
         Transform bestT = null;
@@ -62,6 +61,6 @@ public class PlayerWeaponController : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, detectRadius);
+        Gizmos.DrawWireSphere(transform.position, primaryWeapon.GetRange());
     }
 }
