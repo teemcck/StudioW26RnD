@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public class PlayerStats : MonoBehaviour, IDamageable
+public class PlayerHealth : MonoBehaviour, IDamageable
 {
-    [Header("Health")]
-    [SerializeField] private float maxHealth = 20f;
+    private PlayerStats playerStats;
+    private float maxHealth;
 
     [Header("Damage Tuning")]
     [Tooltip("Seconds of invulnerability after being hit.")]
@@ -12,13 +12,18 @@ public class PlayerStats : MonoBehaviour, IDamageable
     [Header("VFX")]
     [SerializeField] private DamageFlash damageFlash;
 
+    private float _spawnTime;
+    private bool _dead;
+
     public float CurrentHealth { get; private set; }
-    public float MaxHealth => maxHealth;
 
     private float _invulnerableUntil;
 
     private void Awake()
     {
+        _spawnTime = Time.time;
+        playerStats = GetComponent<PlayerStats>();
+        maxHealth = playerStats.Get(PlayerStatType.MaxHealth);
         CurrentHealth = maxHealth;
         if (!damageFlash) damageFlash = GetComponent<DamageFlash>();
     }
@@ -33,14 +38,23 @@ public class PlayerStats : MonoBehaviour, IDamageable
         CurrentHealth = Mathf.Max(0f, CurrentHealth - damage);
         if (damageFlash) damageFlash.Play();
         Debug.Log($"Player hit for {damage}. HP: {CurrentHealth}/{maxHealth}");
-
+        EventBus<PlayerDamagedEvent>.Raise(new PlayerDamagedEvent {Amount = damage, RemainingHP = CurrentHealth, HitPosition = transform.position, Source = "enemy"}); 
+        
         if (CurrentHealth <= 0f)
             Die();
     }
 
     private void Die()
     {
+        if (_dead) return;
+        _dead = true;
+        
         Debug.Log("Player died.");
+        EventBus<PlayerDiedEvent>.Raise(new PlayerDiedEvent
+        {
+            Position = transform.position,
+            SurvivedForSeconds = Time.time - _spawnTime
+        });
         var controller = GetComponent<PlayerController>();
         if (controller) controller.enabled = false;
 
@@ -50,7 +64,11 @@ public class PlayerStats : MonoBehaviour, IDamageable
 
     public void Heal(float amount)
     {
+        if (_dead) return;
         if (amount <= 0f) return;
+        
         CurrentHealth = Mathf.Min(maxHealth, CurrentHealth + amount);
+        
+        EventBus<PlayerHealedEvent>.Raise(new PlayerHealedEvent {Amount = amount, NewHP = CurrentHealth});
     }
 }
