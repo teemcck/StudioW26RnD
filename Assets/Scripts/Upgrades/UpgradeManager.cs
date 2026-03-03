@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Central registry and runtime coordinator for the upgrade system.
@@ -15,9 +16,12 @@ public class UpgradeManager : MonoBehaviour
 {
     public static UpgradeManager Instance { get; private set; }
 
-    [Header("Registries — drag all SOs here")]
+    [Header("Registries -> Drag all SOs here")]
     [SerializeField] private List<UpgradeDisplaySO> allDisplays = new();
     [SerializeField] private List<UpgradeEffectSO>  allEffects  = new();
+    
+    [Header("External References")] 
+    [SerializeField] private UpgradeUIHandler upgradeUIHandler;
     
     // Lookup maps  (built once at Awake)
 
@@ -81,7 +85,7 @@ public class UpgradeManager : MonoBehaviour
 
     public bool TryGetEffect(string id, out UpgradeEffectSO so)  => _effectMap.TryGetValue(id, out so);
     public bool TryGetDisplay(string id, out UpgradeDisplaySO so) => _displayMap.TryGetValue(id, out so);
-    public int  GetStack(string id) => _stacks.TryGetValue(id, out int s) ? s : 0;
+    public int GetStack(string id) => _stacks.TryGetValue(id, out int s) ? s : 0;
     
     // Public API, Apply
 
@@ -198,6 +202,8 @@ public class UpgradeManager : MonoBehaviour
         return _cachedContext;
     }
 
+    // Arbitrary percentages for now, abstract and integrate variable percents in the future.
+    // For example, upgrade "Midas: all upgrade rarities become equally common."
     private static float RarityWeight(UpgradeRarity r) => r switch
     {
         UpgradeRarity.Common    => 60f,

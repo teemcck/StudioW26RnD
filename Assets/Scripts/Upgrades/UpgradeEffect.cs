@@ -7,10 +7,10 @@ using UnityEngine;
 /// </summary>
 public class UpgradeContext
 {
-    public PlayerController Player      { get; }
-    public PlayerStats      Stats       { get; }
+    public PlayerController Player { get; }
+    public PlayerStats Stats { get; }
     public EnemySpawnManager SpawnManager { get; }
-    public GameRules        GameRules   { get; }
+    public GameRules GameRules { get; }
     // Add: LootManager, ProjectileSystem, AbilitySystem, etc. over time
 
     public UpgradeContext(
@@ -19,10 +19,10 @@ public class UpgradeContext
         EnemySpawnManager spawnManager,
         GameRules gameRules)
     {
-        Player       = player;
-        Stats        = stats;
+        Player = player;
+        Stats = stats;
         SpawnManager = spawnManager;
-        GameRules    = gameRules;
+        GameRules = gameRules;
     }
 
     /// <summary>
