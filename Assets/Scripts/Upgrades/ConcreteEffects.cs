@@ -1,41 +1,43 @@
 using UnityEngine;
 
 // STAT EFFECTS
-// flat, additive, and percentage multiplier
+// flat additive, and percentage multiplier
 
 /// <summary>
 /// Adds a flat value to a single PlayerStat field.
 /// Example: +2 dash count, +5 attack damage.
-/// </summary>
-[System.Serializable]
-public class StatFlatEffect : UpgradeEffect
-{
-    public PlayerStatType stat;
-    public float value;
-
-    public override void Apply(UpgradeContext ctx)  => ctx.Stats.AddFlat(stat, value);
-    public override void Remove(UpgradeContext ctx) => ctx.Stats.AddFlat(stat, -value);
-    public override string GetDescription() => $"{(value >= 0 ? "+" : "")}{value} {stat.ToDisplayString()}";
-}
-
-/// <summary>
 /// Multiplies a single PlayerStat by (1 + percent).
 /// Example: percent = 1.0 -> double damage. percent = -0.25 -> 25% less move speed.
 /// </summary>
 [System.Serializable]
-public class StatMultiplierEffect : UpgradeEffect
+public class StatChangeEffect : UpgradeEffect
 {
     public PlayerStatType stat;
-    [Tooltip("Additive multiplier delta. 1.0 = +100%. -0.25 = -25%.")]
-    public float percent;
+    [Tooltip("Additive multiplier delta. 1 = +100%. -.25 = -25%.")]
+    public float multplier;
+    [Tooltip("Additive flat. 1 = +1.0. -.25 = -0.25")]
+    public float flat;
 
-    public override void Apply(UpgradeContext ctx) => ctx.Stats.AddMultiplier(stat, percent);
-    public override void Remove(UpgradeContext ctx) => ctx.Stats.AddMultiplier(stat, -percent);
+    public override void Apply(UpgradeContext ctx)
+    {
+        if (multplier != 0) ctx.Stats.AddMultiplier(stat, multplier);
+        if (flat != 0) ctx.Stats.AddFlat(stat, flat);
+    }
+
+    public override void Remove(UpgradeContext ctx)
+    {
+        if (multplier != 0) ctx.Stats.AddMultiplier(stat, -multplier);
+        if (flat != 0) ctx.Stats.AddFlat(stat, -flat);
+    } 
 
     public override string GetDescription()
     {
-        string sign = percent >= 0 ? "+" : "";
-        return $"{sign}{percent * 100:0}% {stat.ToDisplayString()}";
+        var parts = new System.Collections.Generic.List<string>();
+        
+        if (multplier != 0) parts.Add($"{(multplier >= 0 ? "+" : "")}{multplier * 100:0}%");
+        if (flat != 0) parts.Add($"{(flat >= 0 ? "+" : "")}{flat}");
+
+        return string.Join(", ", parts);
     }
 }
 
@@ -59,7 +61,7 @@ public class SpawnMultiplierEffect : UpgradeEffect
         => ctx.SpawnManager.AddSpawnMultiplier(1f / multiplier);   // inverse
 
     public override string GetDescription()
-        => $"{multiplier:0.##}× enemy spawn rate";
+        => $"{multiplier:0.##}x enemy spawn rate";
 }
 
 /// <summary>
@@ -186,15 +188,18 @@ public class OnKillHealEffect : TriggerEffect
 /// Effect made to showcase "assassin" upgrade. Can be used elsewhere.
 /// </summary>
 [System.Serializable]
-public class PostDashDamageBuffEffect : TriggerEffect
+public class PostDashStatEffect : TriggerEffect
 {
-    public float damageBonus = 5f;
-    public float duration = 3f;
-
+    [SerializeField] private PlayerStatType stat = PlayerStatType.AttackDamage;
+    [SerializeField] private float flatBonus = 5f;
+    [SerializeField] private float duration = 3f;
+    
+    // To do: Make this not double count with successive dashes.
+    
     private PlayerStats _stats;
     private float _timer = 0f;
     private bool _buffActive = false;
-    
+
     protected IEventBinding<PlayerDashedEvent> _binding;
 
     public override bool NeedsTick => _buffActive;
@@ -215,10 +220,10 @@ public class PostDashDamageBuffEffect : TriggerEffect
     {
         if (!_buffActive)
         {
-            _stats.AddFlat(PlayerStatType.AttackDamage, damageBonus);
+            _stats.AddFlat(stat, flatBonus);
             _buffActive = true;
         }
-        _timer = duration;  // Refresh timer on each dash
+        _timer = duration;
     }
 
     public override void Tick(UpgradeContext ctx, float dt)
@@ -230,12 +235,12 @@ public class PostDashDamageBuffEffect : TriggerEffect
 
     private void RemoveBuff()
     {
-        _stats.AddFlat(PlayerStatType.AttackDamage, -damageBonus);
+        _stats.AddFlat(stat, -flatBonus);
         _buffActive = false;
     }
 
     public override string GetDescription()
-        => $"+{damageBonus} attack damage for {duration}s after dashing";
+        => $"+{flatBonus} {stat.ToDisplayString()} for {duration}s after dashing";
 }
 
 // CONDITIONAL EFFECTS, apply different sub-effects based on context
@@ -252,9 +257,9 @@ public class ConditionalEffect : UpgradeEffect
     public ConditionalType condition;
     public float           threshold;   // meaning depends on ConditionalType
 
-    [SerializeReference]
+    [SerializeReference, SubclassSelector]
     public System.Collections.Generic.List<UpgradeEffect> whenTrue  = new();
-    [SerializeReference]
+    [SerializeReference, SubclassSelector]
     public System.Collections.Generic.List<UpgradeEffect> whenFalse = new();
 
     // ConditionalEffects are managed by their own runtime component, not directly.

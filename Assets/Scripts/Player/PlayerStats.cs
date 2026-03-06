@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 // Stat type enum - add new stats here; everything else auto-picks them up
 
@@ -14,7 +15,7 @@ public enum PlayerStatType
     // Combat
     AttackDamage, AttackSpeed, AttackRange, CritChance, CritMultiplier,
     // Defence
-    MaxHealth, Armor, DodgeChance,
+    MaxHealth, DamageReduction, DodgeChance,
     // Economy
     XPMultiplier
 }
@@ -34,7 +35,7 @@ public static class PlayerStatTypeExtensions
         PlayerStatType.CritChance     => "Crit Chance",
         PlayerStatType.CritMultiplier => "Crit Multiplier",
         PlayerStatType.MaxHealth      => "Max Health",
-        PlayerStatType.Armor          => "Armor",
+        PlayerStatType.DamageReduction => "DamageReduction",
         PlayerStatType.DodgeChance    => "Dodge Chance",
         PlayerStatType.XPMultiplier   => "XP Multiplier",
         _                             => t.ToString()
@@ -95,11 +96,10 @@ public class PlayerStats : MonoBehaviour
 
     [Header("Defence")]
     [SerializeField] private float baseMaxHealth  = 100f;
-    [SerializeField] private float baseArmor      = 0f;
+    [SerializeField] private float baseDamageReduction    = 0f;
     [SerializeField] private float baseDodgeChance = 0f;
 
     [Header("Economy")]
-    [SerializeField] private float baseGoldMultiplier = 1f;
     [SerializeField] private float baseXPMultiplier   = 1f;
     
     // Runtime stat instances
@@ -123,7 +123,7 @@ public class PlayerStats : MonoBehaviour
             [PlayerStatType.CritChance]     = new(baseCritChance),
             [PlayerStatType.CritMultiplier] = new(baseCritMultiplier),
             [PlayerStatType.MaxHealth]      = new(baseMaxHealth),
-            [PlayerStatType.Armor]          = new(baseArmor),
+            [PlayerStatType.DamageReduction] = new(baseDamageReduction),
             [PlayerStatType.DodgeChance]    = new(baseDodgeChance),
             [PlayerStatType.XPMultiplier]   = new(baseXPMultiplier)
         };
@@ -163,7 +163,7 @@ public class PlayerStats : MonoBehaviour
     public float CritChance     => Mathf.Clamp01(_stats[PlayerStatType.CritChance].Value);
     public float CritMultiplier => _stats[PlayerStatType.CritMultiplier].Value;
     public float MaxHealth      => _stats[PlayerStatType.MaxHealth].Value;
-    public float Armor          => _stats[PlayerStatType.Armor].Value;
+    public float DamageReduction          => _stats[PlayerStatType.DamageReduction].Value;
     public float DodgeChance    => Mathf.Clamp01(_stats[PlayerStatType.DodgeChance].Value);
     public float XPMultiplier   => _stats[PlayerStatType.XPMultiplier].Value;
 

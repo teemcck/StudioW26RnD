@@ -81,13 +81,9 @@ public class ConditionalEffectRunner : MonoBehaviour
             // ConditionalType.HealthAbove => PlayerController.Health.CurrentHP > effect.threshold,
             ConditionalType.FloorBelow  => GameRules.Instance.Get(GameRuleType.RoomCount) < effect.threshold,
             ConditionalType.FloorAbove  => GameRules.Instance.Get(GameRuleType.RoomCount) > effect.threshold,
-            ConditionalType.Custom      => EvaluateCustom(effect),
-            _                           => false
+            _                           => false // Add health implementation later.
         };
     }
-
-    /// <summary>Hook for game-specific conditions not covered by the enum.</summary>
-    protected virtual bool EvaluateCustom(ConditionalEffect effect) => false;
     
     // Branch application helpers
 

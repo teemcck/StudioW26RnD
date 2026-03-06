@@ -14,10 +14,11 @@ public class UpgradeUIHandler : MonoBehaviour
     
     [SerializeField] private GameObject upgradeContainer;
     [SerializeField] private GameObject upgradeDisplayPrefab;
+    [SerializeField] private GameObject upgradeCanvas;
     
     // Stored UI elements pertaining to each upgrade option.
     
-    [SerializeField] private List<GameObject> upgradeDisplays = new List<GameObject>();
+    private List<GameObject> upgradeDisplays = new List<GameObject>();
 
     private void Awake()
     {
@@ -25,13 +26,30 @@ public class UpgradeUIHandler : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
-    
+
     /// <summary>
+    /// Activates canvas elements.
     /// Instantiates each option in upgradeOptions as a UI object.
     /// Stores data to associated upgrades.
     /// </summary>
     /// <param name="upgradeOptions"></param>
-    public void PopulateUpgradeOptions(List<UpgradeDisplaySO> upgradeOptions)
+    public void DisplayUpgrades(List<UpgradeDisplaySO> upgradeOptions)
+    {
+        if (upgradeCanvas.activeSelf == false) upgradeCanvas.SetActive(true);
+        PopulateUpgradeOptions(upgradeOptions);
+    }
+
+    /// <summary>
+    /// Destroys all UI upgrade options in upgradeContainer.
+    /// Deactivates upgrade canvas if not hidden.
+    /// </summary>
+    public void HideUpgrades()
+    {
+        ClearUpgradeOptions();
+        if (upgradeCanvas.activeSelf == true) upgradeCanvas.SetActive(false);
+    }
+
+    private void PopulateUpgradeOptions(List<UpgradeDisplaySO> upgradeOptions)
     {
         int numOptions = upgradeOptions.Count;
 
@@ -43,11 +61,8 @@ public class UpgradeUIHandler : MonoBehaviour
             upgradeDisplays.Add(display);
         }
     }
-    
-    /// <summary>
-    /// Destroys all UI upgrade options in upgradeContainer.
-    /// </summary>
-    public void ClearUpgradeOptions()
+
+    private void ClearUpgradeOptions()
     {
         foreach (var display in upgradeDisplays)
         {

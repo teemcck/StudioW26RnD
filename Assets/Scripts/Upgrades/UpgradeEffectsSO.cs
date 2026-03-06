@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MackySoft.SerializeReferenceExtensions;
 using UnityEngine;
 
 /// <summary>
@@ -15,8 +16,8 @@ using UnityEngine;
 ///
 /// Both effects are applied atomically when the player picks the card.
 /// </summary>
-[CreateAssetMenu(fileName = "UpgradeEffect_", menuName = "Upgrades/Upgrade Effect")]
-public class UpgradeEffectSO : ScriptableObject
+[CreateAssetMenu(fileName = "UpgradeEffects_", menuName = "Upgrades/UpgradeEffects")]
+public class UpgradeEffectsSO : ScriptableObject
 {
     [Header("Identity")]
     [Tooltip("Primary key. Must match the paired UpgradeDisplaySO.")]
@@ -30,8 +31,8 @@ public class UpgradeEffectSO : ScriptableObject
     public bool scaleWithStacks = false;
 
     [Header("Effects")]
-    [Tooltip("Open-ended list of effects. Right-click to add any UpgradeEffect subclass.")]
-    [SerializeReference]
+    [Tooltip("Open-ended list of effects. Select an UpgradeEffect subclass from the drop down.")]
+    [SerializeReference, SubclassSelector]
     public List<UpgradeEffect> effects = new();
     
     // Helpers used by UpgradeManager

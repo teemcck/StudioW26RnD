@@ -119,6 +119,52 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &39624546
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 39624548}
+  - component: {fileID: 39624547}
+  m_Layer: 0
+  m_Name: LevelReward
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &39624547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 39624546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eda724e999246b0aa1faef07319ac0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LevelReward
+  upgradeManager: {fileID: 0}
+  upgradeUIHandler: {fileID: 1226177851}
+--- !u!4 &39624548
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 39624546}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 561.98486, y: 280.0598, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &206255771
 GameObject:
   m_ObjectHideFlags: 0
@@ -256,6 +302,59 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 206255771}
   m_CullTransparentMesh: 1
+--- !u!1 &282713892
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 282713895}
+  - component: {fileID: 282713893}
+  m_Layer: 0
+  m_Name: UpgradeManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &282713893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 282713892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f29304f4a428d3e4889b17d49d4b3223, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeManager
+  allDisplays:
+  - {fileID: 11400000, guid: 3d08b01b988d7fa499a66a0fecc8c666, type: 2}
+  - {fileID: 11400000, guid: e4b9faea3ca1fc1499769cad2f224906, type: 2}
+  - {fileID: 11400000, guid: 6fa9440a0bbf42b4f9178987b2c3d29e, type: 2}
+  allEffects:
+  - {fileID: 11400000, guid: ea3bf257c932bfc40b56f10fcd5186fe, type: 2}
+  - {fileID: 11400000, guid: dff5a6113a3abfc4da7ce7664112735d, type: 2}
+  - {fileID: 11400000, guid: 433e342f072e98747b3efae2f917df5b, type: 2}
+  upgradeUIHandler: {fileID: 1226177851}
+--- !u!4 &282713895
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 282713892}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 561.98486, y: 280.0598, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &422113266
 GameObject:
   m_ObjectHideFlags: 0
@@ -2194,6 +2293,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c951555d857d5334794d9b61a28c9f19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeUIHandler
+  upgradeContainer: {fileID: 1075705170}
+  upgradeDisplayPrefab: {fileID: 2999386350082327958, guid: 6fd2128eeeeb3c1488ce7ac74e89c3cb, type: 3}
+  upgradeCanvas: {fileID: 422113266}
 --- !u!1 &1692550475
 GameObject:
   m_ObjectHideFlags: 0
@@ -2506,3 +2608,5 @@ SceneRoots:
   - {fileID: 1993178443}
   - {fileID: 610161066}
   - {fileID: 697857441}
+  - {fileID: 39624548}
+  - {fileID: 282713895}

@@ -16,16 +16,16 @@ public class UpgradeManager : MonoBehaviour
 {
     public static UpgradeManager Instance { get; private set; }
 
-    [Header("Registries -> Drag all SOs here")]
+    [Header("Registries (Drag all SOs here)")]
     [SerializeField] private List<UpgradeDisplaySO> allDisplays = new();
-    [SerializeField] private List<UpgradeEffectSO>  allEffects  = new();
+    [SerializeField] private List<UpgradeEffectsSO>  allEffects  = new();
     
     [Header("External References")] 
     [SerializeField] private UpgradeUIHandler upgradeUIHandler;
     
     // Lookup maps  (built once at Awake)
 
-    private Dictionary<string, UpgradeEffectSO>  _effectMap  = new();
+    private Dictionary<string, UpgradeEffectsSO>  _effectMap  = new();
     private Dictionary<string, UpgradeDisplaySO> _displayMap = new();
     
     // Runtime run state
@@ -83,7 +83,7 @@ public class UpgradeManager : MonoBehaviour
     
     // Public API, Lookup
 
-    public bool TryGetEffect(string id, out UpgradeEffectSO so)  => _effectMap.TryGetValue(id, out so);
+    public bool TryGetEffect(string id, out UpgradeEffectsSO so)  => _effectMap.TryGetValue(id, out so);
     public bool TryGetDisplay(string id, out UpgradeDisplaySO so) => _displayMap.TryGetValue(id, out so);
     public int GetStack(string id) => _stacks.TryGetValue(id, out int s) ? s : 0;
     

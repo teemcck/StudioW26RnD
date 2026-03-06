@@ -13,14 +13,16 @@ public class LevelReward  : MonoBehaviour
     // "prioritize" certain common cards, so doing better would be a decrement to the run
     // if xp meant higher chance for less common cards.
 
-    private void Awake()
+    private void Start()
     {
-        throw new NotImplementedException();
+        upgradeManager = UpgradeManager.Instance;
+        upgradeUIHandler = UpgradeUIHandler.Instance;
+        ActivateUpgradeSelection(3); // Testing.
     }
 
     private void ActivateUpgradeSelection(int numChoices)
     {
         List<UpgradeDisplaySO> upgrades = upgradeManager.GetRandomUpgradeChoices(numChoices);
-        upgradeUIHandler.PopulateUpgradeOptions(upgrades);
+        upgradeUIHandler.DisplayUpgrades(upgrades);
     }
 }
