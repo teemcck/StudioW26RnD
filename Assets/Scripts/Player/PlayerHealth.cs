@@ -19,7 +19,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     private float _invulnerableUntil;
 
-    private void Awake()
+    private void Start()
     {
         _spawnTime = Time.time;
         playerStats = GetComponent<PlayerStats>();
