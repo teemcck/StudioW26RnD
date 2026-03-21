@@ -20,6 +20,18 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
 
     private float _health;
 
+    /// <summary>
+    /// Scales max health and current health, and optionally local scale (e.g. split-spawn clones).
+    /// Call right after Instantiate; runs after Awake on the new instance.
+    /// </summary>
+    public virtual void ApplyRuntimeScaling(float healthMultiplier, float sizeMultiplier = 1f)
+    {
+        maxHealth = Mathf.Max(0.01f, maxHealth * healthMultiplier);
+        _health = maxHealth;
+        if (sizeMultiplier > 0f && !Mathf.Approximately(sizeMultiplier, 1f))
+            transform.localScale *= sizeMultiplier;
+    }
+
     protected virtual void Awake()
     {
         Rb = GetComponent<Rigidbody2D>();

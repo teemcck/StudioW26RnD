@@ -9,7 +9,7 @@ public class MeleeEnemy : EnemyBase
 
     private float _nextAttackTime;
 
-    private void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
         if (!Player) return;
 

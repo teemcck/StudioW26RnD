@@ -8,6 +8,7 @@ public class RangedEnemy : EnemyBase
 
     [SerializeField] private float desiredDistance = 4f;
     [SerializeField] private float shootCooldown = 1.2f;
+    [SerializeField] private Vector2 playerAimOffset = Vector2.zero;
 
     private float _nextShootTime;
 
@@ -37,13 +38,24 @@ public class RangedEnemy : EnemyBase
         if (Time.time >= _nextShootTime && projectilePrefab)
         {
             _nextShootTime = Time.time + shootCooldown;
-            Shoot(dir);
+            Vector2 aim = GetPlayerAimWorldPoint(Player);
+            Vector2 fromFire = aim - (Vector2)firePoint.position;
+            Vector2 shootDir = fromFire.sqrMagnitude > 0.0001f ? fromFire.normalized : dir;
+            Shoot(shootDir);
         }
     }
 
-    private void Shoot(Vector2 directionToPlayer)
+    private Vector2 GetPlayerAimWorldPoint(Transform player)
+    {
+        var col = player.GetComponent<Collider2D>();
+        if (col != null)
+            return (Vector2)col.bounds.center + playerAimOffset;
+        return (Vector2)player.position + playerAimOffset;
+    }
+
+    private void Shoot(Vector2 fireDirection)
     {
         var proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
-        proj.Fire(directionToPlayer);
+        proj.Fire(fireDirection);
     }
 }
