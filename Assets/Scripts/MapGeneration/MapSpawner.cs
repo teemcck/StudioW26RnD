@@ -19,6 +19,12 @@ public class MapSpawner : MonoBehaviour
     public int MinNumChunks => minNumChunks;
     public int MaxNumChunks => maxNumChunks;
 
+    /// <summary>
+    /// Referenced by GameplayHandler.cs.
+    /// Used to place player object at the beginning of the level.
+    /// </summary>
+    public Vector2 SpawnPosition {get; private set;}
+
     private void Awake()
     {
         if (chunkGen == null)
@@ -55,6 +61,9 @@ public class MapSpawner : MonoBehaviour
 
             _chunkOffset += width + chunkSpacing;
         }
+
+        // Initial spawn position determined by TeleportEntry of initial chunk.
+        SpawnPosition = _chunks[0].GetComponentInChildren<TeleportEntry>().transform.position;
 
         LinkTeleporters();
         return _chunks;

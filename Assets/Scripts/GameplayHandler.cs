@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class GameplayHandler : MonoBehaviour
@@ -9,6 +10,8 @@ public class GameplayHandler : MonoBehaviour
     [Header("References")]
     [SerializeField] private MapSpawner mapSpawner;
     [SerializeField] private LevelUI levelUI;
+    [SerializeField] private GameObject playerPrefab;
+    [SerializeField] private CinemachineCamera camera;
 
     [Header("Difficulty Settings")]
     [SerializeField] private int minDifficulty = 1;
@@ -21,6 +24,7 @@ public class GameplayHandler : MonoBehaviour
     [SerializeField] private float timeBonusMax = 50f;
     [SerializeField] private float timeBonusWindow = 60f;
 
+    private GameObject _playerObject;
     private int _currentDifficulty;
     private int _currentChunkCount;
     private int _totalEnemies;
@@ -43,6 +47,11 @@ public class GameplayHandler : MonoBehaviour
     {
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
+
+        // Instantiate player.
+        _playerObject = Instantiate(playerPrefab);
+        // Force camera to track player.
+        ChangeCameraTracking(_playerObject.transform);
     }
 
     private void OnEnable()
@@ -61,6 +70,7 @@ public class GameplayHandler : MonoBehaviour
     {
         levelUI.Activate();
         RollNextLevel();
+
         StartCoroutine(LevelSequence());
     }
 
@@ -68,7 +78,7 @@ public class GameplayHandler : MonoBehaviour
 
     private IEnumerator LevelSequence()
     {
-        // --- Preview: show rolled difficulty and length before generating ---
+        // Preview: show rolled difficulty and length before generating.
         CurrentState = LevelState.Preview;
 
         levelUI.ShowLevelPreview(_nextDifficulty, _nextChunkCount, _levelIndex);
@@ -78,7 +88,7 @@ public class GameplayHandler : MonoBehaviour
         _currentDifficulty = _nextDifficulty;
         _currentChunkCount = _nextChunkCount;
 
-        // --- Generate and load the level ---
+        // Generate and load level.
         _currentChunks = mapSpawner.GenerateSequence(_currentDifficulty);
 
         EventBus<LevelLoadedEvent>.Raise(new LevelLoadedEvent
@@ -87,15 +97,18 @@ public class GameplayHandler : MonoBehaviour
             IsFirstLevel = _levelIndex == 0
         });
 
-        // --- Playing ---
+        // Playing.
         CurrentState = LevelState.Playing;
         _enemiesKilled = 0;
         _totalEnemies  = 0; // EnemySpawner will set this once implemented.
         _levelStartTime = Time.time;
 
+        // Move player to the start of the level.
+        _playerObject.transform.position = mapSpawner.SpawnPosition;
+
         yield return new WaitUntil(() => CurrentState == LevelState.LevelEnd);
 
-        // --- XP Summary ---
+        // XP Summary.
         float elapsed = Time.time - _levelStartTime;
         int xp = CalculateXP(_enemiesKilled, _totalEnemies, elapsed);
 
@@ -145,8 +158,13 @@ public class GameplayHandler : MonoBehaviour
         float timeBonus = Mathf.Lerp(timeBonusMax, 0f, elapsed / timeBonusWindow);
 
         int totalXP = Mathf.RoundToInt(killXP + avoidXP + timeBonus);
-        Debug.Log($"XP — Kills: {killXP}, Avoided: {avoidXP}, Time bonus: {timeBonus}, Total: {totalXP}");
+        Debug.Log($"XP - Kills: {killXP}, Avoided: {avoidXP}, Time bonus: {timeBonus}, Total: {totalXP}");
         return totalXP;
+    }
+
+    private void ChangeCameraTracking(Transform newTracking)
+    {
+        camera.Follow = newTracking;
     }
 
     // Event handlers.

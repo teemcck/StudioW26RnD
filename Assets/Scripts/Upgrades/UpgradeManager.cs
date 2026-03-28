@@ -21,7 +21,7 @@ public class UpgradeManager : MonoBehaviour
 
     [Header("External References")]
     [SerializeField] private UpgradeUIHandler upgradeUIHandler;
-    [SerializeField] private PlayerController playerController;
+    private PlayerController playerController; // Set at runtime.
 
     // Lookup maps built once at Awake.
     private Dictionary<string, UpgradeEffectsSO>  _effectMap  = new();
@@ -39,9 +39,30 @@ public class UpgradeManager : MonoBehaviour
     private void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
         BuildMaps();
+    }
+
+    void Start()
+    {
+        // Find reference to player controller.
+        // Player is instantiated at runtime, cannot be serialized.
+        var found = FindObjectsByType<PlayerController>(FindObjectsSortMode.None); // include inactive if needed
+
+        if (found.Length == 0) Debug.LogError($"No instance of player controller found in scene.");
+        else if (found.Length > 1)
+        {
+            Debug.LogError($"Multiple instances of player controller found ({found.Length})." +
+            "There should only be one.");
+        }
+        else
+        {
+            playerController = found[0];
+        }
+
     }
 
     private void Update()

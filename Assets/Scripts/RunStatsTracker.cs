@@ -42,13 +42,13 @@ public class RunStatsTracker : MonoBehaviour
 
     private void OnLevelCompleted(LevelCompletedEvent evt)
     {
-        Debug.Log($"Level complete — kills this run: {TotalKillsThisRun}, " +
+        Debug.Log($"Level complete - kills this run: {TotalKillsThisRun}, " +
                   $"time: {TotalTimeSeconds:F1}s");
     }
 
     private void OnPlayerDied(PlayerDiedEvent evt)
     {
-        Debug.Log($"Run ended — kills: {TotalKillsThisRun}, " +
+        Debug.Log($"Run ended - kills: {TotalKillsThisRun}, " +
                   $"survived: {evt.SurvivedForSeconds:F1}s");
     }
 }

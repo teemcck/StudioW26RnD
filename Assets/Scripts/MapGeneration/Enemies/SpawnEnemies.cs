@@ -7,8 +7,6 @@ using Vector2 = UnityEngine.Vector2;
 
 public class SpawnEnemies : MonoBehaviour
 {
-    [SerializeField] private Tilemap enemySpawnTiles;
-    
     /// <summary>
     /// Spawns enemies across a chunk using Poisson disk sampling in square around chunk. 
     /// Enemies that fall outside the mapped outside the chunk are voided. 
@@ -16,11 +14,11 @@ public class SpawnEnemies : MonoBehaviour
     /// <param name="tm">The tilemap defining valid spawn area.</param>
     /// <param name="spacing">Minimum world-space distance between each spawned enemy.</param>
     /// <param name="enemyPrefabs">Each entry pairs an enemy prefab with its relative spawn weight.</param>
-    public void SpawnEnemiesOnChunk(List<(GameObject prefab, float weight)> enemyPool, float spacing)
+    public void SpawnEnemiesOnChunk(Tilemap map, List<(GameObject prefab, float weight)> enemyPool, float spacing)
     {
         // This might need to be modified later to be less area dependent.
         Vector2 chunkWorldPos = transform.position;
-        Vector2 spawnAreaSize = enemySpawnTiles.localBounds.size;
+        Vector2 spawnAreaSize = map.localBounds.size;
 
         List<Vector2> spawnPoints = Poisson.GeneratePoint(spacing, spawnAreaSize);
 
