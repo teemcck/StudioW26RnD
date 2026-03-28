@@ -3,22 +3,17 @@ using UnityEngine;
 
 /// <summary>
 /// Handles upgrade menu UI elements.
-///
-/// Public API:
-/// - Populate card upgrade displays via PopulateUpgradeOptions.
-/// - Destory card upgrade displays via ClearUpgradeOptions
+/// When the player clicks a card, raises UpgradeSelectedEvent and hides the menu.
 /// </summary>
 public class UpgradeUIHandler : MonoBehaviour
 {
     public static UpgradeUIHandler Instance { get; private set; }
-    
+
     [SerializeField] private GameObject upgradeContainer;
     [SerializeField] private GameObject upgradeDisplayPrefab;
     [SerializeField] private GameObject upgradeCanvas;
-    
-    // Stored UI elements pertaining to each upgrade option.
-    
-    private List<GameObject> upgradeDisplays = new List<GameObject>();
+
+    private List<GameObject> _upgradeDisplays = new List<GameObject>();
 
     private void Awake()
     {
@@ -28,45 +23,60 @@ public class UpgradeUIHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// Activates canvas elements.
-    /// Instantiates each option in upgradeOptions as a UI object.
-    /// Stores data to associated upgrades.
+    /// Shows the upgrade canvas and populates it with the given options.
     /// </summary>
-    /// <param name="upgradeOptions"></param>
     public void DisplayUpgrades(List<UpgradeDisplaySO> upgradeOptions)
     {
-        if (upgradeCanvas.activeSelf == false) upgradeCanvas.SetActive(true);
+        if (!upgradeCanvas.activeSelf) upgradeCanvas.SetActive(true);
         PopulateUpgradeOptions(upgradeOptions);
     }
 
     /// <summary>
-    /// Destroys all UI upgrade options in upgradeContainer.
-    /// Deactivates upgrade canvas if not hidden.
+    /// Destroys all displayed upgrade cards and hides the canvas.
     /// </summary>
     public void HideUpgrades()
     {
         ClearUpgradeOptions();
-        if (upgradeCanvas.activeSelf == true) upgradeCanvas.SetActive(false);
+        if (upgradeCanvas.activeSelf) upgradeCanvas.SetActive(false);
     }
 
     private void PopulateUpgradeOptions(List<UpgradeDisplaySO> upgradeOptions)
     {
-        int numOptions = upgradeOptions.Count;
-
-        for (int i = 0; i < numOptions; i++)
+        foreach (var option in upgradeOptions)
         {
-            // Instantiate upgrade display, feed it data.
-            GameObject display = Instantiate(upgradeDisplayPrefab, upgradeContainer.transform);
-            display.GetComponent<UpgradeDisplay>().UpdateDisplay(upgradeOptions[i]);
-            upgradeDisplays.Add(display);
+            GameObject displayGO = Instantiate(upgradeDisplayPrefab, upgradeContainer.transform);
+            UpgradeDisplay display = displayGO.GetComponent<UpgradeDisplay>();
+            display.UpdateDisplay(option);
+
+            // Capture for the lambda.
+            UpgradeDisplaySO captured = option;
+            display.OnClicked = () => OnUpgradeCardClicked(captured);
+
+            _upgradeDisplays.Add(displayGO);
         }
+    }
+
+    private void OnUpgradeCardClicked(UpgradeDisplaySO selected)
+    {
+        int newStack = UpgradeManager.Instance.ApplyUpgradeFromDisplay(selected)
+            ? UpgradeManager.Instance.GetStack(selected.upgradeID)
+            : 0;
+
+        EventBus<UpgradeSelectedEvent>.Raise(new UpgradeSelectedEvent
+        {
+            UpgradeID     = selected.upgradeID,
+            UpgradeName   = selected.upgradeName,
+            NewStackCount = newStack
+        });
+
+        HideUpgrades();
     }
 
     private void ClearUpgradeOptions()
     {
-        foreach (var display in upgradeDisplays)
-        {
+        foreach (var display in _upgradeDisplays)
             Destroy(display);
-        }
+
+        _upgradeDisplays.Clear();
     }
 }

@@ -160,22 +160,22 @@ public class OnKillHealEffect : TriggerEffect
     [Tooltip("HP restored per kill.")] 
     float healAmount = 5f;
     
-    protected IEventBinding<PlayerKilledEnemyEvent> _binding;
+    protected IEventBinding<EnemyKilledEvent> _binding;
 
     public override void Apply(UpgradeContext ctx)
     {
         // _health  = ctx.Player.GetComponent<PlayerController>().health;
-        _binding = EventBus<PlayerKilledEnemyEvent>.Register(HandleKill);
+        _binding = EventBus<EnemyKilledEvent>.Register(HandleKill);
     }
 
     public override void Remove(UpgradeContext ctx)
-        => EventBus<PlayerKilledEnemyEvent>.Unsubscribe(_binding);
+        => EventBus<EnemyKilledEvent>.Unsubscribe(_binding);
 
-    // private void HandleKill(PlayerKilledEnemyEvent evt)
+    // private void HandleKill(EnemyKilledEvent evt)
     //     => _health?.Heal(healAmount);
 
     // Finish when PlayerController updated to have more control variables.
-    private void HandleKill(PlayerKilledEnemyEvent evt)
+    private void HandleKill(EnemyKilledEvent evt)
     {
         Debug.Log("Healed player: " + healAmount);
     }

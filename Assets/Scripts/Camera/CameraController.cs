@@ -27,7 +27,7 @@ public class CameraController : MonoBehaviour
         if (!TryGetComponent<CinemachineConfiner2D>(out _confiner))
         {
             Debug.Log("Cinemachine Confiner could not be found. " +
-                      "This is 100% intentional and will be fixed later at some point.");
+                      "This is intentional and will be fixed later at some point.");
         }
     }
 

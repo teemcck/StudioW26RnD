@@ -5,101 +5,94 @@ using UnityEngine.Tilemaps;
 public class MapSpawner : MonoBehaviour
 {
     [Header("Map Generation Settings")]
-    [SerializeField] private int minNumChunks;
-    [SerializeField] private int maxNumChunks;
-    [Header("Chunk Generation References")]
+    [SerializeField] private int minNumChunks = 3;
+    [SerializeField] private int maxNumChunks = 7;
+    [SerializeField] private float chunkSpacing = 5f;
+
+    [Header("References")]
     [SerializeField] private ChunkGen chunkGen;
     [SerializeField] private Transform chunkContainer;
+
     private List<GameObject> _chunks = new List<GameObject>();
     private float _chunkOffset;
+
+    public int MinNumChunks => minNumChunks;
+    public int MaxNumChunks => maxNumChunks;
 
     private void Awake()
     {
         if (chunkGen == null)
-        {
             Debug.LogError("ChunkGen reference is missing in MapSpawner.");
-        }
         if (chunkContainer == null)
-        {
             Debug.LogError("ChunkContainer reference is missing in MapSpawner.");
-        }
     }
 
-    public List<GameObject> GenerateSequence()
+    /// <param name="difficulty">Reserved for future use (scaling chunk count, etc.)</param>
+    public List<GameObject> GenerateSequence(int difficulty = 1)
     {
         ResetMap();
         int numChunks = Random.Range(minNumChunks, maxNumChunks + 1);
-        Debug.Log("Generating " + numChunks + " chunks");
+        Debug.Log($"Generating {numChunks} chunks at difficulty {difficulty}.");
 
-        for (int i = 0; i < numChunks; ++i)
+        for (int i = 0; i < numChunks; i++)
         {
-            GameObject chunkPrefab = chunkGen.GetRandomMapChunk();
-            GameObject chunk = Instantiate(chunkPrefab, chunkContainer);
-            Debug.Log("Island " + i + ": " + chunk.name);
+            GameObject prefab = chunkGen.GetRandomMapChunk();
+            if (prefab == null)
+            {
+                Debug.LogError($"Chunk {i} prefab is null, skipping.");
+                continue;
+            }
 
+            GameObject chunk = Instantiate(prefab, chunkContainer);
+            chunk.name = prefab.name;
             chunk.transform.position = new Vector3(_chunkOffset, 0, 0);
             _chunks.Add(chunk);
 
             Tilemap tm = chunk.GetComponentInChildren<Tilemap>();
-
-            // Calculate cumulative offset (since islands progress from origin to right).
-            // This will probably change later.
-            float width;
+            float width = tm != null ? tm.localBounds.size.x : 10f;
             if (tm == null)
-            {
-                Debug.LogError("No Tilemap found for " + chunkPrefab.name +
-                               ", defaulting to 10 unit offset.");
-                width = 10f;
-            }
-            else
-            {
-                width = tm.localBounds.size.x;
-            }
+                Debug.LogWarning($"No Tilemap on {prefab.name}, defaulting to 10 unit width.");
 
-            _chunkOffset += width + 5;
+            _chunkOffset += width + chunkSpacing;
         }
 
         LinkTeleporters();
         return _chunks;
     }
 
-    private void SpawnEnemies()
-    {
-        // Placeholder for now.
-        // List<(GameObject, float)> enemyPool
-        // {
-        //     ()
-        // };
-
-
-        int numChunks = _chunks.Count;
-        for (int i = 0; i < numChunks; ++i)
-        {
-            // _chunks[i].GetComponent<SpawnEnemies>()
-            //     .SpawnEnemiesOnChunk();
-        }
-    }
-    
     private void LinkTeleporters()
     {
-        int numChunks = _chunks.Count;
-        for (int i = 0; i < numChunks - 1; ++i)
+        int count = _chunks.Count;
+
+        // Link each teleporter to the entry point of the next chunk.
+        // The last chunk's teleporter is intentionally left with destination = null.
+        // Teleporter.cs checks for this and raises PlayerReachedEndpointEvent instead.
+        for (int i = 0; i < count - 1; i++)
         {
             Teleporter tp = _chunks[i].GetComponentInChildren<Teleporter>();
-            Transform entry = _chunks[i + 1].GetComponentInChildren<TeleportEntry>().transform;
-            tp.destination = entry;
+            TeleportEntry entry = _chunks[i + 1].GetComponentInChildren<TeleportEntry>();
+
+            if (tp == null)
+            {
+                Debug.LogWarning($"No Teleporter on chunk {i} ({_chunks[i].name}).");
+                continue;
+            }
+            if (entry == null)
+            {
+                Debug.LogWarning($"No TeleportEntry on chunk {i + 1} ({_chunks[i + 1].name}).");
+                continue;
+            }
+
+            tp.destination = entry.transform;
         }
-        // Remove last teleporter. This needs to be a win condition eventually.
-        _chunks[numChunks - 1].GetComponentInChildren<Teleporter>().gameObject.SetActive(false);
     }
 
     private void ResetMap()
     {
         foreach (GameObject chunk in _chunks)
-        {
             Destroy(chunk);
-        }
-        _chunkOffset = 0; 
+
         _chunks.Clear();
+        _chunkOffset = 0f;
     }
 }

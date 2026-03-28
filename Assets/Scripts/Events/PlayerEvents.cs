@@ -30,10 +30,8 @@ public struct PlayerHealedEvent
     public float NewHP;
 }
 
-/// <summary>Player killed an enemy.</summary>
-public struct PlayerKilledEnemyEvent
+/// <summary>Player reached the end of a level.</summary>
+public struct PlayerReachedEndpointEvent
 {
-    public Vector2 EnemyPosition;
-    public string EnemyType;
-    public int TotalKillsThisRun;
+    Vector2 position;
 }

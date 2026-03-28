@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Central registry and runtime coordinator for the upgrade system.
@@ -16,32 +15,26 @@ public class UpgradeManager : MonoBehaviour
 {
     public static UpgradeManager Instance { get; private set; }
 
-    [Header("Registries (Drag all SOs here)")]
+    [Header("Registries (drag all SOs here)")]
     [SerializeField] private List<UpgradeDisplaySO> allDisplays = new();
-    [SerializeField] private List<UpgradeEffectsSO>  allEffects  = new();
-    
-    [Header("External References")] 
+    [SerializeField] private List<UpgradeEffectsSO> allEffects  = new();
+
+    [Header("External References")]
     [SerializeField] private UpgradeUIHandler upgradeUIHandler;
-    
-    // Lookup maps  (built once at Awake)
+    [SerializeField] private PlayerController playerController;
 
+    // Lookup maps built once at Awake.
     private Dictionary<string, UpgradeEffectsSO>  _effectMap  = new();
-    private Dictionary<string, UpgradeDisplaySO> _displayMap = new();
-    
-    // Runtime run state
+    private Dictionary<string, UpgradeDisplaySO>  _displayMap = new();
 
-    /// <summary>How many times the player has acquired each upgrade this run.</summary>
+    // Runtime run state.
     private Dictionary<string, int> _stacks = new();
-
-    /// <summary>All effects that need a per-frame Tick, paired with their context.</summary>
     private List<(UpgradeEffect effect, UpgradeContext ctx)> _tickingEffects = new();
 
-    // Cached context, rebuilt when the scene changes
-    // Not sure if we will have scene changes, but this is here just in case.
     private UpgradeContext _cachedContext;
     private PlayerController _trackedPlayer;
-    
-    // Lifecycle
+
+    // Manager lifecycle.
 
     private void Awake()
     {
@@ -80,18 +73,36 @@ public class UpgradeManager : MonoBehaviour
 
         Debug.Log($"[UpgradeManager] Registered {_effectMap.Count} effects / {_displayMap.Count} displays.");
     }
-    
-    // Public API, Lookup
+
+    // Public API (lookup)
 
     public bool TryGetEffect(string id, out UpgradeEffectsSO so)  => _effectMap.TryGetValue(id, out so);
     public bool TryGetDisplay(string id, out UpgradeDisplaySO so) => _displayMap.TryGetValue(id, out so);
     public int GetStack(string id) => _stacks.TryGetValue(id, out int s) ? s : 0;
-    
-    // Public API, Apply
+
+    // Public API (upgrade screen)
 
     /// <summary>
-    /// Apply an upgrade by ID. Call this when the player selects a card.
+    /// Called by GameplayHandler to open the upgrade screen with n choices.
+    /// Passes the choices to UpgradeUIHandler for display.
     /// </summary>
+    public void OpenUpgradeSelection(int count)
+    {
+        List<UpgradeDisplaySO> choices = GetRandomUpgradeChoices(count);
+        upgradeUIHandler.DisplayUpgrades(choices);
+    }
+
+    /// <summary>
+    /// Called by UpgradeUIHandler when the player clicks a card.
+    /// Applies the upgrade and returns true on success.
+    /// </summary>
+    public bool ApplyUpgradeFromDisplay(UpgradeDisplaySO display)
+    {
+        return ApplyUpgrade(display.upgradeID, playerController);
+    }
+
+    // Public API (apply/revoke)
+
     public bool ApplyUpgrade(string id, PlayerController player)
     {
         if (!_effectMap.TryGetValue(id, out var effectSO))
@@ -112,7 +123,6 @@ public class UpgradeManager : MonoBehaviour
         var ctx = GetOrBuildContext(player);
         effectSO.Apply(ctx);
 
-        // Register any new ticking effects
         foreach (var effect in effectSO.effects)
             if (effect != null && effect.NeedsTick)
                 _tickingEffects.Add((effect, ctx));
@@ -120,9 +130,6 @@ public class UpgradeManager : MonoBehaviour
         return true;
     }
 
-    /// <summary>
-    /// Revoke an upgrade (for debug / specific mechanics like curse removal).
-    /// </summary>
     public void RevokeUpgrade(string id, PlayerController player)
     {
         if (!_effectMap.TryGetValue(id, out var effectSO)) return;
@@ -132,17 +139,11 @@ public class UpgradeManager : MonoBehaviour
         var ctx = GetOrBuildContext(player);
         effectSO.Remove(ctx);
 
-        // Clean up ticking effects that belonged to this SO
-        _tickingEffects.RemoveAll(pair =>
-            effectSO.effects.Contains(pair.effect));
+        _tickingEffects.RemoveAll(pair => effectSO.effects.Contains(pair.effect));
     }
-    
-    // Public API, Randomised upgrade selection for the upgrade screen
 
-    /// <summary>
-    /// Returns <paramref name="count"/> UpgradeDisplaySOs for the upgrade screen.
-    /// Filters out fully-stacked upgrades, weights by rarity.
-    /// </summary>
+    // Public API
+
     public List<UpgradeDisplaySO> GetRandomUpgradeChoices(int count, bool rarityWeighted = true)
     {
         var pool = new List<(UpgradeDisplaySO display, float weight)>();
@@ -169,13 +170,11 @@ public class UpgradeManager : MonoBehaviour
 
         return result;
     }
-    
-    // Run lifecycle
 
-    /// <summary>Call at the start of a new run to wipe all state.</summary>
+    // Run lifecycle.
+
     public void ResetRun(PlayerController player)
     {
-        // Revoke every active upgrade cleanly so Remove() fires on all effects
         var ctx = GetOrBuildContext(player);
         foreach (var kvp in _stacks)
         {
@@ -188,12 +187,11 @@ public class UpgradeManager : MonoBehaviour
         _tickingEffects.Clear();
         _cachedContext = null;
     }
-    
+
     // Helpers
 
     private UpgradeContext GetOrBuildContext(PlayerController player)
     {
-        // Rebuild if the player reference changed (e.g. after a scene load)
         if (_cachedContext == null || _trackedPlayer != player)
         {
             _cachedContext = UpgradeContext.FromScene(player);
@@ -202,8 +200,6 @@ public class UpgradeManager : MonoBehaviour
         return _cachedContext;
     }
 
-    // Arbitrary percentages for now, abstract and integrate variable percents in the future.
-    // For example, upgrade "Midas: all upgrade rarities become equally common."
     private static float RarityWeight(UpgradeRarity r) => r switch
     {
         UpgradeRarity.Common    => 60f,

@@ -1,28 +1,44 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
-public class LevelReward  : MonoBehaviour
+public class LevelReward : MonoBehaviour
 {
-    [SerializeField] private UpgradeManager upgradeManager;
-    [SerializeField] private UpgradeUIHandler upgradeUIHandler;
-    
+    private UpgradeManager _upgradeManager;
+    private UpgradeUIHandler _upgradeUIHandler;
+
+    private IEventBinding<UpgradeSelectedEvent> _upgradeSelectedBinding;
+
     // There is no performance variability implemented as of now.
     // In the future, the xp * xp multiplier will determine the level rewards.
     // Not yet implemented since there are concerns with this, some builds might
     // "prioritize" certain common cards, so doing better would be a decrement to the run
     // if xp meant higher chance for less common cards.
 
-    private void Start()
+    private void Awake()
     {
-        upgradeManager = UpgradeManager.Instance;
-        upgradeUIHandler = UpgradeUIHandler.Instance;
-        ActivateUpgradeSelection(3); // Testing.
+        _upgradeManager    = UpgradeManager.Instance;
+        _upgradeUIHandler  = UpgradeUIHandler.Instance;
     }
 
-    private void ActivateUpgradeSelection(int numChoices)
+    private void OnEnable()
     {
-        List<UpgradeDisplaySO> upgrades = upgradeManager.GetRandomUpgradeChoices(numChoices);
-        upgradeUIHandler.DisplayUpgrades(upgrades);
+        _upgradeSelectedBinding = EventBus<UpgradeSelectedEvent>.Register(OnUpgradeSelected);
+    }
+
+    private void OnDisable()
+    {
+        EventBus<UpgradeSelectedEvent>.Unsubscribe(_upgradeSelectedBinding);
+    }
+
+    public void ActivateUpgradeSelection(int numChoices)
+    {
+        List<UpgradeDisplaySO> upgrades = _upgradeManager.GetRandomUpgradeChoices(numChoices);
+        _upgradeUIHandler.DisplayUpgrades(upgrades);
+    }
+
+    private void OnUpgradeSelected(UpgradeSelectedEvent evt)
+    {
+        Debug.Log($"Upgrade selected: {evt.UpgradeName} (x{evt.NewStackCount})");
+        // Forward to UpgradeManager or apply directly once that API exists.
     }
 }

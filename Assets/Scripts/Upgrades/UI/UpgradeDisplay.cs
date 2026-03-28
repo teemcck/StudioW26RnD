@@ -1,29 +1,32 @@
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// Attached to UpgradeDisplay prefabs.
-/// 
-/// Provides interface for updating UI display as well as data
-/// provided to the in-game tooltip.
+/// Displays card data and exposes an OnClicked callback
+/// wired by UpgradeUIHandler when the card is instantiated.
 /// </summary>
-public class UpgradeDisplay : MonoBehaviour
+public class UpgradeDisplay : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] private Image cardImage;
+
     private UpgradeDisplaySO _data;
-    
-    /// <summary>
-    /// Stores input SO in _data, updates upgrade UI.
-    /// </summary>
-    /// <param name="display"></param>
-   public void UpdateDisplay(UpgradeDisplaySO display)
-   {
-       // Store display data from SO.
-       _data = display;
-       cardImage.sprite = _data.cardImage;
-   }
-   
-   // Public API, Lookup
-   public UpgradeDisplaySO Data => _data;
+
+    /// <summary>Set by UpgradeUIHandler after instantiation.</summary>
+    public Action OnClicked { get; set; }
+
+    public void UpdateDisplay(UpgradeDisplaySO display)
+    {
+        _data = display;
+        cardImage.sprite = _data.cardImage;
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        OnClicked?.Invoke();
+    }
+
+    public UpgradeDisplaySO Data => _data;
 }
