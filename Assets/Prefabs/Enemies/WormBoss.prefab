@@ -1,0 +1,248 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &990070001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 990070002}
+  - component: {fileID: 990070003}
+  - component: {fileID: 990070004}
+  - component: {fileID: 990070005}
+  - component: {fileID: 990070006}
+  - component: {fileID: 990070007}
+  m_Layer: 7
+  m_Name: WormBoss
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &990070002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990070001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &990070003
+SpriteRenderer:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990070001}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 211765407
+  m_SortingLayer: 2
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 2063359332131475940, guid: 1631eaa6336814f3eab0c9a51d6d337d, type: 3}
+  m_Color: {r: 0.85, g: 1, b: 0.8, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 2}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+--- !u!50 &990070004
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990070001}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 2.2
+  m_LinearDamping: 5
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4
+--- !u!70 &990070005
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990070001}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 0.95, y: 1.2}
+  m_Direction: 0
+--- !u!114 &990070006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990070001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f7e98c1f54e4e60afb1d56f0176e64c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WormBossController
+  maxHealth: 350
+  weight: 4
+  moveSpeed: 2.5
+  damageFlash: {fileID: 990070007}
+  baseTilemap: {fileID: 0}
+  decorationTilemap: {fileID: 0}
+  playerLayerMask:
+    serializedVersion: 2
+    m_Bits: 8
+  repositionSpeed: 2.4
+  preferredDistance: 3.2
+  repositionDuration: 1.2
+  contactDamage: 8
+  contactTickInterval: 0.55
+  laser:
+    telegraphTime: 1.1
+    activeTime: 0.26
+    cooldownTime: 0.65
+    damage: 24
+  laserTileRadius: 0.42
+  laserMaxRangeTiles: 8
+  swipe:
+    telegraphTime: 0.85
+    activeTime: 0.18
+    cooldownTime: 0.55
+    damage: 18
+  swipeRange: 2.2
+  swipeHalfArcDegrees: 38
+  swipeChainAtLowHp: 2
+  dig:
+    telegraphTime: 0.95
+    activeTime: 0.2
+    cooldownTime: 0.8
+    damage: 30
+  digStrikeRadius: 0.65
+  digTravelTime: 0.7
+  digUndergroundAlpha: 0.15
+  enableBurrowTrail: 1
+  burrowTrail:
+    telegraphTime: 0.7
+    activeTime: 0.2
+    cooldownTime: 0.7
+    damage: 14
+  burrowTrailSteps: 5
+  burrowTrailSpacing: 0.9
+  burrowTrailRadius: 0.45
+  phaseTwoThreshold: 0.7
+  phaseThreeThreshold: 0.35
+  phaseTwoAttackSpeedMultiplier: 1.1
+  phaseThreeAttackSpeedMultiplier: 1.25
+  laserTelegraphColor: {r: 1, g: 0.2, b: 0.2, a: 0.55}
+  laserDamageColor: {r: 1, g: 0.35, b: 0.1, a: 0.85}
+  swipeTelegraphColor: {r: 1, g: 0.65, b: 0.2, a: 0.5}
+  swipeDamageColor: {r: 1, g: 0.8, b: 0.2, a: 0.85}
+  digTelegraphColor: {r: 0.45, g: 0.95, b: 1, a: 0.58}
+  digDamageColor: {r: 0.55, g: 1, b: 1, a: 0.92}
+  burrowTrailTelegraphColor: {r: 0.84, g: 0.4, b: 1, a: 0.5}
+  burrowTrailDamageColor: {r: 0.98, g: 0.6, b: 1, a: 0.9}
+  healthBarUI: {fileID: 0}
+  bossDisplayName: Worm Core
+--- !u!114 &990070007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990070001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89a1a3e7131184479a35a73d4524c9c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageFlash
+  spriteRenderer: {fileID: 990070003}
+  flashColor: {r: 1, g: 0.55, b: 0.55, a: 1}
+  flashDuration: 0.08

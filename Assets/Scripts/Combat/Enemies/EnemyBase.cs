@@ -19,6 +19,12 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
     protected Transform Player { get; private set; }
 
     private float _health;
+    private bool _isDead;
+
+    public float CurrentHealth => _health;
+    public float MaxHealth => maxHealth;
+    public float HealthNormalized => maxHealth <= 0.0001f ? 0f : Mathf.Clamp01(_health / maxHealth);
+    public bool IsDead => _isDead;
 
     /// <summary>
     /// Scales max health and current health, and optionally local scale (e.g. split-spawn clones).
@@ -45,6 +51,9 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
 
     public virtual void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce)
     {
+        if (_isDead) return;
+        if (damage <= 0f) return;
+
         _health -= damage;
 
         if (damageFlash) damageFlash.Play();
@@ -61,6 +70,9 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
 
     protected virtual void Die()
     {
+        if (_isDead) return;
+        _isDead = true;
+        EventBus<EnemyKilledEvent>.Raise(new EnemyKilledEvent { EnemyType = GetType().Name });
         Destroy(gameObject);
     }
 }
