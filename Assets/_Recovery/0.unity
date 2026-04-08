@@ -2234,6 +2234,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MapSpawner
   minNumChunks: 3
   maxNumChunks: 7
+  minEnemyDifficulty: 3
+  maxEnemyDifficulty: 7
   chunkSpacing: 5
   chunkGen: {fileID: 182929194}
   chunkContainer: {fileID: 947290496}
@@ -2974,6 +2976,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MapSpawner
   minNumChunks: 3
   maxNumChunks: 6
+  minEnemyDifficulty: 3
+  maxEnemyDifficulty: 7
   chunkSpacing: 5
   chunkGen: {fileID: 1868169559}
   chunkContainer: {fileID: 1868169560}
@@ -3020,7 +3024,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9fa621047cf60b4e9d9cb470aede421, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapTesting
-  mapSpawner: {fileID: 1868169558}
 --- !u!1 &1962872404
 GameObject:
   m_ObjectHideFlags: 0

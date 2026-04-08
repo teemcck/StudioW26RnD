@@ -89,7 +89,7 @@ public class GameplayHandler : MonoBehaviour
         _currentChunkCount = _nextChunkCount;
 
         // Generate and load level.
-        _currentChunks = mapSpawner.GenerateSequence(_currentDifficulty);
+        _currentChunks = mapSpawner.GenerateRandomSequence();
 
         EventBus<LevelLoadedEvent>.Raise(new LevelLoadedEvent
         {

@@ -7,8 +7,10 @@ public class MapSpawner : MonoBehaviour
     [Header("Map Generation Settings")]
     [SerializeField] private int minNumChunks = 3;
     [SerializeField] private int maxNumChunks = 7;
+    [SerializeField] private int minEnemyDifficulty = 3;
+    [SerializeField] private int maxEnemyDifficulty = 7;
     [SerializeField] private float chunkSpacing = 5f;
-
+    
     [Header("References")]
     [SerializeField] private ChunkGen chunkGen;
     [SerializeField] private Transform chunkContainer;
@@ -32,12 +34,12 @@ public class MapSpawner : MonoBehaviour
         if (chunkContainer == null)
             Debug.LogError("ChunkContainer reference is missing in MapSpawner.");
     }
-
-    /// <param name="difficulty">Reserved for future use (scaling chunk count, etc.)</param>
-    public List<GameObject> GenerateSequence(int difficulty = 1)
+    
+    public List<GameObject> GenerateRandomSequence()
     {
         ResetMap();
         int numChunks = Random.Range(minNumChunks, maxNumChunks + 1);
+        int difficulty = Random.Range(minNumChunks, maxNumChunks + 1); // Corresponds to the number of enemies.
         Debug.Log($"Generating {numChunks} chunks at difficulty {difficulty}.");
 
         for (int i = 0; i < numChunks; i++)
