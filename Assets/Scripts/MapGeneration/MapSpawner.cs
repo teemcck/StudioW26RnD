@@ -2,15 +2,21 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Tilemaps;
 
+[System.Serializable]
+public class WeightedEnemyPrefab
+{
+    public GameObject prefab;
+    [Min(0.001f)] public float weight = 1f;
+}
+
 public class MapSpawner : MonoBehaviour
 {
     [Header("Map Generation Settings")]
-    [SerializeField] private int minNumChunks = 3;
-    [SerializeField] private int maxNumChunks = 7;
-    [SerializeField] private int minEnemyDifficulty = 3;
-    [SerializeField] private int maxEnemyDifficulty = 7;
     [SerializeField] private float chunkSpacing = 5f;
-    
+
+    [Header("Enemy spawn (tile layer)")]
+    [SerializeField] private List<WeightedEnemyPrefab> enemyPool = new List<WeightedEnemyPrefab>();
+
     [Header("References")]
     [SerializeField] private ChunkGen chunkGen;
     [SerializeField] private Transform chunkContainer;
@@ -18,8 +24,11 @@ public class MapSpawner : MonoBehaviour
     private List<GameObject> _chunks = new List<GameObject>();
     private float _chunkOffset;
 
-    public int MinNumChunks => minNumChunks;
-    public int MaxNumChunks => maxNumChunks;
+    public int MinNumChunks => GameConstants.MinChunkCount;
+    public int MaxNumChunks => GameConstants.MaxChunkCount;
+
+    /// <summary>Total enemies spawned in the last <see cref="GenerateRandomSequence"/> call.</summary>
+    public int LastSpawnedEnemyCount { get; private set; }
 
     /// <summary>
     /// Referenced by GameplayHandler.cs.
@@ -35,12 +44,15 @@ public class MapSpawner : MonoBehaviour
             Debug.LogError("ChunkContainer reference is missing in MapSpawner.");
     }
     
-    public List<GameObject> GenerateRandomSequence()
+    public List<GameObject> GenerateRandomSequence(int difficulty)
     {
         ResetMap();
-        int numChunks = Random.Range(minNumChunks, maxNumChunks + 1);
-        int difficulty = Random.Range(minNumChunks, maxNumChunks + 1); // Corresponds to the number of enemies.
-        Debug.Log($"Generating {numChunks} chunks at difficulty {difficulty}.");
+        LastSpawnedEnemyCount = 0;
+
+        int numChunks = Random.Range(GameConstants.MinChunkCount, GameConstants.MaxChunkCount + 1);
+        float fillFraction = DifficultyToFillFraction(difficulty);
+        var weightedPool = BuildWeightedPool();
+        Debug.Log($"Generating {numChunks} chunks; difficulty {difficulty} → fill {fillFraction:P0}.");
 
         for (int i = 0; i < numChunks; i++)
         {
@@ -61,6 +73,10 @@ public class MapSpawner : MonoBehaviour
             if (tm == null)
                 Debug.LogWarning($"No Tilemap on {prefab.name}, defaulting to 10 unit width.");
 
+            SpawnEnemies spawn = chunk.GetComponentInChildren<SpawnEnemies>();
+            if (spawn != null && weightedPool.Count > 0)
+                LastSpawnedEnemyCount += spawn.SpawnEnemiesFromTileLayer(weightedPool, fillFraction);
+
             _chunkOffset += width + chunkSpacing;
         }
 
@@ -69,6 +85,28 @@ public class MapSpawner : MonoBehaviour
 
         LinkTeleporters();
         return _chunks;
+    }
+
+    float DifficultyToFillFraction(int difficulty)
+    {
+        float t = Mathf.InverseLerp(GameConstants.MinDifficulty, GameConstants.MaxDifficulty, difficulty);
+        float percent = Mathf.Lerp(GameConstants.MinEnemyFillPercent, GameConstants.MaxEnemyFillPercent, t);
+        return Mathf.Clamp01(percent / 100f);
+    }
+
+    List<(GameObject prefab, float weight)> BuildWeightedPool()
+    {
+        var list = new List<(GameObject, float)>();
+        if (enemyPool == null)
+            return list;
+
+        foreach (var entry in enemyPool)
+        {
+            if (entry != null && entry.prefab != null && entry.weight > 0f)
+                list.Add((entry.prefab, entry.weight));
+        }
+
+        return list;
     }
 
     private void LinkTeleporters()

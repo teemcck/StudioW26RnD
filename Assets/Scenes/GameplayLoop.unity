@@ -156,7 +156,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ea3bf257c932bfc40b56f10fcd5186fe, type: 2}
   - {fileID: 11400000, guid: dff5a6113a3abfc4da7ce7664112735d, type: 2}
   - {fileID: 11400000, guid: 433e342f072e98747b3efae2f917df5b, type: 2}
-  upgradeUIHandler: {fileID: 0}
+  upgradeUIHandler: {fileID: 626842123}
 --- !u!4 &76217150
 Transform:
   m_ObjectHideFlags: 0
@@ -571,50 +571,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 238728528}
   m_CullTransparentMesh: 1
---- !u!1 &323731344
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 323731345}
-  - component: {fileID: 323731346}
-  m_Layer: 0
-  m_Name: SpawnEnemies
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &323731345
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 323731344}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1306030231}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &323731346
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 323731344}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fcc9d4d6244df8c418e18caec8b8cec4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SpawnEnemies
 --- !u!1 &325830679
 GameObject:
   m_ObjectHideFlags: 0
@@ -1963,8 +1919,6 @@ MonoBehaviour:
   levelUI: {fileID: 1985775243}
   playerPrefab: {fileID: 157006395687664069, guid: 437290eb29e6e99468b91827e51d4b7e, type: 3}
   camera: {fileID: 1270838601}
-  minDifficulty: 1
-  maxDifficulty: 5
   baseXP: 100
   killXPMultiplier: 1.5
   avoidXPMultiplier: 0.5
@@ -2217,7 +2171,6 @@ Transform:
   m_Children:
   - {fileID: 182929193}
   - {fileID: 947290496}
-  - {fileID: 323731345}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1306030232
@@ -2232,9 +2185,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d57d63fcfdd89744ba536f3d7cf8051, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapSpawner
-  minNumChunks: 3
-  maxNumChunks: 7
   chunkSpacing: 5
+  enemyPool:
+  - prefab: {fileID: 880020001, guid: e7f3a2b1c4d5846e9a0f1b2c3d4e5f72, type: 3}
+    weight: 1
+  - prefab: {fileID: 880050001, guid: e7f3a2b1c4d5846e9a0f1b2c3d4e5f75, type: 3}
+    weight: 1
+  - prefab: {fileID: 880010001, guid: e7f3a2b1c4d5846e9a0f1b2c3d4e5f71, type: 3}
+    weight: 1
+  - prefab: {fileID: 880040001, guid: e7f3a2b1c4d5846e9a0f1b2c3d4e5f74, type: 3}
+    weight: 1
+  - prefab: {fileID: 880030001, guid: e7f3a2b1c4d5846e9a0f1b2c3d4e5f73, type: 3}
+    weight: 1
+  - prefab: {fileID: 880060001, guid: e7f3a2b1c4d5846e9a0f1b2c3d4e5f76, type: 3}
+    weight: 1
   chunkGen: {fileID: 182929194}
   chunkContainer: {fileID: 947290496}
 --- !u!1 &1344989030
@@ -2941,86 +2905,6 @@ Transform:
   - {fileID: 1270838600}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1868169557
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1868169560}
-  - component: {fileID: 1868169559}
-  - component: {fileID: 1868169558}
-  - component: {fileID: 1868169561}
-  m_Layer: 0
-  m_Name: MapGen
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1868169558
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1868169557}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d57d63fcfdd89744ba536f3d7cf8051, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MapSpawner
-  minNumChunks: 3
-  maxNumChunks: 6
-  chunkSpacing: 5
-  chunkGen: {fileID: 1868169559}
-  chunkContainer: {fileID: 1868169560}
---- !u!114 &1868169559
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1868169557}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1cf746b42aea4d0458b2452c6a45e019, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ChunkGen
-  chunkPool:
-  - {fileID: 7956394534131403230, guid: 6abaab445f9352b4d8fd732f94ca8e01, type: 3}
-  - {fileID: 6391965220808168565, guid: bb32e1c2febf41344bb5e09e561442e9, type: 3}
-  - {fileID: 5550807922539162780, guid: 0b28504439ca73b488acaade40e782e2, type: 3}
---- !u!4 &1868169560
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1868169557}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.92805, y: 2.85269, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1868169561
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1868169557}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d9fa621047cf60b4e9d9cb470aede421, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MapTesting
-  mapSpawner: {fileID: 1868169558}
 --- !u!1 &1962872404
 GameObject:
   m_ObjectHideFlags: 0
@@ -3327,7 +3211,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 325830681}
   - {fileID: 1796365242}
-  - {fileID: 1868169560}
   - {fileID: 1105768118}
   - {fileID: 1306030231}
   - {fileID: 713932477}

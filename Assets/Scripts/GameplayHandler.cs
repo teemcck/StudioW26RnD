@@ -13,10 +13,6 @@ public class GameplayHandler : MonoBehaviour
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private CinemachineCamera camera;
 
-    [Header("Difficulty Settings")]
-    [SerializeField] private int minDifficulty = 1;
-    [SerializeField] private int maxDifficulty = 5;
-
     [Header("XP Settings")]
     [SerializeField] private int baseXP = 100;
     [SerializeField] private float killXPMultiplier = 1.5f;
@@ -89,7 +85,8 @@ public class GameplayHandler : MonoBehaviour
         _currentChunkCount = _nextChunkCount;
 
         // Generate and load level.
-        _currentChunks = mapSpawner.GenerateRandomSequence();
+        _currentChunks = mapSpawner.GenerateRandomSequence(_currentDifficulty);
+        _totalEnemies  = mapSpawner.LastSpawnedEnemyCount;
 
         EventBus<LevelLoadedEvent>.Raise(new LevelLoadedEvent
         {
@@ -100,7 +97,6 @@ public class GameplayHandler : MonoBehaviour
         // Playing.
         CurrentState = LevelState.Playing;
         _enemiesKilled = 0;
-        _totalEnemies  = 0; // EnemySpawner will set this once implemented.
         _levelStartTime = Time.time;
 
         // Move player to the start of the level.
@@ -147,8 +143,8 @@ public class GameplayHandler : MonoBehaviour
     /// </summary>
     private void RollNextLevel()
     {
-        _nextDifficulty  = Random.Range(minDifficulty, maxDifficulty + 1);
-        _nextChunkCount  = Random.Range(mapSpawner.MinNumChunks, mapSpawner.MaxNumChunks + 1);
+        _nextDifficulty  = Random.Range(GameConstants.MinDifficulty, GameConstants.MaxDifficulty + 1);
+        _nextChunkCount  = Random.Range(GameConstants.MinChunkCount, GameConstants.MaxChunkCount + 1);
     }
 
     private int CalculateXP(int killed, int total, float elapsed)

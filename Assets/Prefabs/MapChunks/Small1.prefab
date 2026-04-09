@@ -236,6 +236,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3506098878195775965}
   - component: {fileID: 8655878106996946829}
+  - component: {fileID: 8440469484026051717}
   m_Layer: 0
   m_Name: Small1
   m_TagString: Untagged
@@ -274,6 +275,19 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 2
   m_CellSwizzle: 0
+--- !u!114 &8440469484026051717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6391965220808168565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcc9d4d6244df8c418e18caec8b8cec4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpawnEnemies
+  enemySpawnTilemap: {fileID: 8405315704797008268}
 --- !u!1 &6693731875263183288
 GameObject:
   m_ObjectHideFlags: 0
@@ -1541,10 +1555,11 @@ Tilemap:
       serializedVersion: 2
       m_AnimatedSprites:
       - {fileID: -981245166, guid: 859f6f2eb3dda774f82163017700917d, type: 3}
+      - {fileID: -981245166, guid: 859f6f2eb3dda774f82163017700917d, type: 3}
       - {fileID: -1374868726, guid: 859f6f2eb3dda774f82163017700917d, type: 3}
       - {fileID: 358154032, guid: 859f6f2eb3dda774f82163017700917d, type: 3}
       - {fileID: -906163606, guid: 859f6f2eb3dda774f82163017700917d, type: 3}
-      m_AnimationSpeed: 1
+      m_AnimationSpeed: 4
       m_AnimationTimeOffset: 0
       m_Flags: 0
   m_TileAssetArray:
