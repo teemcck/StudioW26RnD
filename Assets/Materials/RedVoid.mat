@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Void
+  m_Name: RedVoid
   m_Shader: {fileID: -6465566751694194690, guid: 651238ea5df08f54a99e80dadd1a9e52, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -93,7 +93,10 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
+    - _BaseColor: {r: 0.27450982, g: 0.09803921, b: 0.16949739, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _DecorativeColor1: {r: 0.2264151, g: 0.07155571, b: 0.07155571, a: 1}
+    - _DecorativeColor2: {r: 0.2216981, g: 0.086796895, b: 0.08884143, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
