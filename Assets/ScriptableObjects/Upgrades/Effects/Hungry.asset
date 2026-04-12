@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 344ede7d009696a4c83b4c4a6972eaad, type: 3}
+  m_Name: Hungry
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeEffectsSO
+  upgradeID: Hungry
+  maxStacks: -1
+  scaleWithStacks: 0
+  effects:
+  - rid: 8721390272822116445
+  - rid: 8721390272822116446
+  references:
+    version: 2
+    RefIds:
+    - rid: 8721390272822116445
+      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
+      data:
+        editorNote: 
+        stat: 10
+        multiplier: 0
+        flat: 20
+    - rid: 8721390272822116446
+      type: {class: LifestealEffect, ns: , asm: Assembly-CSharp}
+      data:
+        editorNote: 
+        lifestealPercent: 0.2

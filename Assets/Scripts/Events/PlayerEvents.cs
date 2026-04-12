@@ -23,6 +23,15 @@ public struct PlayerDashedEvent
     public Vector2 Position;
 }
 
+/// <summary>Player performed a melee attack.</summary>
+public struct PlayerMeleeAttackEvent
+{
+    public Vector2 Position;
+    public Vector2 Direction;
+    public float Damage;
+    public int EnemiesHit;
+}
+
 /// <summary>Player was healed (upgrade on-kill heal, pickup, etc.).</summary>
 public struct PlayerHealedEvent
 {

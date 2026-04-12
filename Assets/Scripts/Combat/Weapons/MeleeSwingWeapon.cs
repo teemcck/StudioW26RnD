@@ -29,6 +29,7 @@ public class MeleeSwingWeapon : WeaponBase
         float cosThreshold = Mathf.Cos((coneAngle * 0.5f) * Mathf.Deg2Rad);
         float dmg = GetDamage();
         float kb = GetKnockback();
+        int hitCount = 0;
 
         foreach (var h in hits)
         {
@@ -42,8 +43,19 @@ public class MeleeSwingWeapon : WeaponBase
 
             var damageable = h.GetComponentInParent<IDamageable>();
             if (damageable != null)
+            {
                 damageable.TakeHit(dmg, direction, kb);
+                hitCount++;
+            }
         }
+        
+        EventBus<PlayerMeleeAttackEvent>.Raise(new PlayerMeleeAttackEvent
+        {
+            Position = transform.position,
+            Direction = direction,
+            Damage = dmg,
+            EnemiesHit = hitCount
+        });
     }
 
     private void OnDrawGizmosSelected()

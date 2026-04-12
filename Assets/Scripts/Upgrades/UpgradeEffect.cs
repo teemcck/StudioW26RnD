@@ -9,18 +9,20 @@ public class UpgradeContext
 {
     public PlayerController Player { get; }
     public PlayerStats Stats { get; }
+    public StatusEffectManager StatusEffects { get; }
     public EnemySpawnManager SpawnManager { get; }
     public GameRules GameRules { get; }
-    // Add: LootManager, ProjectileSystem, AbilitySystem, etc. over time
 
     public UpgradeContext(
         PlayerController player,
         PlayerStats stats,
+        StatusEffectManager statusEffects,
         EnemySpawnManager spawnManager,
         GameRules gameRules)
     {
         Player = player;
         Stats = stats;
+        StatusEffects = statusEffects;
         SpawnManager = spawnManager;
         GameRules = gameRules;
     }
@@ -34,6 +36,7 @@ public class UpgradeContext
         return new UpgradeContext(
             player,
             player.GetComponent<PlayerStats>(),
+            player.GetComponent<StatusEffectManager>(),
             EnemySpawnManager.Instance,
             GameRules.Instance
         );

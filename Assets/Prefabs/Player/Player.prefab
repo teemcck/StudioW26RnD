@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 8992742934170923622}
   - component: {fileID: 1139040308573546473}
   - component: {fileID: 2878024036715833726}
+  - component: {fileID: 2058679924507330363}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -318,6 +319,20 @@ MonoBehaviour:
   baseDamageReduction: 0
   baseDodgeChance: 0
   baseXPMultiplier: 1
+--- !u!114 &2058679924507330363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 157006395687664069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08be9a628120bf147a0867bec26e661f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDashController
+  rb: {fileID: 8197730577921135951}
+  playerController: {fileID: 6214499311367985394}
 --- !u!1 &1240368542618820286
 GameObject:
   m_ObjectHideFlags: 0

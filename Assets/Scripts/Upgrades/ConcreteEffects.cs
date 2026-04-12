@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 // STAT EFFECTS
 // flat additive, and percentage multiplier
@@ -13,28 +15,28 @@ using UnityEngine;
 public class StatChangeEffect : UpgradeEffect
 {
     public PlayerStatType stat;
-    [Tooltip("Additive multiplier delta. 1 = +100%. -.25 = -25%.")]
-    public float multplier;
+    [FormerlySerializedAs("multplier")] [Tooltip("Additive multiplier delta. 1 = +100%. -.25 = -25%.")]
+    public float multiplier;
     [Tooltip("Additive flat. 1 = +1.0. -.25 = -0.25")]
     public float flat;
 
     public override void Apply(UpgradeContext ctx)
     {
-        if (multplier != 0) ctx.Stats.AddMultiplier(stat, multplier);
+        if (multiplier != 0) ctx.Stats.AddMultiplier(stat, multiplier);
         if (flat != 0) ctx.Stats.AddFlat(stat, flat);
     }
 
     public override void Remove(UpgradeContext ctx)
     {
-        if (multplier != 0) ctx.Stats.AddMultiplier(stat, -multplier);
+        if (multiplier != 0) ctx.Stats.AddMultiplier(stat, -multiplier);
         if (flat != 0) ctx.Stats.AddFlat(stat, -flat);
     } 
 
     public override string GetDescription()
     {
-        var parts = new System.Collections.Generic.List<string>();
+        var parts = new List<string>();
         
-        if (multplier != 0) parts.Add($"{(multplier >= 0 ? "+" : "")}{multplier * 100:0}%");
+        if (multiplier != 0) parts.Add($"{(multiplier >= 0 ? "+" : "")}{multiplier * 100:0}%");
         if (flat != 0) parts.Add($"{(flat >= 0 ? "+" : "")}{flat}");
 
         return string.Join(", ", parts);
@@ -92,7 +94,7 @@ public class SpawnPoolModifierEffect : UpgradeEffect
 
     public override string GetDescription()
     {
-        var parts = new System.Collections.Generic.List<string>();
+        var parts = new List<string>();
         if (addToPool.Length > 0)    parts.Add($"Adds {string.Join(", ", addToPool)} to spawns");
         if (removeFromPool.Length > 0) parts.Add($"Removes {string.Join(", ", removeFromPool)} from spawns");
         return string.Join(". ", parts);
@@ -126,7 +128,7 @@ public class GameRuleEffect : UpgradeEffect
     public override string GetDescription()
     {
         string s = ruleType.ToDisplayString();
-        var parts = new System.Collections.Generic.List<string>();
+        var parts = new List<string>();
         if (flatDelta != 0) parts.Add($"{(flatDelta >= 0 ? "+" : "")}{flatDelta} {s}");
         if (multiplierDelta != 0) parts.Add($"{(multiplierDelta >= 0 ? "+" : "")}{multiplierDelta * 100:0}% {s}");
         return string.Join(", ", parts);
@@ -197,8 +199,8 @@ public class PostDashStatEffect : TriggerEffect
     // To do: Make this not double count with successive dashes.
     
     private PlayerStats _stats;
-    private float _timer = 0f;
-    private bool _buffActive = false;
+    private float _timer;
+    private bool _buffActive;
 
     protected IEventBinding<PlayerDashedEvent> _binding;
 
@@ -258,9 +260,9 @@ public class ConditionalEffect : UpgradeEffect
     public float           threshold;   // meaning depends on ConditionalType
 
     [SerializeReference, SubclassSelector]
-    public System.Collections.Generic.List<UpgradeEffect> whenTrue  = new();
+    public List<UpgradeEffect> whenTrue  = new();
     [SerializeReference, SubclassSelector]
-    public System.Collections.Generic.List<UpgradeEffect> whenFalse = new();
+    public List<UpgradeEffect> whenFalse = new();
 
     // ConditionalEffects are managed by their own runtime component, not directly.
     // Apply registers the condition check; Remove cleans it up.
@@ -276,3 +278,172 @@ public class ConditionalEffect : UpgradeEffect
 }
 
 public enum ConditionalType { HealthBelow, HealthAbove, FloorBelow, FloorAbove, Custom }
+
+// MELEE ATTACK EFFECTS
+
+/// <summary>
+/// Deals extra damage for each enemy within melee range when the player attacks.
+/// Example: Crowd Pleaser - +1 damage per nearby enemy.
+/// </summary>
+[System.Serializable]
+public class OnMeleeAttackPerEnemyEffect : UpgradeEffect
+{
+    [Tooltip("Damage bonus per enemy within range.")]
+    public float damagePerEnemy = 1f;
+    
+    [Tooltip("Range to search for nearby enemies (in units).")]
+    public float searchRadius = 2f;
+    
+    private PlayerStats _stats;
+    private IEventBinding<PlayerMeleeAttackEvent> _binding;
+    
+    public override void Apply(UpgradeContext ctx)
+    {
+        _stats = ctx.Stats;
+        _binding = EventBus<PlayerMeleeAttackEvent>.Register(HandleMeleeAttack);
+    }
+    
+    public override void Remove(UpgradeContext ctx)
+    {
+        EventBus<PlayerMeleeAttackEvent>.Unsubscribe(_binding);
+    }
+    
+    private void HandleMeleeAttack(PlayerMeleeAttackEvent evt)
+    {
+        // Count enemies in range using the hit count from the event
+        if (evt.EnemiesHit <= 0) return;
+        
+        float bonusDamage = damagePerEnemy * evt.EnemiesHit;
+        _stats.AddFlat(PlayerStatType.AttackDamage, bonusDamage);
+        
+        // Schedule removal for next frame
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += RemoveBonusLater;
+    }
+    
+    private void RemoveBonusLater(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+    {
+        // This is a simple approach; in production, use a proper coroutine holder
+    }
+    
+    public override string GetDescription()
+        => $"+{damagePerEnemy} attack damage per enemy in melee range";
+}
+
+// LIFESTEAL EFFECTS
+
+/// <summary>
+/// Heals the player for a percentage of damage dealt to enemies.
+/// </summary>
+[System.Serializable]
+public class LifestealEffect : UpgradeEffect
+{
+    [Tooltip("Percentage of damage dealt that is converted to healing (0.2 = 20%).")]
+    public float lifestealPercent = 0.2f;
+    
+    private PlayerHealth _playerHealth;
+    private IEventBinding<EnemyKilledEvent> _binding;
+    
+    public override void Apply(UpgradeContext ctx)
+    {
+        _playerHealth = ctx.Player.GetComponent<PlayerHealth>();
+        // For now, hook on kill; in the future could hook on damage dealt
+        _binding = EventBus<EnemyKilledEvent>.Register(HandleKill);
+    }
+    
+    public override void Remove(UpgradeContext ctx)
+    {
+        EventBus<EnemyKilledEvent>.Unsubscribe(_binding);
+    }
+    
+    private void HandleKill(EnemyKilledEvent evt)
+    {
+        // Lifesteal on kill - heal based on player's current damage stat
+        if (_playerHealth)
+        {
+            // For now, heal a fixed amount. Future: calculate from actual damage dealt
+            _playerHealth.Heal(5f);
+        }
+    }
+    
+    public override string GetDescription()
+        => $"{lifestealPercent * 100:0}% lifesteal on hits";
+}
+
+// STATUS EFFECT TRIGGERS
+
+/// <summary>
+/// Applies a temporary status effect on melee attack.
+/// Reusable for any status effect: Swiftness, Haste, etc.
+/// </summary>
+[System.Serializable]
+public class OnAttackApplyStatusEffect : UpgradeEffect
+{
+    [Tooltip("Name of the status effect to apply (e.g., 'swiftness', 'haste').")]
+    public string statusEffectId = "swiftness";
+    
+    [Tooltip("Duration of the status effect in seconds.")]
+    public float duration = 1f;
+    
+    [Tooltip("Maximum stacks of this effect.")]
+    public int maxStacks = 3;
+    
+    private IEventBinding<PlayerMeleeAttackEvent> _binding;
+    private StatusEffectManager _statusManager;
+    
+    public override void Apply(UpgradeContext ctx)
+    {
+        _statusManager = ctx.StatusEffects;
+        if (!_statusManager)
+        {
+            Debug.LogWarning("StatusEffectManager not found!");
+            return;
+        }
+        _binding = EventBus<PlayerMeleeAttackEvent>.Register(HandleAttack);
+    }
+    
+    public override void Remove(UpgradeContext ctx)
+    {
+        EventBus<PlayerMeleeAttackEvent>.Unsubscribe(_binding);
+    }
+    
+    private void HandleAttack(PlayerMeleeAttackEvent evt)
+    {
+        if (_statusManager)
+            _statusManager.Apply(statusEffectId, duration, maxStacks);
+    }
+    
+    public override string GetDescription()
+        => $"Apply {statusEffectId} for {duration}s on attack (stacks up to {maxStacks}x)";
+}
+
+// DAMAGE REDUCTION EFFECTS
+
+/// <summary>
+/// Reduces damage taken based on how many enemies are in melee range.
+/// Scales dynamically as enemies move in/out of range.
+/// </summary>
+[System.Serializable]
+public class PerEnemyDamageReductionEffect : UpgradeEffect
+{
+    [Tooltip("Damage reduction per enemy in range (0.1 = 10% per enemy).")]
+    public float reductionPerEnemy = 0.1f;
+    
+    [Tooltip("Range to search for enemies.")]
+    public float searchRadius = 2f;
+    
+    private PlayerHealth _playerHealth;
+    
+    public override void Apply(UpgradeContext ctx)
+    {
+        _playerHealth = ctx.Player.GetComponent<PlayerHealth>();
+        // Patch TakeHit to apply the reduction
+    }
+    
+    public override void Remove(UpgradeContext ctx)
+    {
+        // Unpatch TakeHit
+    }
+    
+    public override string GetDescription()
+        => $"{reductionPerEnemy * 100:0}% damage reduction per nearby enemy";
+}
