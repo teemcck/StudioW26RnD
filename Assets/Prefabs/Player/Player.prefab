@@ -17,9 +17,7 @@ GameObject:
   - component: {fileID: 6214499311367985394}
   - component: {fileID: 8534264854870924676}
   - component: {fileID: 194756067758797601}
-  - component: {fileID: 550109514319323168}
   - component: {fileID: 8992742934170923622}
-  - component: {fileID: 1139040308573546473}
   - component: {fileID: 2878024036715833726}
   - component: {fileID: 2058679924507330363}
   m_Layer: 3
@@ -208,7 +206,7 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
-  attacksPerSecond: 2
+  attacksPerSecond: 1
   meleeAnimationDuration: 0.35
 --- !u!114 &6214499311367985394
 MonoBehaviour:
@@ -276,26 +274,11 @@ MonoBehaviour:
   damageStunDuration: 0.28
   damageVisualKnockbackSpeed: 0.7
   deathAnimationDuration: 0.32
+  hitStopDuration: 0.05
+  hitShakeIntensity: 0.2
+  invulnerabilityBlinkCount: 5
   damageFlash: {fileID: 0}
---- !u!114 &550109514319323168
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 157006395687664069}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7cd4e1220efcf492fa698cf21279ea61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerWeaponController
-  playerController: {fileID: 0}
-  primaryWeapon: {fileID: 0}
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  attacksPerSecond: 2
-  meleeAnimationDuration: 0.35
+  cameraController: {fileID: 0}
 --- !u!114 &8992742934170923622
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -311,24 +294,6 @@ MonoBehaviour:
   spriteRenderer: {fileID: 0}
   flashColor: {r: 1, g: 1, b: 1, a: 1}
   flashDuration: 0.08
---- !u!114 &1139040308573546473
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 157006395687664069}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 740fb0c580c864366ad52a5b7a47833f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  invulnerableTime: 0.75
-  damageAnimationDuration: 0.36
-  damageStunDuration: 0.28
-  damageVisualKnockbackSpeed: 0.7
-  deathAnimationDuration: 0.32
-  damageFlash: {fileID: 0}
 --- !u!114 &2878024036715833726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -346,7 +311,7 @@ MonoBehaviour:
   baseDashCount: 1
   baseDashCooldown: 1
   baseDashDistance: 3
-  baseAttackDamage: 10
+  baseAttackDamage: 2
   baseAttackSpeed: 1
   baseAttackRange: 1.5
   baseCritChance: 0
