@@ -19,6 +19,7 @@ public class GameplayHandler : MonoBehaviour
     [SerializeField] private float avoidXPMultiplier = 0.5f;
     [SerializeField] private float timeBonusMax = 50f;
     [SerializeField] private float timeBonusWindow = 60f;
+    [SerializeField] private int xpPerLevel = 100;
 
     private GameObject _playerObject;
     private int _currentDifficulty;
@@ -44,10 +45,9 @@ public class GameplayHandler : MonoBehaviour
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
 
-        // Instantiate player.
-        _playerObject = Instantiate(playerPrefab);
-        // Force camera to track player.
-        ChangeCameraTracking(_playerObject.transform);
+        // Don't instantiate player here - wait for level start
+        // _playerObject = Instantiate(playerPrefab);
+        // ChangeCameraTracking(_playerObject.transform);
     }
 
     private void OnEnable()
@@ -77,8 +77,27 @@ public class GameplayHandler : MonoBehaviour
         // Preview: show rolled difficulty and length before generating.
         CurrentState = LevelState.Preview;
 
+        // Ensure player is not visible during preview
+        if (_playerObject != null)
+        {
+            _playerObject.SetActive(false);
+        }
+
         levelUI.ShowLevelPreview(_nextDifficulty, _nextChunkCount, _levelIndex);
         yield return new WaitUntil(() => levelUI.PlayerConfirmedStart);
+
+        // Instantiate player when level starts
+        if (_playerObject == null)
+        {
+            _playerObject = Instantiate(playerPrefab);
+            ChangeCameraTracking(_playerObject.transform);
+        }
+        else
+        {
+            // Re-enable player if it was disabled
+            _playerObject.SetActive(true);
+            EnablePlayerMovement(true);
+        }
 
         // Commit the pre-rolled values.
         _currentDifficulty = _nextDifficulty;
@@ -104,23 +123,47 @@ public class GameplayHandler : MonoBehaviour
 
         yield return new WaitUntil(() => CurrentState == LevelState.LevelEnd);
 
-        // XP Summary.
-        float elapsed = Time.time - _levelStartTime;
-        int xp = CalculateXP(_enemiesKilled, _totalEnemies, elapsed);
+        // Disable player movement but keep active for upgrades
+        EnablePlayerMovement(false);
+        // Don't deactivate player yet - wait until after upgrades are selected
 
-        EventBus<LevelCompletedEvent>.Raise(new LevelCompletedEvent
+        // Disable all enemies
+        DisableAllEnemies();
+
+        // Deinitialize chunks after level end (moved from before next level)
+        if (_currentChunks != null)
         {
-            LevelLength           = _currentChunks.Count,
-            LevelDifficulty       = _currentDifficulty,
-            CompletionTimeSeconds = elapsed
-        });
+            foreach (GameObject chunk in _currentChunks)
+            {
+                if (chunk != null)
+                    Destroy(chunk);
+            }
+            _currentChunks.Clear();
+        }
 
-        levelUI.ShowXPSummary(_enemiesKilled, _totalEnemies, xp);
+        // XP Summary with animated XP bar
+        float elapsed = Time.time - _levelStartTime;
+        int levelXP = CalculateXP(_enemiesKilled, _totalEnemies, elapsed);
+
+        // Add XP to run total
+        RunStatsTracker.Instance.AddXP(levelXP);
+
+        // Show old XP summary first
+        levelUI.ShowXPSummary(_enemiesKilled, _totalEnemies, levelXP);
         yield return new WaitUntil(() => levelUI.SummaryConfirmed);
 
-        // Reward.
+        // Then show XP bar animation
+        levelUI.ShowXPBarAnimation(RunStatsTracker.Instance.TotalXP - levelXP, levelXP, _enemiesKilled, _totalEnemies, elapsed);
+        yield return new WaitUntil(() => levelUI.XPBarAnimationComplete);
+
+        // After XP bar completes, show upgrades (threshold always met for now)
         CurrentState = LevelState.Reward;
         _levelIndex++;
+
+        // Reset the reward confirmation flag for the new upgrade selection
+        levelUI.ResetRewardConfirmed();
+
+        Debug.Log("[GameplayHandler] XP bar animation complete, opening upgrade selection...");
 
         EventBus<UpgradeScreenOpenedEvent>.Raise(new UpgradeScreenOpenedEvent
         {
@@ -128,8 +171,18 @@ public class GameplayHandler : MonoBehaviour
         });
 
         UpgradeManager.Instance.OpenUpgradeSelection(3);
-        yield return new WaitUntil(() => levelUI.RewardConfirmed);
+        Debug.Log("[GameplayHandler] Waiting for upgrade selection...");
+        yield return new WaitUntil(() => 
+        {
+            if (levelUI.RewardConfirmed)
+            {
+                Debug.Log("[GameplayHandler] Upgrade selected!");
+                return true;
+            }
+            return false;
+        });
 
+        Debug.Log("[GameplayHandler] Rolling next level and looping...");
         // Roll next level and loop.
         RollNextLevel();
         StartCoroutine(LevelSequence());
@@ -158,9 +211,42 @@ public class GameplayHandler : MonoBehaviour
         return totalXP;
     }
 
+    public int XPPerLevel => xpPerLevel;
+
     private void ChangeCameraTracking(Transform newTracking)
     {
         camera.Follow = newTracking;
+    }
+
+    private void EnablePlayerMovement(bool enable)
+    {
+        if (_playerObject != null)
+        {
+            // Disable/enable player controller
+            var playerController = _playerObject.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                playerController.enabled = enable;
+            }
+
+            // Disable/enable rigidbody
+            var rb = _playerObject.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+                rb.simulated = enable;
+            }
+        }
+    }
+
+    private void DisableAllEnemies()
+    {
+        // Find all enemy objects and disable them
+        var enemies = FindObjectsOfType<EnemyBase>();
+        foreach (var enemy in enemies)
+        {
+            enemy.gameObject.SetActive(false);
+        }
     }
 
     // Event handlers.

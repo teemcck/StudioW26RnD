@@ -20,7 +20,7 @@ public class DamageFlash : MonoBehaviour
 
     public void Play()
     {
-        if (!spriteRenderer) return;
+        if (!spriteRenderer || !gameObject.activeInHierarchy) return;
 
         if (_flashCo != null) StopCoroutine(_flashCo);
         _flashCo = StartCoroutine(FlashRoutine());

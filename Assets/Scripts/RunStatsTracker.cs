@@ -6,6 +6,7 @@ public class RunStatsTracker : MonoBehaviour
 
     public int TotalKillsThisRun     { get; private set; }
     public float TotalTimeSeconds    { get; private set; }
+    public int TotalXP               { get; private set; }
 
     private IEventBinding<EnemyKilledEvent>     _killBinding;
     private IEventBinding<LevelCompletedEvent>  _levelBinding;
@@ -40,10 +41,16 @@ public class RunStatsTracker : MonoBehaviour
 
     private void OnEnemyKilled(EnemyKilledEvent evt) => TotalKillsThisRun++;
 
+    public void AddXP(int amount)
+    {
+        TotalXP += amount;
+        Debug.Log($"XP added: {amount}, Total XP: {TotalXP}");
+    }
+
     private void OnLevelCompleted(LevelCompletedEvent evt)
     {
         Debug.Log($"Level complete - kills this run: {TotalKillsThisRun}, " +
-                  $"time: {TotalTimeSeconds:F1}s");
+                  $"time: {TotalTimeSeconds:F1}s, total XP: {TotalXP}");
     }
 
     private void OnPlayerDied(PlayerDiedEvent evt)

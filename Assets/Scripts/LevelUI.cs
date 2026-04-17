@@ -28,9 +28,17 @@ public class LevelUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI summaryXPText;
     [SerializeField] private Button summaryContinueButton;
 
+    [Header("XP Bar Animation Panel")]
+    [SerializeField] private GameObject xpBarPanel;
+    [SerializeField] private Image xpBarFill;
+    [SerializeField] private TextMeshProUGUI xpBarText;
+    [SerializeField] private TextMeshProUGUI xpBarStatsText;
+    [SerializeField] private Button xpBarContinueButton;
+
     public bool PlayerConfirmedStart { get; private set; }
     public bool SummaryConfirmed     { get; private set; }
     public bool RewardConfirmed      { get; private set; }
+    public bool XPBarAnimationComplete { get; private set; }
 
     private IEventBinding<UpgradeSelectedEvent> _upgradeSelectedBinding;
 
@@ -39,6 +47,7 @@ public class LevelUI : MonoBehaviour
         // Ensure all panels start hidden regardless of editor state.
         previewPanel.SetActive(false);
         summaryPanel.SetActive(false);
+        xpBarPanel.SetActive(false);
     }
 
     private void OnEnable()
@@ -97,10 +106,116 @@ public class LevelUI : MonoBehaviour
         });
     }
 
+    public void ShowXPBarAnimation(int previousXP, int levelXP, int killed, int total, float elapsed)
+    {
+        XPBarAnimationComplete = false;
+        xpBarPanel.SetActive(true);
+        if (xpBarContinueButton != null) xpBarContinueButton.gameObject.SetActive(false);
+
+        int startXP = previousXP;
+        int targetXP = previousXP + levelXP;
+
+        // Calculate XP display as currentXP % xpPerLevel
+        int xpPerLevel = GameplayHandler.Instance.XPPerLevel;
+        int startDisplayXP = startXP % xpPerLevel;
+        int targetDisplayXP = targetXP % xpPerLevel;
+
+        // Handle level-up: if target wrapped around, it means we leveled up
+        if (targetDisplayXP < startDisplayXP)
+        {
+            // Animate from startDisplay to xpPerLevel, then continue from 0 to targetDisplay
+            targetDisplayXP += xpPerLevel;
+        }
+
+        float initialFill = (float)startDisplayXP / xpPerLevel;
+
+        // Set initial state
+        if (xpBarFill != null) xpBarFill.fillAmount = initialFill;
+        if (xpBarText != null) xpBarText.text = $"{startDisplayXP} / {xpPerLevel} XP";
+
+        // Display level stats
+        int avoided = total - killed;
+        if (xpBarStatsText != null)
+            xpBarStatsText.text = $"Enemies Killed: {killed}\nEnemies Avoided: {avoided}\nTime: {elapsed:F1}s";
+
+        // Start animation coroutine
+        StartCoroutine(AnimateXPBar(startXP, targetXP, xpPerLevel));
+    }
+
+    private System.Collections.IEnumerator AnimateXPBar(int startXP, int targetXP, int xpPerLevel)
+    {
+        float animationDuration = 2f;
+        float elapsed = 0f;
+
+        // Calculate the XP range for this level
+        int levelXP = targetXP - startXP;
+
+        // Calculate display range (modulo xpPerLevel)
+        int startDisplayXP = startXP % xpPerLevel;
+        int targetDisplayXP = targetXP % xpPerLevel;
+
+        // Handle level-up: if target wrapped around, it means we leveled up
+        if (targetDisplayXP < startDisplayXP)
+        {
+            // Animate from startDisplay to xpPerLevel, then continue from 0 to targetDisplay
+            targetDisplayXP += xpPerLevel;
+        }
+
+        float initialFill = (float)startDisplayXP / xpPerLevel;
+
+        // Set initial fill based on previous XP
+        xpBarFill.fillAmount = initialFill;
+        xpBarText.text = $"{startDisplayXP} / {xpPerLevel} XP";
+
+        // Wait a moment to show the starting state
+        yield return new WaitForSeconds(0.5f);
+
+        while (elapsed < animationDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / animationDuration;
+
+            // Smooth animation curve
+            t = Mathf.SmoothStep(0f, 1f, t);
+
+            // Calculate current XP display
+            int gainedXP = Mathf.RoundToInt(levelXP * t);
+            int currentTotalXP = startXP + gainedXP;
+            int displayXP = currentTotalXP % xpPerLevel;
+
+            // Calculate fill amount
+            float fillAmount = (float)displayXP / xpPerLevel;
+
+            xpBarFill.fillAmount = fillAmount;
+            xpBarText.text = $"{displayXP} / {xpPerLevel} XP";
+
+            yield return null;
+        }
+
+        // Ensure final state
+        int finalDisplayXP = targetXP % xpPerLevel;
+        xpBarFill.fillAmount = (float)finalDisplayXP / xpPerLevel;
+        xpBarText.text = $"{finalDisplayXP} / {xpPerLevel} XP";
+
+        // Show continue button
+        xpBarContinueButton.gameObject.SetActive(true);
+        xpBarContinueButton.onClick.RemoveAllListeners();
+        xpBarContinueButton.onClick.AddListener(() =>
+        {
+            xpBarPanel.SetActive(false);
+            XPBarAnimationComplete = true;
+        });
+    }
+
     // Event Handlers
 
     private void OnUpgradeSelected(UpgradeSelectedEvent evt)
     {
         RewardConfirmed = true;
+    }
+
+    public void ResetRewardConfirmed()
+    {
+        RewardConfirmed = false;
     }
 }
