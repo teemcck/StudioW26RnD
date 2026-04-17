@@ -2465,6 +2465,8 @@ MonoBehaviour:
     weight: 1
   - prefab: {fileID: 880010001, guid: e7f3a2b1c4d5846e9a0f1b2c3d4e5f71, type: 3}
     weight: 1
+  - prefab: {fileID: 890010001, guid: 579fbd128f7d4d1795b7f9e8cce4f6f1, type: 3}
+    weight: 1
   chunkGen: {fileID: 182929194}
   chunkContainer: {fileID: 947290496}
 --- !u!1 &1344989030
