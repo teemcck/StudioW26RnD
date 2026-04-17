@@ -44,10 +44,9 @@ public class GameplayHandler : MonoBehaviour
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
 
-        // Instantiate player.
-        _playerObject = Instantiate(playerPrefab);
-        // Force camera to track player.
-        ChangeCameraTracking(_playerObject.transform);
+        // Don't instantiate player here - wait for level start
+        // _playerObject = Instantiate(playerPrefab);
+        // ChangeCameraTracking(_playerObject.transform);
     }
 
     private void OnEnable()
@@ -77,8 +76,27 @@ public class GameplayHandler : MonoBehaviour
         // Preview: show rolled difficulty and length before generating.
         CurrentState = LevelState.Preview;
 
+        // Ensure player is not visible during preview
+        if (_playerObject != null)
+        {
+            _playerObject.SetActive(false);
+        }
+
         levelUI.ShowLevelPreview(_nextDifficulty, _nextChunkCount, _levelIndex);
         yield return new WaitUntil(() => levelUI.PlayerConfirmedStart);
+
+        // Instantiate player when level starts
+        if (_playerObject == null)
+        {
+            _playerObject = Instantiate(playerPrefab);
+            ChangeCameraTracking(_playerObject.transform);
+        }
+        else
+        {
+            // Re-enable player if it was disabled
+            _playerObject.SetActive(true);
+            EnablePlayerMovement(true);
+        }
 
         // Commit the pre-rolled values.
         _currentDifficulty = _nextDifficulty;
@@ -104,18 +122,39 @@ public class GameplayHandler : MonoBehaviour
 
         yield return new WaitUntil(() => CurrentState == LevelState.LevelEnd);
 
-        // XP Summary.
-        float elapsed = Time.time - _levelStartTime;
-        int xp = CalculateXP(_enemiesKilled, _totalEnemies, elapsed);
-
-        EventBus<LevelCompletedEvent>.Raise(new LevelCompletedEvent
+        // Disable player movement and make invisible
+        EnablePlayerMovement(false);
+        if (_playerObject != null)
         {
-            LevelLength           = _currentChunks.Count,
-            LevelDifficulty       = _currentDifficulty,
-            CompletionTimeSeconds = elapsed
-        });
+            _playerObject.SetActive(false);
+        }
 
-        levelUI.ShowXPSummary(_enemiesKilled, _totalEnemies, xp);
+        // Disable all enemies
+        DisableAllEnemies();
+
+        // Deinitialize chunks after level end (moved from before next level)
+        if (_currentChunks != null)
+        {
+            foreach (GameObject chunk in _currentChunks)
+            {
+                if (chunk != null)
+                    Destroy(chunk);
+            }
+            _currentChunks.Clear();
+        }
+
+        // XP Summary with animated XP bar
+        float elapsed = Time.time - _levelStartTime;
+        int levelXP = CalculateXP(_enemiesKilled, _totalEnemies, elapsed);
+
+        // Add XP to run total
+        RunStatsTracker.Instance.AddXP(levelXP);
+
+        // Show XP bar animation
+        levelUI.ShowXPBarAnimation(RunStatsTracker.Instance.TotalXP - levelXP, levelXP, _enemiesKilled, _totalEnemies, elapsed);
+        yield return new WaitUntil(() => levelUI.XPBarAnimationComplete);
+
+        // Wait for continue press
         yield return new WaitUntil(() => levelUI.SummaryConfirmed);
 
         // Reward.
@@ -161,6 +200,37 @@ public class GameplayHandler : MonoBehaviour
     private void ChangeCameraTracking(Transform newTracking)
     {
         camera.Follow = newTracking;
+    }
+
+    private void EnablePlayerMovement(bool enable)
+    {
+        if (_playerObject != null)
+        {
+            // Disable/enable player controller
+            var playerController = _playerObject.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                playerController.enabled = enable;
+            }
+
+            // Disable/enable rigidbody
+            var rb = _playerObject.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+                rb.simulated = enable;
+            }
+        }
+    }
+
+    private void DisableAllEnemies()
+    {
+        // Find all enemy objects and disable them
+        var enemies = FindObjectsOfType<EnemyBase>();
+        foreach (var enemy in enemies)
+        {
+            enemy.gameObject.SetActive(false);
+        }
     }
 
     // Event handlers.

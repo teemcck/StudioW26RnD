@@ -28,9 +28,17 @@ public class LevelUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI summaryXPText;
     [SerializeField] private Button summaryContinueButton;
 
+    [Header("XP Bar Animation Panel")]
+    [SerializeField] private GameObject xpBarPanel;
+    [SerializeField] private Image xpBarFill;
+    [SerializeField] private TextMeshProUGUI xpBarText;
+    [SerializeField] private TextMeshProUGUI xpBarStatsText;
+    [SerializeField] private Button xpBarContinueButton;
+
     public bool PlayerConfirmedStart { get; private set; }
     public bool SummaryConfirmed     { get; private set; }
     public bool RewardConfirmed      { get; private set; }
+    public bool XPBarAnimationComplete { get; private set; }
 
     private IEventBinding<UpgradeSelectedEvent> _upgradeSelectedBinding;
 
@@ -39,6 +47,7 @@ public class LevelUI : MonoBehaviour
         // Ensure all panels start hidden regardless of editor state.
         previewPanel.SetActive(false);
         summaryPanel.SetActive(false);
+        xpBarPanel.SetActive(false);
     }
 
     private void OnEnable()
@@ -94,6 +103,63 @@ public class LevelUI : MonoBehaviour
         {
             summaryPanel.SetActive(false);
             SummaryConfirmed = true;
+        });
+    }
+
+    public void ShowXPBarAnimation(int previousXP, int levelXP, int killed, int total, float elapsed)
+    {
+        XPBarAnimationComplete = false;
+        xpBarPanel.SetActive(true);
+        xpBarContinueButton.gameObject.SetActive(false); // Hide continue button during animation
+
+        int startXP = previousXP;
+        int targetXP = previousXP + levelXP;
+
+        // Display level stats
+        int avoided = total - killed;
+        xpBarStatsText.text = $"Enemies Killed: {killed}\nEnemies Avoided: {avoided}\nTime: {elapsed:F1}s";
+
+        // Set initial state
+        xpBarFill.fillAmount = 0f;
+        xpBarText.text = $"{startXP} / {targetXP} XP";
+
+        // Start animation coroutine
+        StartCoroutine(AnimateXPBar(startXP, targetXP));
+    }
+
+    private System.Collections.IEnumerator AnimateXPBar(int startXP, int targetXP)
+    {
+        float animationDuration = 2f; // 2 seconds for the fill animation
+        float elapsed = 0f;
+
+        while (elapsed < animationDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / animationDuration;
+
+            // Smooth animation curve
+            t = Mathf.SmoothStep(0f, 1f, t);
+
+            // Calculate current XP display
+            int displayXP = Mathf.RoundToInt(Mathf.Lerp(startXP, targetXP, t));
+
+            xpBarFill.fillAmount = t; // Fill from 0 to 1 over animation duration
+            xpBarText.text = $"{displayXP} / {targetXP} XP";
+
+            yield return null;
+        }
+
+        // Ensure final state
+        xpBarFill.fillAmount = 1f;
+        xpBarText.text = $"{targetXP} / {targetXP} XP";
+
+        // Show continue button
+        xpBarContinueButton.gameObject.SetActive(true);
+        xpBarContinueButton.onClick.RemoveAllListeners();
+        xpBarContinueButton.onClick.AddListener(() =>
+        {
+            xpBarPanel.SetActive(false);
+            XPBarAnimationComplete = true;
         });
     }
 
