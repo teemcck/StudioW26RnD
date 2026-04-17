@@ -11,6 +11,7 @@ public class PlayerWeaponController : MonoBehaviour
     [Header("Idle Attack")]
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private float attacksPerSecond = 2.0f;
+    [SerializeField] private float meleeAnimationDuration = 0.35f;
 
     private float _nextAttackTime;
 
@@ -32,6 +33,9 @@ public class PlayerWeaponController : MonoBehaviour
             dir = playerController ? playerController.LastMoveDirection : Vector2.right;
 
         primaryWeapon.Attack(dir.normalized, enemyLayer);
+
+        if (playerController && primaryWeapon is MeleeSwingWeapon)
+            playerController.PlayMeleeAnimation(dir.normalized, meleeAnimationDuration);
 
         float cooldown = attacksPerSecond <= 0f ? 999f : (1f / attacksPerSecond);
         _nextAttackTime = Time.time + (cooldown * primaryWeapon.GetCooldown());

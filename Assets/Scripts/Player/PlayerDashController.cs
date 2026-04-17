@@ -39,6 +39,10 @@ public class PlayerDashController : MonoBehaviour
         Vector2 dashVelocity = dashDirection * dashSpeed;
         rb.linearVelocity = dashVelocity;
 
+        float dashDuration = dashSpeed > 0.0001f ? (dashDistance / dashSpeed) : 0.1f;
+        if (playerController)
+            playerController.PlayDashAnimation(dashDirection, dashDuration);
+
         _nextDashTime = Time.time + dashCooldown;
 
         EventBus<PlayerDashedEvent>.Raise(new PlayerDashedEvent

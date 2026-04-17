@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3274129640293433026}
   - component: {fileID: 7126398141146133394}
+  - component: {fileID: 3884207442100012345}
   - component: {fileID: 1010398472233973090}
   - component: {fileID: 8197730577921135951}
   - component: {fileID: 910647096960272701}
@@ -168,6 +169,28 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!95 &3884207442100012345
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 157006395687664069}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1b5fe037ca8844b41b54482388bf82d1, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &910647096960272701
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -200,7 +223,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   moveSpeed: 2
   acceleration: 40
+  runThreshold: 0.05
   rb: {fileID: 8197730577921135951}
+  animator: {fileID: 3884207442100012345}
+  spriteRenderer: {fileID: 7126398141146133394}
   viewCamera: {fileID: 0}
 --- !u!114 &8534264854870924676
 MonoBehaviour:
