@@ -493,7 +493,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChunkGen
   chunkPool:
-  - {fileID: 5550807922539162780, guid: 0b28504439ca73b488acaade40e782e2, type: 3}
+  - {fileID: 5550807922539162780, guid: 84befd88c045fb04a9a76ebb6fb2fc51, type: 3}
+  - {fileID: 5550807922539162780, guid: bf010f69bbd4b464d97287121ee4f9a5, type: 3}
 --- !u!1 &226859495
 GameObject:
   m_ObjectHideFlags: 0

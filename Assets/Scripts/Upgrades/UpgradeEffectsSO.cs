@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using MackySoft.SerializeReferenceExtensions;
 using UnityEngine;
 
 /// <summary>
@@ -31,8 +30,8 @@ public class UpgradeEffectsSO : ScriptableObject
     public bool scaleWithStacks = false;
 
     [Header("Effects")]
-    [Tooltip("Open-ended list of effects. Select an UpgradeEffect subclass from the drop down.")]
-    [SerializeReference, SubclassSelector]
+    [Tooltip("Open-ended list of effects.")]
+    [SerializeReference]
     public List<UpgradeEffect> effects = new();
     
     // Helpers used by UpgradeManager

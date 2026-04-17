@@ -159,8 +159,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.17}
-  m_Size: {x: 0.5, y: 0.5}
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 0.1, y: 0.11}
   m_Direction: 0
 --- !u!50 &8197730577921135951
 Rigidbody2D:
@@ -270,9 +270,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   invulnerableTime: 0.75
-  damageAnimationDuration: 0.36
-  damageStunDuration: 0.28
-  damageVisualKnockbackSpeed: 0.7
+  damageAnimationDuration: 0.46
+  damageStunDuration: 0.42
+  damageVisualKnockbackSpeed: 0.55
   deathAnimationDuration: 0.32
   hitStopDuration: 0.05
   hitShakeIntensity: 0.2

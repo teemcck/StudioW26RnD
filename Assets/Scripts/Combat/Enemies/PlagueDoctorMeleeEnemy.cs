@@ -30,6 +30,17 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
     [SerializeField] private float minFlipInterval = 0.12f;
     [SerializeField] private bool spriteFacesRightByDefault = false;
 
+    [Header("Swing Slash VFX")]
+    [SerializeField] private bool enableSwingSlashVfx = true;
+    [SerializeField] private Transform slashVfxTransform;
+    [SerializeField] private Animator slashVfxAnimator;
+    [SerializeField] private SpriteRenderer slashVfxRenderer;
+    [SerializeField] private string slashStatePrefix = "SwingVFX";
+    [SerializeField] private float slashDistance = 0.95f;
+    [SerializeField] private float slashLifetime = 0.18f;
+    [SerializeField] private float slashScale = 1.35f;
+    [SerializeField] private Color slashColor = new Color(1f, 0.82f, 0.82f, 1f);
+
     private float _nextAttackTime;
     private bool _isAttackLocked;
     private bool _isVulnerable;
@@ -41,12 +52,26 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
     private float _lastFlipTime = -999f;
     private int _facingSign = 1;
     private int _lockedFacingSign = 1;
+    private Coroutine _slashVfxCo;
 
     protected override void Awake()
     {
         base.Awake();
         if (!animator) animator = GetComponent<Animator>();
         if (!spriteRenderer) spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        if (!slashVfxTransform)
+        {
+            Transform child = transform.Find("PlagueDoctorSlashVFX");
+            if (child) slashVfxTransform = child;
+        }
+        if (!slashVfxAnimator && slashVfxTransform)
+            slashVfxAnimator = slashVfxTransform.GetComponent<Animator>();
+        if (!slashVfxRenderer && slashVfxTransform)
+            slashVfxRenderer = slashVfxTransform.GetComponent<SpriteRenderer>();
+        if (slashVfxRenderer)
+            slashVfxRenderer.color = slashColor;
+        if (slashVfxTransform)
+            slashVfxTransform.gameObject.SetActive(false);
         if (spriteRenderer) _baseColor = spriteRenderer.color;
         _baseScale = transform.localScale;
     }
@@ -70,6 +95,12 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
 
         _isAttackLocked = false;
         _isVulnerable = false;
+        if (_slashVfxCo != null)
+        {
+            StopCoroutine(_slashVfxCo);
+            _slashVfxCo = null;
+        }
+        if (slashVfxTransform) slashVfxTransform.gameObject.SetActive(false);
         ResetVisuals();
     }
 
@@ -124,6 +155,7 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
 
         TryApplyDirectionalSwingDamage(attackDirection);
         ApplySwingImpactVisual();
+        PlaySwingSlashVfx(attackDirection);
 
         float remaining = Mathf.Max(0.01f, attackAnimationDuration - damageDelay);
         yield return new WaitForSeconds(remaining);
@@ -234,6 +266,59 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
         if (spriteRenderer)
             spriteRenderer.color = Color.white;
         transform.localScale = _baseScale * (1f + windupPulseScale * 1.4f);
+    }
+
+    private void PlaySwingSlashVfx(Vector2 attackDirection)
+    {
+        if (!enableSwingSlashVfx) return;
+        if (!slashVfxTransform || !slashVfxAnimator || !slashVfxRenderer) return;
+
+        Vector2 dir = attackDirection.sqrMagnitude > 0.0001f ? attackDirection.normalized : _lastFacingDirection;
+        if (dir.sqrMagnitude < 0.0001f)
+            dir = Vector2.right;
+        Vector2 snappedDir = SnapTo8Directions(dir);
+        if (_slashVfxCo != null)
+            StopCoroutine(_slashVfxCo);
+        _slashVfxCo = StartCoroutine(PlaySwingSlashVfxRoutine(snappedDir));
+    }
+
+    private IEnumerator PlaySwingSlashVfxRoutine(Vector2 direction)
+    {
+        float distance = Mathf.Max(0.05f, slashDistance);
+        slashVfxTransform.localPosition = new Vector3(direction.x * distance, direction.y * distance, slashVfxTransform.localPosition.z);
+        slashVfxTransform.localScale = Vector3.one * Mathf.Max(0.01f, slashScale);
+        slashVfxRenderer.color = slashColor;
+        slashVfxTransform.gameObject.SetActive(true);
+
+        string stateName = $"{slashStatePrefix}_{BuildDirectionSuffix(direction)}";
+        if (slashVfxAnimator.HasState(0, Animator.StringToHash(stateName)))
+            slashVfxAnimator.Play(stateName, 0, 0f);
+
+        yield return new WaitForSeconds(Mathf.Max(0.05f, slashLifetime));
+        if (slashVfxTransform)
+            slashVfxTransform.gameObject.SetActive(false);
+        _slashVfxCo = null;
+    }
+
+    private static Vector2 SnapTo8Directions(Vector2 dir)
+    {
+        if (dir.sqrMagnitude < 0.0001f) return Vector2.right;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        angle = Mathf.Round(angle / 45f) * 45f;
+        float rad = angle * Mathf.Deg2Rad;
+        return new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)).normalized;
+    }
+
+    private static string BuildDirectionSuffix(Vector2 dir)
+    {
+        if (dir.y >= 0.6f && dir.x >= 0.3f) return "UR";
+        if (dir.y <= -0.6f && dir.x >= 0.3f) return "DR";
+        if (dir.y >= 0.6f && dir.x <= -0.3f) return "UL";
+        if (dir.y <= -0.6f && dir.x <= -0.3f) return "DL";
+        if (dir.x >= 0.6f) return "R";
+        if (dir.x <= -0.6f) return "L";
+        if (dir.y >= 0f) return "U";
+        return "D";
     }
 
     private void ResetVisuals()

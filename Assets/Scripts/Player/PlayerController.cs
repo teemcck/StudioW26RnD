@@ -92,7 +92,8 @@ public class PlayerController : MonoBehaviour
 
         if (Time.time < _controlLockUntil)
         {
-            rb.linearVelocity = Vector2.MoveTowards(rb.linearVelocity, Vector2.zero, acceleration * 1.5f * Time.fixedDeltaTime);
+            // Hard-lock movement during stun so hit reactions stay readable.
+            rb.linearVelocity = Vector2.zero;
             _lastVelocity = rb.linearVelocity;
             return;
         }

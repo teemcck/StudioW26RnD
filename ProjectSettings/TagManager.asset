@@ -47,7 +47,7 @@ TagManager:
   - name: Ground
     uniqueID: 4234139169
     locked: 0
-  - name: Player
+  - name: Player/Obstacles
     uniqueID: 211765407
     locked: 0
   - name: VFX

@@ -8,8 +8,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     [Header("Damage Tuning")]
     [Tooltip("Seconds of invulnerability after being hit.")]
     [SerializeField] private float invulnerableTime = 0.75f;
-    [SerializeField] private float damageAnimationDuration = 0.36f;
-    [SerializeField] private float damageStunDuration = 0.28f;
+    [SerializeField] private float damageAnimationDuration = 0.46f;
+    [SerializeField] private float damageStunDuration = 0.42f;
     [SerializeField] private float damageVisualKnockbackSpeed = 0.7f;
     [SerializeField] private float deathAnimationDuration = 0.32f;
 
@@ -55,8 +55,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         CurrentHealth = Mathf.Max(0f, CurrentHealth - damage);
         if (_playerController)
         {
+            float stunDuration = Mathf.Max(damageStunDuration, damageAnimationDuration * 0.9f);
             _playerController.PlayDamageAnimation(knockbackDirection, damageAnimationDuration);
-            _playerController.ApplyDamageStun(knockbackDirection, damageStunDuration, damageVisualKnockbackSpeed);
+            _playerController.ApplyDamageStun(knockbackDirection, stunDuration, damageVisualKnockbackSpeed);
         }
         if (_hitStopCo != null)
         {
