@@ -21,6 +21,7 @@ public class PlayerDashController : MonoBehaviour
     public void OnDash(InputValue value)
     {
         if (!value.isPressed) return;
+        if (playerController && playerController.IsControlLocked) return;
         if (Time.time < _nextDashTime) return;
 
         PerformDash();

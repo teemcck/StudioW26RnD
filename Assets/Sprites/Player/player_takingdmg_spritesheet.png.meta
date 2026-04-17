@@ -1,0 +1,691 @@
+fileFormatVersion: 2
+guid: 3eca41040c1264c2b8482d0fd3885600
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6593412925646920141
+    second: player_takingdmg_spritesheet_0
+  - first:
+      213: 8138633365781270015
+    second: player_takingdmg_spritesheet_1
+  - first:
+      213: -2844998966042480507
+    second: player_takingdmg_spritesheet_2
+  - first:
+      213: -6387812553385848744
+    second: player_takingdmg_spritesheet_3
+  - first:
+      213: -2488635976155306772
+    second: player_takingdmg_spritesheet_4
+  - first:
+      213: 2227272731176716243
+    second: player_takingdmg_spritesheet_5
+  - first:
+      213: -8688440906791945393
+    second: player_takingdmg_spritesheet_6
+  - first:
+      213: 8802796608298931074
+    second: player_takingdmg_spritesheet_7
+  - first:
+      213: 6583916467654647412
+    second: player_takingdmg_spritesheet_8
+  - first:
+      213: 3712449412088371916
+    second: player_takingdmg_spritesheet_9
+  - first:
+      213: 368827863339771622
+    second: player_takingdmg_spritesheet_10
+  - first:
+      213: 3927557697574780595
+    second: player_takingdmg_spritesheet_11
+  - first:
+      213: -2000809229184996600
+    second: player_takingdmg_spritesheet_12
+  - first:
+      213: -282046404172319958
+    second: player_takingdmg_spritesheet_13
+  - first:
+      213: 9042951885564794821
+    second: player_takingdmg_spritesheet_14
+  - first:
+      213: -2272097618104349020
+    second: player_takingdmg_spritesheet_15
+  - first:
+      213: -5467029026672708113
+    second: player_takingdmg_spritesheet_16
+  - first:
+      213: 3666294995620766780
+    second: player_takingdmg_spritesheet_17
+  - first:
+      213: -8939384941888072981
+    second: player_takingdmg_spritesheet_18
+  - first:
+      213: 9183359240340720476
+    second: player_takingdmg_spritesheet_19
+  - first:
+      213: 6567455110185163850
+    second: player_takingdmg_spritesheet_20
+  - first:
+      213: -5918922388147945577
+    second: player_takingdmg_spritesheet_21
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_0
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 217
+        width: 26
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc957aa5f12808b50800000000000000
+      internalID: 6593412925646920141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_1
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 217
+        width: 34
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffdc8840deb32f070800000000000000
+      internalID: 8138633365781270015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_2
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 217
+        width: 44
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5803faa83888488d0800000000000000
+      internalID: -2844998966042480507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_3
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 217
+        width: 32
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 850d7a7a35ee957a0800000000000000
+      internalID: -6387812553385848744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_4
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 164
+        width: 29
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce4610ad3c6967dd0800000000000000
+      internalID: -2488635976155306772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_5
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 164
+        width: 42
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d7c3b79fbcd8ee10800000000000000
+      internalID: 2227272731176716243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_6
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 164
+        width: 44
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4b71b257057c6780800000000000000
+      internalID: -8688440906791945393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_7
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 164
+        width: 36
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 283dba340e0d92a70800000000000000
+      internalID: 8802796608298931074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_8
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 112
+        width: 26
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47e566de425ce5b50800000000000000
+      internalID: 6583916467654647412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_9
+      rect:
+        serializedVersion: 2
+        x: 42
+        y: 112
+        width: 37
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cca92262215458330800000000000000
+      internalID: 3712449412088371916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_10
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 140
+        width: 9
+        height: 4
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e622a1dcf65e1500800000000000000
+      internalID: 368827863339771622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_11
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 112
+        width: 37
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3bebbc6baec718630800000000000000
+      internalID: 3927557697574780595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_12
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 112
+        width: 40
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80bea175b92bb34e0800000000000000
+      internalID: -2000809229184996600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_13
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 120
+        width: 9
+        height: 4
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a23f12d2a48f51cf0800000000000000
+      internalID: -282046404172319958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_14
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 56
+        width: 26
+        height: 47
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c7d90c04d40f7d70800000000000000
+      internalID: 9042951885564794821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_15
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 56
+        width: 34
+        height: 47
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ae01e12143e770e0800000000000000
+      internalID: -2272097618104349020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_16
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 56
+        width: 42
+        height: 47
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe57c68d0163124b0800000000000000
+      internalID: -5467029026672708113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_17
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 56
+        width: 34
+        height: 47
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c34a4c7afdb41e230800000000000000
+      internalID: 3666294995620766780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_18
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 2
+        width: 26
+        height: 47
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be2194c12cce0f380800000000000000
+      internalID: -8939384941888072981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_19
+      rect:
+        serializedVersion: 2
+        x: 42
+        y: 2
+        width: 31
+        height: 47
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5b4f45d298d17f70800000000000000
+      internalID: 9183359240340720476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_20
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 2
+        width: 34
+        height: 47
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4c19e870a9442b50800000000000000
+      internalID: 6567455110185163850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_takingdmg_spritesheet_21
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 2
+        width: 31
+        height: 47
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79fb551a273cbdda0800000000000000
+      internalID: -5918922388147945577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: b01ed3bafe3b34f2dae9a5bf2886afad
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":5.0,"y":4.0},"gridSpriteSize":{"x":37.0,"y":66.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      player_takingdmg_spritesheet_0: 6593412925646920141
+      player_takingdmg_spritesheet_1: 8138633365781270015
+      player_takingdmg_spritesheet_10: 368827863339771622
+      player_takingdmg_spritesheet_11: 3927557697574780595
+      player_takingdmg_spritesheet_12: -2000809229184996600
+      player_takingdmg_spritesheet_13: -282046404172319958
+      player_takingdmg_spritesheet_14: 9042951885564794821
+      player_takingdmg_spritesheet_15: -2272097618104349020
+      player_takingdmg_spritesheet_16: -5467029026672708113
+      player_takingdmg_spritesheet_17: 3666294995620766780
+      player_takingdmg_spritesheet_18: -8939384941888072981
+      player_takingdmg_spritesheet_19: 9183359240340720476
+      player_takingdmg_spritesheet_2: -2844998966042480507
+      player_takingdmg_spritesheet_20: 6567455110185163850
+      player_takingdmg_spritesheet_21: -5918922388147945577
+      player_takingdmg_spritesheet_3: -6387812553385848744
+      player_takingdmg_spritesheet_4: -2488635976155306772
+      player_takingdmg_spritesheet_5: 2227272731176716243
+      player_takingdmg_spritesheet_6: -8688440906791945393
+      player_takingdmg_spritesheet_7: 8802796608298931074
+      player_takingdmg_spritesheet_8: 6583916467654647412
+      player_takingdmg_spritesheet_9: 3712449412088371916
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

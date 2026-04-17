@@ -23,6 +23,7 @@ public class PlayerWeaponController : MonoBehaviour
     private void Update()
     {
         if (!primaryWeapon) return;
+        if (playerController && playerController.IsControlLocked) return;
         if (Time.time < _nextAttackTime) return;
 
         Transform target = FindClosestEnemy();

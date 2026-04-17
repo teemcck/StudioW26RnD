@@ -105,6 +105,28 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 1
+--- !u!95 &3884207442100012345
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 157006395687664069}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1b5fe037ca8844b41b54482388bf82d1, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!70 &1010398472233973090
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -169,28 +191,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!95 &3884207442100012345
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 157006395687664069}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 1b5fe037ca8844b41b54482388bf82d1, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &910647096960272701
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -209,6 +209,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   attacksPerSecond: 2
+  meleeAnimationDuration: 0.35
 --- !u!114 &6214499311367985394
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,7 +271,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 740fb0c580c864366ad52a5b7a47833f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  invulnerableTime: 0.2
+  invulnerableTime: 0.75
+  damageAnimationDuration: 0.36
+  damageStunDuration: 0.28
+  damageVisualKnockbackSpeed: 0.7
+  deathAnimationDuration: 0.32
   damageFlash: {fileID: 0}
 --- !u!114 &550109514319323168
 MonoBehaviour:
@@ -290,6 +295,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   attacksPerSecond: 2
+  meleeAnimationDuration: 0.35
 --- !u!114 &8992742934170923622
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -317,7 +323,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 740fb0c580c864366ad52a5b7a47833f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  invulnerableTime: 0.2
+  invulnerableTime: 0.75
+  damageAnimationDuration: 0.36
+  damageStunDuration: 0.28
+  damageVisualKnockbackSpeed: 0.7
+  deathAnimationDuration: 0.32
   damageFlash: {fileID: 0}
 --- !u!114 &2878024036715833726
 MonoBehaviour:
@@ -341,7 +351,7 @@ MonoBehaviour:
   baseAttackRange: 1.5
   baseCritChance: 0
   baseCritMultiplier: 2
-  baseMaxHealth: 100
+  baseMaxHealth: 10
   baseDamageReduction: 0
   baseDodgeChance: 0
   baseXPMultiplier: 1

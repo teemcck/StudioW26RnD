@@ -7,7 +7,9 @@ public class PlayerController : MonoBehaviour
     {
         Locomotion,
         Dash,
-        Melee
+        Melee,
+        Damage,
+        Death
     }
 
     [Header("Movement")]
@@ -28,8 +30,11 @@ public class PlayerController : MonoBehaviour
     private Vector2 _lastVelocity;
     private ActionState _actionState = ActionState.Locomotion;
     private float _actionTimer;
+    private bool _isDead;
+    private float _controlLockUntil;
 
     public Vector2 LastMoveDirection { get; private set; } = Vector2.right;
+    public bool IsControlLocked => _isDead || Time.time < _controlLockUntil;
 
     private void Awake()
     {
@@ -58,7 +63,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (_actionState == ActionState.Locomotion)
+        if (_actionState == ActionState.Locomotion || _actionState == ActionState.Death)
             return;
 
         _actionTimer -= Time.deltaTime;
@@ -71,11 +76,27 @@ public class PlayerController : MonoBehaviour
 
     public void OnMove(InputValue value)
     {
+        if (_isDead) return;
         _moveInput = value.Get<Vector2>();
     }
 
     private void FixedUpdate()
     {
+        if (_isDead)
+        {
+            _moveInput = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
+            _lastVelocity = Vector2.zero;
+            return;
+        }
+
+        if (Time.time < _controlLockUntil)
+        {
+            rb.linearVelocity = Vector2.MoveTowards(rb.linearVelocity, Vector2.zero, acceleration * 1.5f * Time.fixedDeltaTime);
+            _lastVelocity = rb.linearVelocity;
+            return;
+        }
+
         Vector2 camMoveDir = InputToCameraRelativeDirection(_moveInput);
         camMoveDir = SnapTo8Directions(camMoveDir);
 
@@ -122,12 +143,51 @@ public class PlayerController : MonoBehaviour
 
     public void PlayDashAnimation(Vector2 dashDirection, float durationSeconds)
     {
+        if (_isDead) return;
+        if (_actionState == ActionState.Damage || _actionState == ActionState.Death) return;
         PlayAction("Dash", dashDirection, durationSeconds, ActionState.Dash);
     }
 
     public void PlayMeleeAnimation(Vector2 attackDirection, float durationSeconds)
     {
+        if (_isDead) return;
+        if (_actionState == ActionState.Damage || _actionState == ActionState.Death) return;
         PlayAction("Melee", attackDirection, durationSeconds, ActionState.Melee);
+    }
+
+    public void PlayDamageAnimation(Vector2 hitDirection, float durationSeconds)
+    {
+        if (_isDead) return;
+        PlayAction("Damage", hitDirection, durationSeconds, ActionState.Damage);
+    }
+
+    public void PlayDeathAnimation(Vector2 facingDirection)
+    {
+        if (_isDead) return;
+        _isDead = true;
+        _controlLockUntil = float.PositiveInfinity;
+        _moveInput = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
+        _lastVelocity = Vector2.zero;
+
+        if (facingDirection.sqrMagnitude > 0.0001f)
+            LastMoveDirection = facingDirection.normalized;
+
+        string stateName = BuildStateName("Death", LastMoveDirection, out bool flipX);
+        SetFlip(flipX);
+        _actionState = ActionState.Death;
+        PlayState(stateName, forceRestart: true);
+    }
+
+    public void ApplyDamageStun(Vector2 knockbackDirection, float stunDuration, float knockbackSpeed)
+    {
+        if (_isDead) return;
+
+        _controlLockUntil = Mathf.Max(_controlLockUntil, Time.time + Mathf.Max(0f, stunDuration));
+
+        Vector2 dir = knockbackDirection.sqrMagnitude > 0.0001f ? knockbackDirection.normalized : Vector2.zero;
+        if (dir.sqrMagnitude > 0.0001f)
+            rb.linearVelocity = dir * Mathf.Max(0f, knockbackSpeed);
     }
 
     private void PlayAction(string prefix, Vector2 direction, float durationSeconds, ActionState actionState)

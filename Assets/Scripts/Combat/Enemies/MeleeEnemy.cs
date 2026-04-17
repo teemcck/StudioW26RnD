@@ -7,8 +7,6 @@ public class MeleeEnemy : EnemyBase
     [SerializeField] private float attackCooldown = 1.0f;
     [SerializeField] private float contactDamage = 2f;
 
-    private float _nextAttackTime;
-
     protected virtual void FixedUpdate()
     {
         if (!Player) return;
@@ -23,14 +21,17 @@ public class MeleeEnemy : EnemyBase
         }
         else
         {
-            if (Time.time >= _nextAttackTime)
-            {
-                _nextAttackTime = Time.time + attackCooldown;
-
-                var playerHealth = Player.GetComponent<IDamageable>();
-                if (playerHealth != null)
-                    playerHealth.TakeHit(contactDamage, (Player.position - transform.position).normalized, 0f);
-            }
+            TryDealContactDamage(Player, contactDamage, attackCooldown, 0f, true, toPlayer);
         }
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        TryDealContactDamage(collision.collider, contactDamage, attackCooldown, 0f);
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        TryDealContactDamage(other, contactDamage, attackCooldown, 0f);
     }
 }

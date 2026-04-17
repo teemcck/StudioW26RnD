@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public abstract class EnemyBase : MonoBehaviour, IDamageable
@@ -20,6 +21,7 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
 
     private float _health;
     private bool _isDead;
+    private readonly Dictionary<int, float> _contactDamageCooldownByTarget = new();
 
     public float CurrentHealth => _health;
     public float MaxHealth => maxHealth;
@@ -74,5 +76,45 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         _isDead = true;
         EventBus<EnemyKilledEvent>.Raise(new EnemyKilledEvent { EnemyType = GetType().Name });
         Destroy(gameObject);
+    }
+
+    protected bool TryDealContactDamage(Component hitComponent, float damage, float intervalSeconds, float knockbackForce)
+    {
+        return TryDealContactDamage(hitComponent, damage, intervalSeconds, knockbackForce, false, Vector2.zero);
+    }
+
+    protected bool TryDealContactDamage(Component hitComponent, float damage, float intervalSeconds, float knockbackForce, bool useOverrideDirection, Vector2 overrideDirection)
+    {
+        if (_isDead) return false;
+        if (hitComponent == null) return false;
+        if (damage <= 0f) return false;
+
+        IDamageable damageable = hitComponent.GetComponentInParent<IDamageable>();
+        Component damageableComponent = damageable as Component;
+        if (damageableComponent == null) return false;
+
+        // Enemy contact damage should only affect the tracked player.
+        if (Player != null)
+        {
+            Transform t = damageableComponent.transform;
+            if (t != Player && !t.IsChildOf(Player))
+                return false;
+        }
+
+        int targetId = damageableComponent.GetInstanceID();
+        if (_contactDamageCooldownByTarget.TryGetValue(targetId, out float nextAllowed) && Time.time < nextAllowed)
+            return false;
+
+        Vector2 knockbackDirection = useOverrideDirection
+            ? overrideDirection
+            : (Vector2)(damageableComponent.transform.position - transform.position);
+        if (knockbackDirection.sqrMagnitude > 0.0001f)
+            knockbackDirection.Normalize();
+        else
+            knockbackDirection = Vector2.up;
+
+        damageable.TakeHit(damage, knockbackDirection, knockbackForce);
+        _contactDamageCooldownByTarget[targetId] = Time.time + Mathf.Max(0.05f, intervalSeconds);
+        return true;
     }
 }

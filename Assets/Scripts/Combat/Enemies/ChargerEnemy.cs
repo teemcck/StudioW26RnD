@@ -24,7 +24,6 @@ public class ChargerEnemy : EnemyBase
 
     private Phase _phase = Phase.Chase;
     private float _phaseEndTime;
-    private float _nextAttackTime;
     private float _nextChargeAvailableTime;
     private Vector2 _chargeDir;
 
@@ -88,12 +87,16 @@ public class ChargerEnemy : EnemyBase
     private void TryMelee(float dist, Vector2 dir)
     {
         if (dist > attackRange) return;
-        if (Time.time < _nextAttackTime) return;
+        TryDealContactDamage(Player, contactDamage, attackCooldown, 0f, true, dir);
+    }
 
-        _nextAttackTime = Time.time + attackCooldown;
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        TryDealContactDamage(collision.collider, contactDamage, attackCooldown, 0f);
+    }
 
-        var playerHealth = Player.GetComponent<IDamageable>();
-        if (playerHealth != null)
-            playerHealth.TakeHit(contactDamage, dir, 0f);
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        TryDealContactDamage(other, contactDamage, attackCooldown, 0f);
     }
 }
