@@ -277,7 +277,7 @@ MonoBehaviour:
   hitStopDuration: 0.05
   hitShakeIntensity: 0.2
   invulnerabilityBlinkCount: 5
-  damageFlash: {fileID: 0}
+  damageFlash: {fileID: 8992742934170923622}
   cameraController: {fileID: 0}
 --- !u!114 &8992742934170923622
 MonoBehaviour:
@@ -291,7 +291,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89a1a3e7131184479a35a73d4524c9c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageFlash
-  spriteRenderer: {fileID: 0}
+  spriteRenderer: {fileID: 7126398141146133394}
   flashColor: {r: 1, g: 1, b: 1, a: 1}
   flashDuration: 0.08
 --- !u!114 &2878024036715833726
@@ -381,11 +381,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MeleeWeaponSwing
   damage: 10
   knockbackForce: 6
-  range: 1
-  hitRadius: 1
-  coneAngle: 90
+  range: 0.85
+  hitRadius: 0.85
+  hitOriginRangeFactor: 0.7
+  swingVfxRangeFactor: 0.95
+  coneAngle: 80
+  swingVfxRenderer: {fileID: 2760868408693861232}
   swingVfxAnimator: {fileID: 1973844969767649745}
-  playTriggerName: Swing
+  swingVfxStatePrefix: SwingVFX
 --- !u!1 &6153819805708460151
 GameObject:
   m_ObjectHideFlags: 0
@@ -411,7 +414,7 @@ Transform:
   m_GameObject: {fileID: 6153819805708460151}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.58, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0.191, y: 0.196, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -444,8 +447,8 @@ Transform:
   m_GameObject: {fileID: 6591180047368544936}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.8, y: 0, z: 0}
-  m_LocalScale: {x: 1.6, y: 0.25, z: 1}
+  m_LocalPosition: {x: 0.2493, y: 0.1602, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 310921696390865935}
@@ -504,7 +507,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.19, y: 0.09}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

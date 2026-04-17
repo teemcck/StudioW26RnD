@@ -11,6 +11,8 @@ public class WeightedEnemyPrefab
 
 public class MapSpawner : MonoBehaviour
 {
+    public static MapSpawner Instance { get; private set; }
+
     [Header("Map Generation Settings")]
     [SerializeField] private float chunkSpacing = 5f;
 
@@ -38,10 +40,23 @@ public class MapSpawner : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+
         if (chunkGen == null)
             Debug.LogError("ChunkGen reference is missing in MapSpawner.");
         if (chunkContainer == null)
             Debug.LogError("ChunkContainer reference is missing in MapSpawner.");
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
     
     public List<GameObject> GenerateRandomSequence(int difficulty)
@@ -143,5 +158,47 @@ public class MapSpawner : MonoBehaviour
 
         _chunks.Clear();
         _chunkOffset = 0f;
+    }
+
+    public bool ArePositionsInSameChunk(Vector2 a, Vector2 b)
+    {
+        if (!TryGetChunkIndexAtWorldPosition(a, out int aIdx)) return false;
+        if (!TryGetChunkIndexAtWorldPosition(b, out int bIdx)) return false;
+        return aIdx == bIdx;
+    }
+
+    public bool TryGetChunkIndexAtWorldPosition(Vector2 worldPos, out int index)
+    {
+        index = -1;
+        for (int i = 0; i < _chunks.Count; i++)
+        {
+            GameObject chunk = _chunks[i];
+            if (!chunk) continue;
+
+            Tilemap tm = chunk.GetComponentInChildren<Tilemap>();
+            if (!tm) continue;
+
+            Bounds worldBounds = GetTilemapWorldBounds(tm);
+            Vector3 p = new Vector3(worldPos.x, worldPos.y, worldBounds.center.z);
+            if (worldBounds.Contains(p))
+            {
+                index = i;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static Bounds GetTilemapWorldBounds(Tilemap tilemap)
+    {
+        Bounds local = tilemap.localBounds;
+        Vector3 worldCenter = tilemap.transform.TransformPoint(local.center);
+        Vector3 lossy = tilemap.transform.lossyScale;
+        Vector3 worldSize = new Vector3(
+            Mathf.Abs(local.size.x * lossy.x),
+            Mathf.Abs(local.size.y * lossy.y),
+            Mathf.Abs(local.size.z * lossy.z));
+        return new Bounds(worldCenter, worldSize);
     }
 }

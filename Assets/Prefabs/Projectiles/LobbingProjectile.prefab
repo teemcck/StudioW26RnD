@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.35, y: 0.35, z: 0.35}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -84,8 +84,8 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 5
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  m_Color: {r: 1, g: 0.6, b: 0.2, a: 1}
+  m_Sprite: {fileID: -8187527979532607363, guid: 5241dde8932bf4b6ebad4f006eb06417, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -137,7 +137,7 @@ MonoBehaviour:
   lifetime: 5
   directDamage: 0
   dealDirectDamage: 0
-  explosionRadius: 1.15
+  explosionRadius: 1.35
   explosionDamage: 4
   explosionKnockback: 4
   hitMask:
@@ -148,8 +148,8 @@ MonoBehaviour:
     m_Bits: 8
   explodeOnExpire: 1
   showGroundExplosionVisual: 1
-  groundExplosionVisualDuration: 0.32
-  groundExplosionVisualColor: {r: 1, g: 0.5, b: 0.12, a: 0.58}
+  groundExplosionVisualDuration: 0.38
+  groundExplosionVisualColor: {r: 1, g: 0.5, b: 0.12, a: 0.72}
   groundExplosionSprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   groundExplosionRingScale: 1.12
   explosionVisualDiameterMultiplier: 2.38
@@ -160,9 +160,23 @@ MonoBehaviour:
   maxFlightTime: 1.65
   showLandingTelegraph: 1
   landingTelegraphSprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  landingTelegraphColor: {r: 1, g: 0.4, b: 0.12, a: 0.38}
-  landingTelegraphSortingOrder: 42
+  landingTelegraphColor: {r: 1, g: 0.4, b: 0.12, a: 0.28}
+  landingTelegraphSortingOrder: -10
+  landingTelegraphSortingLayerId: 211765407
   telegraphPulseSpeed: 5
+  showImpactBurst: 1
+  impactBurstSprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  impactBurstColor: {r: 1, g: 0.72, b: 0.25, a: 0.92}
+  impactBurstDuration: 0.2
+  impactBurstStartScaleMultiplier: 0.55
+  impactBurstEndScaleMultiplier: 1.85
+  impactBurstSortingOrder: 55
+  impactBurstSortingLayerId: 838984925
+  projectileSpriteRenderer: {fileID: 772001000003}
+  flightAnimationSprites:
+  - {fileID: -8187527979532607363, guid: 5241dde8932bf4b6ebad4f006eb06417, type: 3}
+  - {fileID: -4719834269875834882, guid: 5241dde8932bf4b6ebad4f006eb06417, type: 3}
+  flightAnimationFps: 10
 --- !u!58 &772001000006
 CircleCollider2D:
   m_ObjectHideFlags: 0

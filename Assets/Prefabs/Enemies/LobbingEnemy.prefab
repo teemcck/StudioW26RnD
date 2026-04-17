@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 880010003}
   - component: {fileID: 880010004}
   - component: {fileID: 880010005}
+  - component: {fileID: 880010013}
   - component: {fileID: 880010006}
   - component: {fileID: 880010007}
   m_Layer: 7
@@ -31,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 880010012}
@@ -86,8 +87,8 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 2063359332131475940, guid: 1631eaa6336814f3eab0c9a51d6d337d, type: 3}
-  m_Color: {r: 0.95, g: 0.55, b: 0.2, a: 1}
+  m_Sprite: {fileID: 251928823346222877, guid: 91f6f11a737544fa998275f170f8571c, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -158,8 +159,30 @@ CapsuleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.66, y: 0.92}
+  m_Size: {x: 0.33, y: 0.33}
   m_Direction: 0
+--- !u!95 &880010013
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880010001}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 09be8e322c43417fa49f4b5d95dbeb24, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &880010006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,15 +195,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7f3a2b1c4d5846e9a0f1b2c3d4e5f62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LobbingEnemy
-  maxHealth: 12
+  maxHealth: 15
   weight: 1
   moveSpeed: 2.2
   damageFlash: {fileID: 880010007}
+  minHitReactionDuration: 0.07
+  maxHitReactionDuration: 0.2
+  showHitPulse: 1
+  hitPulseColor: {r: 1, g: 0.9, b: 0.35, a: 0.9}
+  hitPulseDuration: 0.11
+  hitPulseStartScale: 0.45
+  hitPulseEndScale: 0.9
+  hitPulseSortingOrderBoost: 2
   projectilePrefab: {fileID: 772001000005, guid: e7f3a2b1c4d5846e9a0f1b2c3d4e5f70, type: 3}
   firePoint: {fileID: 880010012}
   horizontalShotSpeed: 2.6
+  projectileAimDistance: 5.5
+  shotMomentSeconds: 0.9
+  attackAnimationDuration: 1.5
+  attackCadenceMultiplier: 1
   desiredDistance: 5.5
   shootCooldown: 2
+  keepDistanceDeadZone: 0.35
+  maxShootDistance: 8.5
+  animator: {fileID: 880010013}
+  spriteRenderer: {fileID: 880010003}
+  idleStateName: UfoLobber_Idle
+  attackStateName: UfoLobber_Attack
+  windupTint: {r: 1, g: 0.6, b: 0.4, a: 1}
+  windupPulseSpeed: 7
+  windupPulseScale: 0.08
+  moveFacingThreshold: 0.08
+  targetFacingThreshold: 0.2
+  minFlipInterval: 0.12
+  spriteFacesRightByDefault: 1
+  showPreShotLandingIndicator: 1
+  preShotIndicatorPadding: 0.15
+  showMuzzleFlash: 1
+  muzzleFlashColor: {r: 1, g: 0.82, b: 0.4, a: 0.92}
+  muzzleFlashDuration: 0.1
+  muzzleFlashScale: 0.38
+  muzzleFlashSortingOrderOffset: 2
 --- !u!114 &880010007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,8 +249,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageFlash
   spriteRenderer: {fileID: 880010003}
-  flashColor: {r: 1, g: 0.63529414, b: 0.63529414, a: 1}
-  flashDuration: 0.08
+  flashColor: {r: 1, g: 1, b: 1, a: 1}
+  flashDuration: 0.12
 --- !u!1 &880010011
 GameObject:
   m_ObjectHideFlags: 0
@@ -221,7 +276,7 @@ Transform:
   m_GameObject: {fileID: 880010011}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.3, y: 0.2, z: 0}
+  m_LocalPosition: {x: -0.001, y: 0.154, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

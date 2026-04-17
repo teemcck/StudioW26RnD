@@ -152,7 +152,18 @@ public class PlayerController : MonoBehaviour
     {
         if (_isDead) return;
         if (_actionState == ActionState.Damage || _actionState == ActionState.Death) return;
-        PlayAction("Melee", attackDirection, durationSeconds, ActionState.Melee);
+
+        if (attackDirection.sqrMagnitude > 0.0001f)
+            LastMoveDirection = attackDirection.normalized;
+
+        _actionState = ActionState.Melee;
+        _actionTimer = Mathf.Max(0.01f, durationSeconds);
+
+        // Moving melee should always take priority when movement input/velocity exists.
+        if (IsMovingForMelee() && TryPlayActionState("MeleeMove", LastMoveDirection))
+            return;
+
+        TryPlayActionState("Melee", LastMoveDirection);
     }
 
     public void PlayDamageAnimation(Vector2 hitDirection, float durationSeconds)
@@ -210,6 +221,29 @@ public class PlayerController : MonoBehaviour
 
         SetFlip(flipX);
         PlayState(stateName, forceRestart);
+    }
+
+    private bool IsMovingForMelee()
+    {
+        if (_moveInput.sqrMagnitude > 0.0001f)
+            return true;
+
+        float movingThresholdSq = runThreshold * runThreshold * 0.1f;
+        if (_lastVelocity.sqrMagnitude > movingThresholdSq)
+            return true;
+
+        return rb && rb.linearVelocity.sqrMagnitude > movingThresholdSq;
+    }
+
+    private bool TryPlayActionState(string prefix, Vector2 direction)
+    {
+        string stateName = BuildStateName(prefix, direction, out bool flipX);
+        if (animator && !animator.HasState(0, Animator.StringToHash(stateName)))
+            return false;
+
+        SetFlip(flipX);
+        PlayState(stateName, forceRestart: true);
+        return true;
     }
 
     private string BuildStateName(string prefix, Vector2 rawDirection, out bool flipX)

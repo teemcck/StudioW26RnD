@@ -1,0 +1,639 @@
+fileFormatVersion: 2
+guid: 1c7f1cb977c9f4a289d8fde16eab472e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4107499127321877404
+    second: player_meleewhilemoving_spritesheet_0
+  - first:
+      213: -6195640699687334464
+    second: player_meleewhilemoving_spritesheet_1
+  - first:
+      213: -6332678935549101679
+    second: player_meleewhilemoving_spritesheet_2
+  - first:
+      213: 5989013137633614774
+    second: player_meleewhilemoving_spritesheet_3
+  - first:
+      213: 8616918993269522496
+    second: player_meleewhilemoving_spritesheet_4
+  - first:
+      213: -4522832505434527941
+    second: player_meleewhilemoving_spritesheet_5
+  - first:
+      213: 8086076081484053116
+    second: player_meleewhilemoving_spritesheet_6
+  - first:
+      213: -1286406475393949587
+    second: player_meleewhilemoving_spritesheet_7
+  - first:
+      213: -3835589539545709747
+    second: player_meleewhilemoving_spritesheet_8
+  - first:
+      213: -2356282767599537184
+    second: player_meleewhilemoving_spritesheet_9
+  - first:
+      213: -7460820682034724182
+    second: player_meleewhilemoving_spritesheet_10
+  - first:
+      213: -6736961504620268589
+    second: player_meleewhilemoving_spritesheet_11
+  - first:
+      213: -4297631234362928203
+    second: player_meleewhilemoving_spritesheet_12
+  - first:
+      213: -7836082730198204359
+    second: player_meleewhilemoving_spritesheet_13
+  - first:
+      213: 7127880684594943110
+    second: player_meleewhilemoving_spritesheet_14
+  - first:
+      213: -1737001682660907121
+    second: player_meleewhilemoving_spritesheet_15
+  - first:
+      213: -5806416372623535973
+    second: player_meleewhilemoving_spritesheet_16
+  - first:
+      213: -7263646991002445679
+    second: player_meleewhilemoving_spritesheet_17
+  - first:
+      213: -4951894344191450183
+    second: player_meleewhilemoving_spritesheet_18
+  - first:
+      213: 8480572691411056037
+    second: player_meleewhilemoving_spritesheet_19
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_0
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 215
+        width: 41
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9b5f3f91b4c00930800000000000000
+      internalID: 4107499127321877404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_1
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 216
+        width: 38
+        height: 49
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0cd0f2b0c99a40aa0800000000000000
+      internalID: -6195640699687334464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_2
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 215
+        width: 41
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1993ff16f0ecd18a0800000000000000
+      internalID: -6332678935549101679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_3
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 216
+        width: 42
+        height: 49
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bb9ccfa7bf3d1350800000000000000
+      internalID: 5989013137633614774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_4
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 164
+        width: 44
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04085248b22759770800000000000000
+      internalID: 8616918993269522496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_5
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 165
+        width: 40
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b372cfe9ccbab31c0800000000000000
+      internalID: -4522832505434527941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_6
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 164
+        width: 44
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7ab3afaa53873070800000000000000
+      internalID: 8086076081484053116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_7
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 165
+        width: 41
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d60a1655024c52ee0800000000000000
+      internalID: -1286406475393949587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_8
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 113
+        width: 45
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d438c27b2af35cac0800000000000000
+      internalID: -3835589539545709747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_9
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 114
+        width: 45
+        height: 49
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e3fad69e4dcc4fd0800000000000000
+      internalID: -2356282767599537184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_10
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 113
+        width: 45
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa2ce6a6e17d57890800000000000000
+      internalID: -7460820682034724182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_11
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 114
+        width: 42
+        height: 49
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d3b0ab94318182a0800000000000000
+      internalID: -6736961504620268589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_12
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 62
+        width: 32
+        height: 47
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b39c24892fbb54c0800000000000000
+      internalID: -4297631234362928203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_13
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 63
+        width: 25
+        height: 47
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93086f33644a04390800000000000000
+      internalID: -7836082730198204359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_14
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 62
+        width: 32
+        height: 47
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68456aea7b15be260800000000000000
+      internalID: 7127880684594943110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_15
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 63
+        width: 25
+        height: 47
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f87adb23c2ee4e7e0800000000000000
+      internalID: -1737001682660907121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_16
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 2
+        width: 30
+        height: 47
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9013c3a2177b6fa0800000000000000
+      internalID: -5806416372623535973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_17
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 3
+        width: 27
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 198d67fcb87523b90800000000000000
+      internalID: -7263646991002445679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_18
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 2
+        width: 30
+        height: 47
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b3e3398456574bb0800000000000000
+      internalID: -4951894344191450183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_meleewhilemoving_spritesheet_19
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 3
+        width: 36
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a53f6b4eeb01b570800000000000000
+      internalID: 8480572691411056037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 7c0570c20eb14463c8b01ce6c06be999
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      player_meleewhilemoving_spritesheet_0: 4107499127321877404
+      player_meleewhilemoving_spritesheet_1: -6195640699687334464
+      player_meleewhilemoving_spritesheet_10: -7460820682034724182
+      player_meleewhilemoving_spritesheet_11: -6736961504620268589
+      player_meleewhilemoving_spritesheet_12: -4297631234362928203
+      player_meleewhilemoving_spritesheet_13: -7836082730198204359
+      player_meleewhilemoving_spritesheet_14: 7127880684594943110
+      player_meleewhilemoving_spritesheet_15: -1737001682660907121
+      player_meleewhilemoving_spritesheet_16: -5806416372623535973
+      player_meleewhilemoving_spritesheet_17: -7263646991002445679
+      player_meleewhilemoving_spritesheet_18: -4951894344191450183
+      player_meleewhilemoving_spritesheet_19: 8480572691411056037
+      player_meleewhilemoving_spritesheet_2: -6332678935549101679
+      player_meleewhilemoving_spritesheet_3: 5989013137633614774
+      player_meleewhilemoving_spritesheet_4: 8616918993269522496
+      player_meleewhilemoving_spritesheet_5: -4522832505434527941
+      player_meleewhilemoving_spritesheet_6: 8086076081484053116
+      player_meleewhilemoving_spritesheet_7: -1286406475393949587
+      player_meleewhilemoving_spritesheet_8: -3835589539545709747
+      player_meleewhilemoving_spritesheet_9: -2356282767599537184
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
