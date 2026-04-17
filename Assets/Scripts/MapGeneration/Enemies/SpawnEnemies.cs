@@ -27,30 +27,47 @@ public class SpawnEnemies : MonoBehaviour
             return 0;
 
         fillFraction = Mathf.Clamp01(fillFraction);
-        var cells = new List<Vector3Int>();
+
+        // Get all tiles that have something painted on them
+        var availableTiles = new List<Vector3Int>();
         BoundsInt bounds = enemySpawnTilemap.cellBounds;
+
         foreach (Vector3Int pos in bounds.allPositionsWithin)
         {
             if (enemySpawnTilemap.HasTile(pos))
-                cells.Add(pos);
+            {
+                availableTiles.Add(pos);
+            }
         }
 
-        if (cells.Count == 0)
-            return 0;
-
-        int targetCount = Mathf.Clamp(Mathf.RoundToInt(cells.Count * fillFraction), 0, cells.Count);
-        if (targetCount == 0)
-            return 0;
-
-        Shuffle(cells);
-
-        Transform parent = transform;
-        int spawned = 0;
-        for (int i = 0; i < targetCount; i++)
+        if (availableTiles.Count == 0)
         {
-            Vector3 worldPos = enemySpawnTilemap.GetCellCenterWorld(cells[i]);
+            Debug.LogWarning($"No spawn tiles found in chunk {name}");
+            return 0;
+        }
+
+        // Determine how many enemies to spawn
+        int targetCount = Mathf.Clamp(Mathf.RoundToInt(availableTiles.Count * fillFraction), 1, availableTiles.Count);
+
+        // Shuffle the available tiles to randomize which ones get enemies
+        Shuffle(availableTiles);
+
+        // Spawn enemies at the center of randomly selected tiles
+        Transform parent = transform.parent ?? transform; // Spawn as children of chunk root
+        int spawned = 0;
+
+        for (int i = 0; i < targetCount && i < availableTiles.Count; i++)
+        {
+            Vector3Int tilePos = availableTiles[i];
+
+            // Get the world position of the tile center
+            Vector3 spawnPos = enemySpawnTilemap.GetCellCenterWorld(tilePos);
+
+            // Select random enemy type
             GameObject prefab = GetRandomEnemyType(enemyPool);
-            Instantiate(prefab, worldPos, Quaternion.identity, parent);
+
+            // Spawn the enemy
+            Instantiate(prefab, spawnPos, Quaternion.identity, parent);
             spawned++;
         }
 
