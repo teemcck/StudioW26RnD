@@ -19,6 +19,7 @@ public class GameplayHandler : MonoBehaviour
     [SerializeField] private float avoidXPMultiplier = 0.5f;
     [SerializeField] private float timeBonusMax = 50f;
     [SerializeField] private float timeBonusWindow = 60f;
+    [SerializeField] private int xpPerLevel = 100;
 
     private GameObject _playerObject;
     private int _currentDifficulty;
@@ -122,12 +123,9 @@ public class GameplayHandler : MonoBehaviour
 
         yield return new WaitUntil(() => CurrentState == LevelState.LevelEnd);
 
-        // Disable player movement and make invisible
+        // Disable player movement but keep active for upgrades
         EnablePlayerMovement(false);
-        if (_playerObject != null)
-        {
-            _playerObject.SetActive(false);
-        }
+        // Don't deactivate player yet - wait until after upgrades are selected
 
         // Disable all enemies
         DisableAllEnemies();
@@ -150,16 +148,22 @@ public class GameplayHandler : MonoBehaviour
         // Add XP to run total
         RunStatsTracker.Instance.AddXP(levelXP);
 
-        // Show XP bar animation
+        // Show old XP summary first
+        levelUI.ShowXPSummary(_enemiesKilled, _totalEnemies, levelXP);
+        yield return new WaitUntil(() => levelUI.SummaryConfirmed);
+
+        // Then show XP bar animation
         levelUI.ShowXPBarAnimation(RunStatsTracker.Instance.TotalXP - levelXP, levelXP, _enemiesKilled, _totalEnemies, elapsed);
         yield return new WaitUntil(() => levelUI.XPBarAnimationComplete);
 
-        // Wait for continue press
-        yield return new WaitUntil(() => levelUI.SummaryConfirmed);
-
-        // Reward.
+        // After XP bar completes, show upgrades (threshold always met for now)
         CurrentState = LevelState.Reward;
         _levelIndex++;
+
+        // Reset the reward confirmation flag for the new upgrade selection
+        levelUI.ResetRewardConfirmed();
+
+        Debug.Log("[GameplayHandler] XP bar animation complete, opening upgrade selection...");
 
         EventBus<UpgradeScreenOpenedEvent>.Raise(new UpgradeScreenOpenedEvent
         {
@@ -167,8 +171,18 @@ public class GameplayHandler : MonoBehaviour
         });
 
         UpgradeManager.Instance.OpenUpgradeSelection(3);
-        yield return new WaitUntil(() => levelUI.RewardConfirmed);
+        Debug.Log("[GameplayHandler] Waiting for upgrade selection...");
+        yield return new WaitUntil(() => 
+        {
+            if (levelUI.RewardConfirmed)
+            {
+                Debug.Log("[GameplayHandler] Upgrade selected!");
+                return true;
+            }
+            return false;
+        });
 
+        Debug.Log("[GameplayHandler] Rolling next level and looping...");
         // Roll next level and loop.
         RollNextLevel();
         StartCoroutine(LevelSequence());
@@ -196,6 +210,8 @@ public class GameplayHandler : MonoBehaviour
         Debug.Log($"XP - Kills: {killXP}, Avoided: {avoidXP}, Time bonus: {timeBonus}, Total: {totalXP}");
         return totalXP;
     }
+
+    public int XPPerLevel => xpPerLevel;
 
     private void ChangeCameraTracking(Transform newTracking)
     {

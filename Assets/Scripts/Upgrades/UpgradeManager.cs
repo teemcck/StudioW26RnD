@@ -46,25 +46,6 @@ public class UpgradeManager : MonoBehaviour
         BuildMaps();
     }
 
-    void Start()
-    {
-        // Find reference to player controller.
-        // Player is instantiated at runtime, cannot be serialized.
-        var found = FindObjectsByType<PlayerController>(FindObjectsSortMode.None); // include inactive if needed
-
-        if (found.Length == 0) Debug.LogError($"No instance of player controller found in scene.");
-        else if (found.Length > 1)
-        {
-            Debug.LogError($"Multiple instances of player controller found ({found.Length})." +
-            "There should only be one.");
-        }
-        else
-        {
-            playerController = found[0];
-        }
-
-    }
-
     private void Update()
     {
         if (_tickingEffects.Count == 0) return;
@@ -215,6 +196,21 @@ public class UpgradeManager : MonoBehaviour
     {
         if (_cachedContext == null || _trackedPlayer != player)
         {
+            // If no player provided, try to find one
+            if (player == null)
+            {
+                var found = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+                if (found.Length > 0)
+                {
+                    player = found[0];
+                }
+                else
+                {
+                    Debug.LogError("No PlayerController found when building upgrade context!");
+                    return null;
+                }
+            }
+            
             _cachedContext = UpgradeContext.FromScene(player);
             _trackedPlayer = player;
         }

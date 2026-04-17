@@ -110,27 +110,65 @@ public class LevelUI : MonoBehaviour
     {
         XPBarAnimationComplete = false;
         xpBarPanel.SetActive(true);
-        xpBarContinueButton.gameObject.SetActive(false); // Hide continue button during animation
+        if (xpBarContinueButton != null) xpBarContinueButton.gameObject.SetActive(false);
 
         int startXP = previousXP;
         int targetXP = previousXP + levelXP;
 
-        // Display level stats
-        int avoided = total - killed;
-        xpBarStatsText.text = $"Enemies Killed: {killed}\nEnemies Avoided: {avoided}\nTime: {elapsed:F1}s";
+        // Calculate XP display as currentXP % xpPerLevel
+        int xpPerLevel = GameplayHandler.Instance.XPPerLevel;
+        int startDisplayXP = startXP % xpPerLevel;
+        int targetDisplayXP = targetXP % xpPerLevel;
+
+        // Handle level-up: if target wrapped around, it means we leveled up
+        if (targetDisplayXP < startDisplayXP)
+        {
+            // Animate from startDisplay to xpPerLevel, then continue from 0 to targetDisplay
+            targetDisplayXP += xpPerLevel;
+        }
+
+        float initialFill = (float)startDisplayXP / xpPerLevel;
 
         // Set initial state
-        xpBarFill.fillAmount = 0f;
-        xpBarText.text = $"{startXP} / {targetXP} XP";
+        if (xpBarFill != null) xpBarFill.fillAmount = initialFill;
+        if (xpBarText != null) xpBarText.text = $"{startDisplayXP} / {xpPerLevel} XP";
+
+        // Display level stats
+        int avoided = total - killed;
+        if (xpBarStatsText != null)
+            xpBarStatsText.text = $"Enemies Killed: {killed}\nEnemies Avoided: {avoided}\nTime: {elapsed:F1}s";
 
         // Start animation coroutine
-        StartCoroutine(AnimateXPBar(startXP, targetXP));
+        StartCoroutine(AnimateXPBar(startXP, targetXP, xpPerLevel));
     }
 
-    private System.Collections.IEnumerator AnimateXPBar(int startXP, int targetXP)
+    private System.Collections.IEnumerator AnimateXPBar(int startXP, int targetXP, int xpPerLevel)
     {
-        float animationDuration = 2f; // 2 seconds for the fill animation
+        float animationDuration = 2f;
         float elapsed = 0f;
+
+        // Calculate the XP range for this level
+        int levelXP = targetXP - startXP;
+
+        // Calculate display range (modulo xpPerLevel)
+        int startDisplayXP = startXP % xpPerLevel;
+        int targetDisplayXP = targetXP % xpPerLevel;
+
+        // Handle level-up: if target wrapped around, it means we leveled up
+        if (targetDisplayXP < startDisplayXP)
+        {
+            // Animate from startDisplay to xpPerLevel, then continue from 0 to targetDisplay
+            targetDisplayXP += xpPerLevel;
+        }
+
+        float initialFill = (float)startDisplayXP / xpPerLevel;
+
+        // Set initial fill based on previous XP
+        xpBarFill.fillAmount = initialFill;
+        xpBarText.text = $"{startDisplayXP} / {xpPerLevel} XP";
+
+        // Wait a moment to show the starting state
+        yield return new WaitForSeconds(0.5f);
 
         while (elapsed < animationDuration)
         {
@@ -141,17 +179,23 @@ public class LevelUI : MonoBehaviour
             t = Mathf.SmoothStep(0f, 1f, t);
 
             // Calculate current XP display
-            int displayXP = Mathf.RoundToInt(Mathf.Lerp(startXP, targetXP, t));
+            int gainedXP = Mathf.RoundToInt(levelXP * t);
+            int currentTotalXP = startXP + gainedXP;
+            int displayXP = currentTotalXP % xpPerLevel;
 
-            xpBarFill.fillAmount = t; // Fill from 0 to 1 over animation duration
-            xpBarText.text = $"{displayXP} / {targetXP} XP";
+            // Calculate fill amount
+            float fillAmount = (float)displayXP / xpPerLevel;
+
+            xpBarFill.fillAmount = fillAmount;
+            xpBarText.text = $"{displayXP} / {xpPerLevel} XP";
 
             yield return null;
         }
 
         // Ensure final state
-        xpBarFill.fillAmount = 1f;
-        xpBarText.text = $"{targetXP} / {targetXP} XP";
+        int finalDisplayXP = targetXP % xpPerLevel;
+        xpBarFill.fillAmount = (float)finalDisplayXP / xpPerLevel;
+        xpBarText.text = $"{finalDisplayXP} / {xpPerLevel} XP";
 
         // Show continue button
         xpBarContinueButton.gameObject.SetActive(true);
@@ -168,5 +212,10 @@ public class LevelUI : MonoBehaviour
     private void OnUpgradeSelected(UpgradeSelectedEvent evt)
     {
         RewardConfirmed = true;
+    }
+
+    public void ResetRewardConfirmed()
+    {
+        RewardConfirmed = false;
     }
 }
