@@ -15,7 +15,7 @@ using UnityEngine.Serialization;
 public class StatChangeEffect : UpgradeEffect
 {
     public PlayerStatType stat;
-    [FormerlySerializedAs("multplier")] [Tooltip("Additive multiplier delta. 1 = +100%. -.25 = -25%.")]
+    [Tooltip("Additive multiplier delta. 1 = +100%. -.25 = -25%.")]
     public float multiplier;
     [Tooltip("Additive flat. 1 = +1.0. -.25 = -0.25")]
     public float flat;

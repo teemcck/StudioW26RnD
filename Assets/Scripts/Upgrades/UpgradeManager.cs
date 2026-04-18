@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Central registry and runtime coordinator for the upgrade system.
@@ -52,6 +53,16 @@ public class UpgradeManager : MonoBehaviour
         float dt = Time.deltaTime;
         foreach (var (effect, ctx) in _tickingEffects)
             effect.Tick(ctx, dt);
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void BuildMaps()
@@ -213,8 +224,50 @@ public class UpgradeManager : MonoBehaviour
             
             _cachedContext = UpgradeContext.FromScene(player);
             _trackedPlayer = player;
+            playerController = player;
         }
         return _cachedContext;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        var found = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+        if (found.Length == 0)
+            return;
+
+        var nextPlayer = found[0];
+        if (_trackedPlayer == nextPlayer && _cachedContext != null)
+            return;
+
+        playerController = nextPlayer;
+        _trackedPlayer = nextPlayer;
+        _cachedContext = UpgradeContext.FromScene(nextPlayer);
+        ReapplyStacksToTrackedPlayer();
+    }
+
+    private void ReapplyStacksToTrackedPlayer()
+    {
+        if (_cachedContext == null)
+            return;
+
+        _tickingEffects.Clear();
+
+        foreach (var kvp in _stacks)
+        {
+            if (!_effectMap.TryGetValue(kvp.Key, out var effectSO))
+                continue;
+
+            for (int i = 0; i < kvp.Value; i++)
+            {
+                effectSO.Apply(_cachedContext);
+
+                foreach (var effect in effectSO.effects)
+                {
+                    if (effect != null && effect.NeedsTick)
+                        _tickingEffects.Add((effect, _cachedContext));
+                }
+            }
+        }
     }
 
     private static float RarityWeight(UpgradeRarity r) => r switch

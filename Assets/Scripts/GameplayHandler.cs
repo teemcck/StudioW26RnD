@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameplayHandler : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class GameplayHandler : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private MapSpawner mapSpawner;
-    [SerializeField] private LevelUI levelUI;
+    [SerializeField] private LevelUI floorUI;
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private CinemachineCamera camera;
 
@@ -19,33 +20,40 @@ public class GameplayHandler : MonoBehaviour
     [SerializeField] private float avoidXPMultiplier = 0.5f;
     [SerializeField] private float timeBonusMax = 50f;
     [SerializeField] private float timeBonusWindow = 60f;
-    [SerializeField] private int xpPerLevel = 100;
+    [SerializeField] private int xpPerFloor = 100;
+
+    [Header("World Progression")]
+    [SerializeField] private string bossSceneName = "BossGameplay";
+    [SerializeField] private string deathSceneName = "DeathScene";
 
     private GameObject _playerObject;
     private int _currentDifficulty;
     private int _currentChunkCount;
     private int _totalEnemies;
     private int _enemiesKilled;
-    private float _levelStartTime;
-    private int _levelIndex = 0;
+    private float _floorStartTime;
+    private int _floorIndex = 0;
     private List<GameObject> _currentChunks;
+    private bool _hasShownWorldOneIntro;
+    private bool _hasShownWorldTwoIntro;
 
-    // Pre-rolled values for the upcoming level, shown on the preview screen.
+    // Pre-rolled values for the upcoming floor, shown on the preview screen.
     private int _nextDifficulty;
     private int _nextChunkCount;
 
     private IEventBinding<EnemyKilledEvent> _enemyKilledBinding;
     private IEventBinding<PlayerReachedEndpointEvent> _endpointBinding;
+    private IEventBinding<PlayerDiedEvent> _playerDiedBinding;
 
-    public enum LevelState { Idle, Preview, Playing, LevelEnd, Reward }
-    public LevelState CurrentState { get; private set; } = LevelState.Idle;
+    public enum FloorState { Idle, Preview, Playing, FloorEnd, Reward }
+    public FloorState CurrentState { get; private set; } = FloorState.Idle;
 
     private void Awake()
     {
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
 
-        // Don't instantiate player here - wait for level start
+        // Don't instantiate player here - wait for floor start
         // _playerObject = Instantiate(playerPrefab);
         // ChangeCameraTracking(_playerObject.transform);
     }
@@ -54,28 +62,32 @@ public class GameplayHandler : MonoBehaviour
     {
         _enemyKilledBinding = EventBus<EnemyKilledEvent>.Register(OnEnemyKilled);
         _endpointBinding    = EventBus<PlayerReachedEndpointEvent>.Register(OnPlayerReachedEndpoint);
+        _playerDiedBinding  = EventBus<PlayerDiedEvent>.Register(OnPlayerDied);
     }
 
     private void OnDisable()
     {
         EventBus<EnemyKilledEvent>.Unsubscribe(_enemyKilledBinding);
         EventBus<PlayerReachedEndpointEvent>.Unsubscribe(_endpointBinding);
+        EventBus<PlayerDiedEvent>.Unsubscribe(_playerDiedBinding);
     }
 
     private void Start()
     {
-        levelUI.Activate();
-        RollNextLevel();
+        floorUI.Activate();
+        RollNextFloor();
 
-        StartCoroutine(LevelSequence());
+        StartCoroutine(FloorSequence());
     }
 
     // Core loop.
 
-    private IEnumerator LevelSequence()
+    private IEnumerator FloorSequence()
     {
+        yield return ShowWorldIntroIfNeeded();
+
         // Preview: show rolled difficulty and length before generating.
-        CurrentState = LevelState.Preview;
+        CurrentState = FloorState.Preview;
 
         // Ensure player is not visible during preview
         if (_playerObject != null)
@@ -83,10 +95,10 @@ public class GameplayHandler : MonoBehaviour
             _playerObject.SetActive(false);
         }
 
-        levelUI.ShowLevelPreview(_nextDifficulty, _nextChunkCount, _levelIndex);
-        yield return new WaitUntil(() => levelUI.PlayerConfirmedStart);
+        floorUI.ShowFloorPreview(_nextDifficulty, _floorIndex);
+        yield return new WaitUntil(() => floorUI.PlayerConfirmedStart);
 
-        // Instantiate player when level starts
+        // Instantiate player when floor starts
         if (_playerObject == null)
         {
             _playerObject = Instantiate(playerPrefab);
@@ -103,25 +115,28 @@ public class GameplayHandler : MonoBehaviour
         _currentDifficulty = _nextDifficulty;
         _currentChunkCount = _nextChunkCount;
 
-        // Generate and load level.
-        _currentChunks = mapSpawner.GenerateRandomSequence(_currentDifficulty);
+        // Generate and load floor.
+        _currentChunks = mapSpawner.GenerateRandomSequence(
+            _currentDifficulty,
+            _currentChunkCount,
+            WorldProgression.GetBandForFloor(_floorIndex));
         _totalEnemies  = mapSpawner.LastSpawnedEnemyCount;
 
-        EventBus<LevelLoadedEvent>.Raise(new LevelLoadedEvent
+        EventBus<FloorLoadedEvent>.Raise(new FloorLoadedEvent
         {
-            LevelIndex   = _levelIndex,
-            IsFirstLevel = _levelIndex == 0
+            FloorIndex   = _floorIndex,
+            IsFirstFloor = _floorIndex == 0
         });
 
         // Playing.
-        CurrentState = LevelState.Playing;
+        CurrentState = FloorState.Playing;
         _enemiesKilled = 0;
-        _levelStartTime = Time.time;
+        _floorStartTime = Time.time;
 
-        // Move player to the start of the level.
+        // Move player to the start of the floor.
         _playerObject.transform.position = mapSpawner.SpawnPosition;
 
-        yield return new WaitUntil(() => CurrentState == LevelState.LevelEnd);
+        yield return new WaitUntil(() => CurrentState == FloorState.FloorEnd);
 
         // Disable player movement but keep active for upgrades
         EnablePlayerMovement(false);
@@ -130,7 +145,7 @@ public class GameplayHandler : MonoBehaviour
         // Disable all enemies
         DisableAllEnemies();
 
-        // Deinitialize chunks after level end (moved from before next level)
+        // Deinitialize chunks after floor end (moved from before next floor)
         if (_currentChunks != null)
         {
             foreach (GameObject chunk in _currentChunks)
@@ -142,26 +157,26 @@ public class GameplayHandler : MonoBehaviour
         }
 
         // XP Summary with animated XP bar
-        float elapsed = Time.time - _levelStartTime;
-        int levelXP = CalculateXP(_enemiesKilled, _totalEnemies, elapsed);
+        float elapsed = Time.time - _floorStartTime;
+        int floorXP = CalculateXP(_enemiesKilled, _totalEnemies, elapsed);
 
         // Add XP to run total
-        RunStatsTracker.Instance.AddXP(levelXP);
+        RunStatsTracker.Instance.AddXP(floorXP);
 
         // Show old XP summary first
-        levelUI.ShowXPSummary(_enemiesKilled, _totalEnemies, levelXP);
-        yield return new WaitUntil(() => levelUI.SummaryConfirmed);
+        floorUI.ShowXPSummary(_enemiesKilled, _totalEnemies, floorXP);
+        yield return new WaitUntil(() => floorUI.SummaryConfirmed);
 
         // Then show XP bar animation
-        levelUI.ShowXPBarAnimation(RunStatsTracker.Instance.TotalXP - levelXP, levelXP, _enemiesKilled, _totalEnemies, elapsed);
-        yield return new WaitUntil(() => levelUI.XPBarAnimationComplete);
+        floorUI.ShowXPBarAnimation(RunStatsTracker.Instance.TotalXP - floorXP, floorXP, _enemiesKilled, _totalEnemies, elapsed);
+        yield return new WaitUntil(() => floorUI.XPBarAnimationComplete);
 
         // After XP bar completes, show upgrades (threshold always met for now)
-        CurrentState = LevelState.Reward;
-        _levelIndex++;
+        CurrentState = FloorState.Reward;
+        _floorIndex++;
 
         // Reset the reward confirmation flag for the new upgrade selection
-        levelUI.ResetRewardConfirmed();
+        floorUI.ResetRewardConfirmed();
 
         Debug.Log("[GameplayHandler] XP bar animation complete, opening upgrade selection...");
 
@@ -174,7 +189,7 @@ public class GameplayHandler : MonoBehaviour
         Debug.Log("[GameplayHandler] Waiting for upgrade selection...");
         yield return new WaitUntil(() => 
         {
-            if (levelUI.RewardConfirmed)
+            if (floorUI.RewardConfirmed)
             {
                 Debug.Log("[GameplayHandler] Upgrade selected!");
                 return true;
@@ -182,19 +197,24 @@ public class GameplayHandler : MonoBehaviour
             return false;
         });
 
-        Debug.Log("[GameplayHandler] Rolling next level and looping...");
-        // Roll next level and loop.
-        RollNextLevel();
-        StartCoroutine(LevelSequence());
+        Debug.Log("[GameplayHandler] Rolling next floor and looping...");
+        if (WorldProgression.IsBossFloor(_floorIndex))
+        {
+            SceneManager.LoadScene(bossSceneName);
+            yield break;
+        }
+
+        RollNextFloor();
+        StartCoroutine(FloorSequence());
     }
 
     // Helpers.
 
     /// <summary>
-    /// Rolls difficulty and chunk count for the upcoming level.
+    /// Rolls difficulty and chunk count for the upcoming floor.
     /// Done before the preview screen so the player sees real values.
     /// </summary>
-    private void RollNextLevel()
+    private void RollNextFloor()
     {
         _nextDifficulty  = Random.Range(GameConstants.MinDifficulty, GameConstants.MaxDifficulty + 1);
         _nextChunkCount  = Random.Range(GameConstants.MinChunkCount, GameConstants.MaxChunkCount + 1);
@@ -211,7 +231,30 @@ public class GameplayHandler : MonoBehaviour
         return totalXP;
     }
 
-    public int XPPerLevel => xpPerLevel;
+    public int XPPerFloor => xpPerFloor;
+
+    private IEnumerator ShowWorldIntroIfNeeded()
+    {
+        if (_floorIndex == 0 && !_hasShownWorldOneIntro)
+        {
+            _hasShownWorldOneIntro = true;
+            floorUI.ShowWorldTransition(
+                "World 1: Upper Strata",
+                "This place seems unstable. You'd better be quick.",
+                "Enter");
+            yield return new WaitUntil(() => floorUI.TransitionConfirmed);
+        }
+
+        if (WorldProgression.IsWorldTwoTransition(_floorIndex) && !_hasShownWorldTwoIntro)
+        {
+            _hasShownWorldTwoIntro = true;
+            floorUI.ShowWorldTransition(
+                "World 2: Lower Strata",
+                "You feel an ominous presence. What could be at the bottom?",
+                "Descend");
+            yield return new WaitUntil(() => floorUI.TransitionConfirmed);
+        }
+    }
 
     private void ChangeCameraTracking(Transform newTracking)
     {
@@ -242,7 +285,7 @@ public class GameplayHandler : MonoBehaviour
     private void DisableAllEnemies()
     {
         // Find all enemy objects and disable them
-        var enemies = FindObjectsOfType<EnemyBase>();
+        var enemies = FindObjectsByType<EnemyBase>(FindObjectsSortMode.None);
         foreach (var enemy in enemies)
         {
             enemy.gameObject.SetActive(false);
@@ -253,13 +296,19 @@ public class GameplayHandler : MonoBehaviour
 
     private void OnEnemyKilled(EnemyKilledEvent evt)
     {
-        if (CurrentState != LevelState.Playing) return;
+        if (CurrentState != FloorState.Playing) return;
         _enemiesKilled++;
     }
 
     private void OnPlayerReachedEndpoint(PlayerReachedEndpointEvent evt)
     {
-        if (CurrentState != LevelState.Playing) return;
-        CurrentState = LevelState.LevelEnd;
+        if (CurrentState != FloorState.Playing) return;
+        CurrentState = FloorState.FloorEnd;
+    }
+
+    private void OnPlayerDied(PlayerDiedEvent evt)
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(deathSceneName);
     }
 }

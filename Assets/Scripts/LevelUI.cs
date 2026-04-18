@@ -1,11 +1,11 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine.UI;
 
 /// <summary>
-/// Drives all level-related UI panels.
+/// Drives all floor-related UI panels.
 /// GameplayHandler waits on the three bool flags:
-///   PlayerConfirmedStart  - player clicked Begin on the pre-level preview.
+///   PlayerConfirmedStart  - player clicked Begin on the pre-floor preview.
 ///   SummaryConfirmed      - player clicked Continue on the XP summary.
 ///   RewardConfirmed       - player selected an upgrade on the reward screen.
 ///
@@ -14,12 +14,15 @@ using TMPro;
 /// </summary>
 public class LevelUI : MonoBehaviour
 {
-    [Header("Pre-Level Preview Panel")]
+    [Header("Pre-Floor Preview Panel")]
     [SerializeField] private GameObject previewPanel;
-    [SerializeField] private TextMeshProUGUI previewLevelIndexText;
+    [SerializeField] private TextMeshProUGUI previewFloorIndexText;
     [SerializeField] private TextMeshProUGUI previewDifficultyText;
-    [SerializeField] private TextMeshProUGUI previewLengthText;
     [SerializeField] private Button previewBeginButton;
+
+    [Header("Preview Animation")]
+    [SerializeField] private float difficultyRollDuration = 0.75f;
+    [SerializeField] private float difficultyRollInterval = 0.06f;
 
     [Header("XP Summary Panel")]
     [SerializeField] private GameObject summaryPanel;
@@ -35,12 +38,17 @@ public class LevelUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI xpBarStatsText;
     [SerializeField] private Button xpBarContinueButton;
 
+    [Header("World Transition")]
+    [SerializeField] private WorldTransitionUI worldTransitionUI;
+
     public bool PlayerConfirmedStart { get; private set; }
     public bool SummaryConfirmed     { get; private set; }
     public bool RewardConfirmed      { get; private set; }
     public bool XPBarAnimationComplete { get; private set; }
+    public bool TransitionConfirmed => worldTransitionUI == null || worldTransitionUI.TransitionConfirmed;
 
     private IEventBinding<UpgradeSelectedEvent> _upgradeSelectedBinding;
+    private Coroutine _difficultyRollCoroutine;
 
     private void Awake()
     {
@@ -48,6 +56,7 @@ public class LevelUI : MonoBehaviour
         previewPanel.SetActive(false);
         summaryPanel.SetActive(false);
         xpBarPanel.SetActive(false);
+        worldTransitionUI?.HideImmediate();
     }
 
     private void OnEnable()
@@ -71,14 +80,16 @@ public class LevelUI : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    public void ShowLevelPreview(int difficulty, int chunkCount, int levelIndex)
+    public void ShowFloorPreview(int difficulty, int floorIndex)
     {
         PlayerConfirmedStart = false;
         previewPanel.SetActive(true);
+        if (_difficultyRollCoroutine != null)
+            StopCoroutine(_difficultyRollCoroutine);
 
-        previewLevelIndexText.text = $"Level {levelIndex + 1}";
-        previewDifficultyText.text = $"Difficulty: {difficulty}";
-        previewLengthText.text     = $"Islands: {chunkCount}";
+        previewFloorIndexText.text = $"Floor {floorIndex + 1}";
+        previewDifficultyText.text = "Difficulty: ?";
+        previewBeginButton.interactable = false;
 
         previewBeginButton.onClick.RemoveAllListeners();
         previewBeginButton.onClick.AddListener(() =>
@@ -86,6 +97,19 @@ public class LevelUI : MonoBehaviour
             previewPanel.SetActive(false);
             PlayerConfirmedStart = true;
         });
+
+        _difficultyRollCoroutine = StartCoroutine(AnimateDifficultyRoll(difficulty));
+    }
+
+    public void ShowWorldTransition(string title, string body, string buttonLabel = "Continue")
+    {
+        if (worldTransitionUI == null)
+        {
+            Debug.LogWarning("[LevelUI] WorldTransitionUI is not assigned. Skipping transition screen.");
+            return;
+        }
+
+        worldTransitionUI.Show(title, body, buttonLabel);
     }
 
     public void ShowXPSummary(int killed, int total, int xp)
@@ -106,66 +130,84 @@ public class LevelUI : MonoBehaviour
         });
     }
 
-    public void ShowXPBarAnimation(int previousXP, int levelXP, int killed, int total, float elapsed)
+    public void ShowXPBarAnimation(int previousXP, int floorXP, int killed, int total, float elapsed)
     {
         XPBarAnimationComplete = false;
         xpBarPanel.SetActive(true);
         if (xpBarContinueButton != null) xpBarContinueButton.gameObject.SetActive(false);
 
         int startXP = previousXP;
-        int targetXP = previousXP + levelXP;
+        int targetXP = previousXP + floorXP;
 
-        // Calculate XP display as currentXP % xpPerLevel
-        int xpPerLevel = GameplayHandler.Instance.XPPerLevel;
-        int startDisplayXP = startXP % xpPerLevel;
-        int targetDisplayXP = targetXP % xpPerLevel;
+        // Calculate XP display as currentXP % xpPerFloor
+        int xpPerFloor = GameplayHandler.Instance.XPPerFloor;
+        int startDisplayXP = startXP % xpPerFloor;
+        int targetDisplayXP = targetXP % xpPerFloor;
 
-        // Handle level-up: if target wrapped around, it means we leveled up
+        // Handle floor-up: if target wrapped around, it means we progressed.
         if (targetDisplayXP < startDisplayXP)
         {
-            // Animate from startDisplay to xpPerLevel, then continue from 0 to targetDisplay
-            targetDisplayXP += xpPerLevel;
+            // Animate from startDisplay to xpPerFloor, then continue from 0 to targetDisplay.
+            targetDisplayXP += xpPerFloor;
         }
 
-        float initialFill = (float)startDisplayXP / xpPerLevel;
+        float initialFill = (float)startDisplayXP / xpPerFloor;
 
         // Set initial state
         if (xpBarFill != null) xpBarFill.fillAmount = initialFill;
-        if (xpBarText != null) xpBarText.text = $"{startDisplayXP} / {xpPerLevel} XP";
+        if (xpBarText != null) xpBarText.text = $"{startDisplayXP} / {xpPerFloor} XP";
 
-        // Display level stats
+        // Display floor stats
         int avoided = total - killed;
         if (xpBarStatsText != null)
             xpBarStatsText.text = $"Enemies Killed: {killed}\nEnemies Avoided: {avoided}\nTime: {elapsed:F1}s";
 
         // Start animation coroutine
-        StartCoroutine(AnimateXPBar(startXP, targetXP, xpPerLevel));
+        StartCoroutine(AnimateXPBar(startXP, targetXP, xpPerFloor));
     }
 
-    private System.Collections.IEnumerator AnimateXPBar(int startXP, int targetXP, int xpPerLevel)
+    private System.Collections.IEnumerator AnimateDifficultyRoll(int finalDifficulty)
+    {
+        float elapsed = 0f;
+        float interval = Mathf.Max(0.01f, difficultyRollInterval);
+        float duration = Mathf.Max(0f, difficultyRollDuration);
+
+        while (elapsed < duration)
+        {
+            previewDifficultyText.text = $"Difficulty: {Random.Range(GameConstants.MinDifficulty, GameConstants.MaxDifficulty + 1)}";
+            yield return new WaitForSeconds(interval);
+            elapsed += interval;
+        }
+
+        previewDifficultyText.text = $"Difficulty: {finalDifficulty}";
+        previewBeginButton.interactable = true;
+        _difficultyRollCoroutine = null;
+    }
+
+    private System.Collections.IEnumerator AnimateXPBar(int startXP, int targetXP, int xpPerFloor)
     {
         float animationDuration = 2f;
         float elapsed = 0f;
 
-        // Calculate the XP range for this level
-        int levelXP = targetXP - startXP;
+        // Calculate the XP range for this floor
+        int floorXP = targetXP - startXP;
 
-        // Calculate display range (modulo xpPerLevel)
-        int startDisplayXP = startXP % xpPerLevel;
-        int targetDisplayXP = targetXP % xpPerLevel;
+        // Calculate display range (modulo xpPerFloor)
+        int startDisplayXP = startXP % xpPerFloor;
+        int targetDisplayXP = targetXP % xpPerFloor;
 
-        // Handle level-up: if target wrapped around, it means we leveled up
+        // Handle floor-up: if target wrapped around, it means we progressed.
         if (targetDisplayXP < startDisplayXP)
         {
-            // Animate from startDisplay to xpPerLevel, then continue from 0 to targetDisplay
-            targetDisplayXP += xpPerLevel;
+            // Animate from startDisplay to xpPerFloor, then continue from 0 to targetDisplay
+            targetDisplayXP += xpPerFloor;
         }
 
-        float initialFill = (float)startDisplayXP / xpPerLevel;
+        float initialFill = (float)startDisplayXP / xpPerFloor;
 
         // Set initial fill based on previous XP
         xpBarFill.fillAmount = initialFill;
-        xpBarText.text = $"{startDisplayXP} / {xpPerLevel} XP";
+        xpBarText.text = $"{startDisplayXP} / {xpPerFloor} XP";
 
         // Wait a moment to show the starting state
         yield return new WaitForSeconds(0.5f);
@@ -179,23 +221,23 @@ public class LevelUI : MonoBehaviour
             t = Mathf.SmoothStep(0f, 1f, t);
 
             // Calculate current XP display
-            int gainedXP = Mathf.RoundToInt(levelXP * t);
+            int gainedXP = Mathf.RoundToInt(floorXP * t);
             int currentTotalXP = startXP + gainedXP;
-            int displayXP = currentTotalXP % xpPerLevel;
+            int displayXP = currentTotalXP % xpPerFloor;
 
             // Calculate fill amount
-            float fillAmount = (float)displayXP / xpPerLevel;
+            float fillAmount = (float)displayXP / xpPerFloor;
 
             xpBarFill.fillAmount = fillAmount;
-            xpBarText.text = $"{displayXP} / {xpPerLevel} XP";
+            xpBarText.text = $"{displayXP} / {xpPerFloor} XP";
 
             yield return null;
         }
 
         // Ensure final state
-        int finalDisplayXP = targetXP % xpPerLevel;
-        xpBarFill.fillAmount = (float)finalDisplayXP / xpPerLevel;
-        xpBarText.text = $"{finalDisplayXP} / {xpPerLevel} XP";
+        int finalDisplayXP = targetXP % xpPerFloor;
+        xpBarFill.fillAmount = (float)finalDisplayXP / xpPerFloor;
+        xpBarText.text = $"{finalDisplayXP} / {xpPerFloor} XP";
 
         // Show continue button
         xpBarContinueButton.gameObject.SetActive(true);
