@@ -16,7 +16,7 @@ public class MeleeSwingWeapon : WeaponBase
     [SerializeField] private Animator swingVfxAnimator;
     [SerializeField] private string swingVfxStatePrefix = "SwingVFX";
 
-    public override void Attack(Vector2 direction, LayerMask enemyLayer)
+    public override void Attack(Vector2 direction, LayerMask enemyLayer, Transform target = null)
     {
         if (direction.sqrMagnitude < 0.0001f)
             direction = Vector2.right;
@@ -31,7 +31,23 @@ public class MeleeSwingWeapon : WeaponBase
         Collider2D[] hits = Physics2D.OverlapCircleAll(swingCenter, overlapRadius, enemyLayer);
 
         float cosThreshold = Mathf.Cos((coneAngle * 0.5f) * Mathf.Deg2Rad);
-        float dmg = GetDamage();
+        int enemiesInRange = 0;
+        foreach (var h in hits)
+        {
+            if (!h) continue;
+            Vector2 toEnemy = (Vector2)h.bounds.center - swingCenter;
+            Vector2 toEnemyDir = toEnemy.sqrMagnitude > 0.0001f ? toEnemy.normalized : Vector2.zero;
+            if (Vector2.Dot(direction, toEnemyDir) >= cosThreshold)
+                enemiesInRange++;
+        }
+
+        var runtime = GetComponentInParent<PlayerUpgradeRuntime>();
+        EnemyBase primaryTarget = target ? target.GetComponentInParent<EnemyBase>() : null;
+        var snapshot = runtime != null
+            ? runtime.BuildAttackSnapshot(AttackKind.Melee, transform.position, primaryTarget, enemiesInRange)
+            : default;
+
+        float dmg = snapshot.ApplyTo(GetDamage());
         float kb = GetKnockback();
         int hitCount = 0;
 
@@ -48,17 +64,20 @@ public class MeleeSwingWeapon : WeaponBase
             var damageable = h.GetComponentInParent<IDamageable>();
             if (damageable != null)
             {
-                damageable.TakeHit(dmg, direction, kb);
+                damageable.TakeHit(dmg, direction, kb, new DamageContext(gameObject, transform.root.gameObject, AttackKind.Melee, "melee_attack", triggersOnHitEffects: true));
                 hitCount++;
             }
         }
+
+        runtime?.NotifyAttackPerformed(AttackKind.Melee, snapshot);
         
         EventBus<PlayerMeleeAttackEvent>.Raise(new PlayerMeleeAttackEvent
         {
             Position = swingCenter,
             Direction = direction,
             Damage = dmg,
-            EnemiesHit = hitCount
+            EnemiesHit = hitCount,
+            EnemiesInRange = enemiesInRange
         });
     }
 

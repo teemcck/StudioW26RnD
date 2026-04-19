@@ -11,19 +11,26 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 344ede7d009696a4c83b4c4a6972eaad, type: 3}
   m_Name: Assassin
-  m_EditorClassIdentifier: Assembly-CSharp::UpgradeEffectSO
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeEffectsSO
   upgradeID: Assassin
-  maxStacks: -1
-  scaleWithStacks: 1
+  maxStacks: 1
+  scaleWithStacks: 0
+  traits: []
   effects:
-  - rid: 4994377774330282219
+  - rid: 1001
+  - rid: 1002
   references:
     version: 2
     RefIds:
-    - rid: 4994377774330282219
-      type: {class: PostDashStatEffect, ns: , asm: Assembly-CSharp}
+    - rid: 1001
+      type: {class: PlayerUpgradeModifierEffect, ns: , asm: Assembly-CSharp}
       data:
-        editorNote: Assassin Condtion
-        stat: 5
-        flatBonus: 5
-        duration: 3
+        editorNote: 
+        modifier: 5
+        amount: 0.35
+    - rid: 1002
+      type: {class: PlayerUpgradeModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        editorNote: 
+        modifier: 6
+        amount: 2

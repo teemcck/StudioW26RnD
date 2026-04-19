@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: Whirlwind
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeEffectsSO
   upgradeID: Whirlwind
-  maxStacks: -1
+  maxStacks: 1
   scaleWithStacks: 0
+  traits: []
   effects:
-  - rid: 8721390272822116447
+  - rid: 1008
   references:
     version: 2
     RefIds:
-    - rid: 8721390272822116447
-      type: {class: OnAttackApplyStatusEffect, ns: , asm: Assembly-CSharp}
+    - rid: 1008
+      type: {class: PlayerUpgradeModifierEffect, ns: , asm: Assembly-CSharp}
       data:
         editorNote: 
-        statusEffectId: Swiftness
-        duration: 1
-        maxStacks: 3
+        modifier: 8
+        amount: 1

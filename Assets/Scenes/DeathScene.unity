@@ -658,6 +658,7 @@ GameObject:
   m_Component:
   - component: {fileID: 760739012}
   - component: {fileID: 760739011}
+  - component: {fileID: 760739013}
   m_Layer: 0
   m_Name: DeathMusic
   m_TagString: Untagged
@@ -676,11 +677,11 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 66c8c16b325703d4d8acf930bd97723f, type: 3}
-  m_PlayOnAwake: 1
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 1
+  Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -762,6 +763,47 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &760739013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 760739010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c3f4b04de6c4671a1a6dfbd8bfb6b08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  sourceTemplate: {fileID: 760739011}
+  initialSfxPoolSize: 10
+  musicVolume: 1
+  sfxVolume: 1
+  menuMusic: {fileID: 8300000, guid: 30513b3b185ce7945afe5210d8de180f, type: 3}
+  world1Start: {fileID: 8300000, guid: c7e307f3f887c694abf24afb7f87a3b8, type: 3}
+  world1CalmChords: {fileID: 8300000, guid: 2700320a0d36d994384217623582f91c, type: 3}
+  world1CalmKeys: {fileID: 8300000, guid: 05c92ead7802e09408127b95e0f8bb69, type: 3}
+  world1Chords: {fileID: 8300000, guid: e7207b602e45699409fded162b9788ea, type: 3}
+  world1Keys: {fileID: 8300000, guid: 701c0291b7aa3e0439f5b3f4d31d08b3, type: 3}
+  world1Sidebreak: {fileID: 8300000, guid: f3ae2e9f8d3f19a4781d45b24d7aa38f, type: 3}
+  world1Mutebreak: {fileID: 8300000, guid: e0dafe71ea2635944b5cc7c408bf126f, type: 3}
+  world1Breakdown: {fileID: 8300000, guid: 98730643c1cf3c74ca89e2aa7e65b568, type: 3}
+  world2Start: {fileID: 8300000, guid: cb137beb3fc772c4d8ae9329e63bfdf1, type: 3}
+  world2Chords: {fileID: 8300000, guid: 5a0e182ac3cbdeb47a01250a72652cb4, type: 3}
+  world2Keys: {fileID: 8300000, guid: ff7d7b6e91539ce44a2baada2c5ef509, type: 3}
+  world2Arp: {fileID: 8300000, guid: 94069fa29b769694d9d9fce240e1b7f0, type: 3}
+  world2Crazy: {fileID: 8300000, guid: d653d746ef1ebfe49a9233444937f2c4, type: 3}
+  world2Sidebreak: {fileID: 8300000, guid: 60320145e3f028645bdf5697c05c5169, type: 3}
+  world2Breakdown: {fileID: 8300000, guid: a1f87bec42efeec45a8d55f4f41f73dd, type: 3}
+  world2Waah: {fileID: 8300000, guid: 93f51242e3cc9bb439f1df223e19228d, type: 3}
+  playerHitSfx: {fileID: 0}
+  playerDashSfx: {fileID: 0}
+  playerMeleeSfx: {fileID: 0}
+  playerDeathSfx: {fileID: 0}
+  enemyHitSfx: {fileID: 0}
+  upgradeSelectedSfx: {fileID: 0}
+  uiButtonSfx: {fileID: 0}
+  teleporterEnteredSfx: {fileID: 0}
 --- !u!4 &760739012
 Transform:
   m_ObjectHideFlags: 0

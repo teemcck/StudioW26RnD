@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Central registry and runtime coordinator for the upgrade system.
@@ -54,6 +55,16 @@ public class UpgradeManager : MonoBehaviour
             effect.Tick(ctx, dt);
     }
 
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
     private void BuildMaps()
     {
         _effectMap.Clear();
@@ -81,6 +92,76 @@ public class UpgradeManager : MonoBehaviour
     public bool TryGetEffect(string id, out UpgradeEffectsSO so)  => _effectMap.TryGetValue(id, out so);
     public bool TryGetDisplay(string id, out UpgradeDisplaySO so) => _displayMap.TryGetValue(id, out so);
     public int GetStack(string id) => _stacks.TryGetValue(id, out int s) ? s : 0;
+    public List<UpgradeDisplaySO> GetAppliedUpgradeDisplays()
+    {
+        var results = new List<UpgradeDisplaySO>();
+        foreach (var pair in _stacks)
+        {
+            if (pair.Value <= 0) continue;
+            if (!_displayMap.TryGetValue(pair.Key, out var display) || display == null) continue;
+
+            for (int i = 0; i < pair.Value; i++)
+                results.Add(display);
+        }
+
+        return results;
+    }
+
+    public int GetTotalUpgradeCount()
+    {
+        int total = 0;
+        foreach (var pair in _stacks)
+            total += pair.Value;
+        return total;
+    }
+
+    public int CountUpgradesByMinimumRarity(UpgradeRarity minimumRarity)
+    {
+        int count = 0;
+        foreach (var pair in _stacks)
+        {
+            if (pair.Value <= 0) continue;
+            if (!_displayMap.TryGetValue(pair.Key, out var display)) continue;
+            if (display.rarity < minimumRarity) continue;
+            count += pair.Value;
+        }
+
+        return count;
+    }
+
+    public int CountUpgradesWithTrait(UpgradeTrait trait, string excludeUpgradeId = null)
+    {
+        int count = 0;
+        foreach (var pair in _stacks)
+        {
+            if (pair.Value <= 0) continue;
+            if (pair.Key == excludeUpgradeId) continue;
+            if (!_effectMap.TryGetValue(pair.Key, out var effect)) continue;
+            if (effect.traits == null) continue;
+
+            foreach (var candidate in effect.traits)
+            {
+                if (candidate != trait) continue;
+                count += pair.Value;
+                break;
+            }
+        }
+
+        return count;
+    }
+
+    public bool AreOnlyOtherUpgradesCommon(string excludeUpgradeId = null)
+    {
+        foreach (var pair in _stacks)
+        {
+            if (pair.Value <= 0) continue;
+            if (pair.Key == excludeUpgradeId) continue;
+            if (!_displayMap.TryGetValue(pair.Key, out var display)) continue;
+            if (display.rarity != UpgradeRarity.Common) return false;
+        }
+
+        return true;
+    }
 
     // Public API (upgrade screen)
 
@@ -124,6 +205,7 @@ public class UpgradeManager : MonoBehaviour
 
         var ctx = GetOrBuildContext(player);
         effectSO.Apply(ctx);
+        ctx?.Runtime?.RefreshDynamicModifiers(this);
 
         foreach (var effect in effectSO.effects)
             if (effect != null && effect.NeedsTick)
@@ -140,6 +222,7 @@ public class UpgradeManager : MonoBehaviour
         _stacks[id]--;
         var ctx = GetOrBuildContext(player);
         effectSO.Remove(ctx);
+        ctx?.Runtime?.RefreshDynamicModifiers(this);
 
         _tickingEffects.RemoveAll(pair => effectSO.effects.Contains(pair.effect));
     }
@@ -188,6 +271,7 @@ public class UpgradeManager : MonoBehaviour
         _stacks.Clear();
         _tickingEffects.Clear();
         _cachedContext = null;
+        ctx?.Runtime?.RefreshDynamicModifiers(this);
     }
 
     // Helpers
@@ -213,8 +297,52 @@ public class UpgradeManager : MonoBehaviour
             
             _cachedContext = UpgradeContext.FromScene(player);
             _trackedPlayer = player;
+            playerController = player;
         }
         return _cachedContext;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        var found = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+        if (found.Length == 0)
+            return;
+
+        var nextPlayer = found[0];
+        if (_trackedPlayer == nextPlayer && _cachedContext != null)
+            return;
+
+        playerController = nextPlayer;
+        _trackedPlayer = nextPlayer;
+        _cachedContext = UpgradeContext.FromScene(nextPlayer);
+        ReapplyStacksToTrackedPlayer();
+    }
+
+    private void ReapplyStacksToTrackedPlayer()
+    {
+        if (_cachedContext == null)
+            return;
+
+        _tickingEffects.Clear();
+
+        foreach (var kvp in _stacks)
+        {
+            if (!_effectMap.TryGetValue(kvp.Key, out var effectSO))
+                continue;
+
+            for (int i = 0; i < kvp.Value; i++)
+            {
+                effectSO.Apply(_cachedContext);
+
+                foreach (var effect in effectSO.effects)
+                {
+                    if (effect != null && effect.NeedsTick)
+                        _tickingEffects.Add((effect, _cachedContext));
+                }
+            }
+        }
+
+        _cachedContext.Runtime?.RefreshDynamicModifiers(this);
     }
 
     private static float RarityWeight(UpgradeRarity r) => r switch
@@ -222,6 +350,7 @@ public class UpgradeManager : MonoBehaviour
         UpgradeRarity.Common    => 60f,
         UpgradeRarity.Uncommon  => 25f,
         UpgradeRarity.Rare      => 12f,
+        UpgradeRarity.Epic      =>  6f,
         UpgradeRarity.Legendary =>  3f,
         _                       => 60f
     };

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80d2b54fefacae94d9e920bfe3f41ae3, type: 3}
+  m_Name: Whirlwind
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeDisplaySO
+  upgradeID: Whirlwind
+  upgradeName: Whirlwind
+  upgradeDescription: Every attack grants swiftness for 1 second (stacks up to 3x).
+  cardImage: {fileID: -4178046375966092550, guid: 627272160d5a0a04fb2b841c1dccefc8, type: 3}
+  rarity: 0
+  category: 1

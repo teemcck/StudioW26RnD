@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeDisplaySO
   upgradeID: Berserker
   upgradeName: Berserker
-  upgradeDescription: 
-  cardImage: {fileID: 8703389998563471379, guid: 08ef5b813159c1f4594d11fd7aaad39d, type: 3}
-  rarity: 0
+  upgradeDescription: Deal +1 damage for every health point you are missing.
+  cardImage: {fileID: 4113829005332862926, guid: 622725a604e58c549a337d4d346cfd90, type: 3}
+  rarity: 1
   category: 1

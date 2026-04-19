@@ -13,16 +13,17 @@ MonoBehaviour:
   m_Name: Bulwark
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeEffectsSO
   upgradeID: Bulwark
-  maxStacks: -1
+  maxStacks: 1
   scaleWithStacks: 0
+  traits: []
   effects:
-  - rid: 8721390272822116448
+  - rid: 1004
   references:
     version: 2
     RefIds:
-    - rid: 8721390272822116448
-      type: {class: PerEnemyDamageReductionEffect, ns: , asm: Assembly-CSharp}
+    - rid: 1004
+      type: {class: PlayerUpgradeModifierEffect, ns: , asm: Assembly-CSharp}
       data:
         editorNote: 
-        reductionPerEnemy: 0.1
-        searchRadius: 2
+        modifier: 3
+        amount: 0.1

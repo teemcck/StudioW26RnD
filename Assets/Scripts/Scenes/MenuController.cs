@@ -16,11 +16,13 @@ public class MenuController : MonoBehaviour
 
     public void PlayGame()
     {
+        AudioManager.Instance?.PlayUiButton();
         SceneManager.LoadScene("GameplayLoop");
     }
 
     public void OpenCredits()
     {
+        AudioManager.Instance?.PlayUiButton();
         if (creditsPanel)
             creditsPanel.SetActive(true);
         if (menuPanel)
@@ -29,6 +31,7 @@ public class MenuController : MonoBehaviour
 
     public void CloseCredits()
     {
+        AudioManager.Instance?.PlayUiButton();
         if (creditsPanel)
             creditsPanel.SetActive(false);
         if (menuPanel)
@@ -37,6 +40,7 @@ public class MenuController : MonoBehaviour
 
     public void QuitGame()
     {
+        AudioManager.Instance?.PlayUiButton();
         #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
         #else

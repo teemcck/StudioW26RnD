@@ -53,4 +53,12 @@ public class PlayerDashController : MonoBehaviour
 
         Debug.Log($"Player dashed. Direction: {dashDirection}, Speed: {dashSpeed}, Distance: {dashDistance}");
     }
+
+    public void ReduceRemainingCooldown(float seconds)
+    {
+        if (seconds <= 0f)
+            return;
+
+        _nextDashTime = Mathf.Max(Time.time, _nextDashTime - seconds);
+    }
 }

@@ -1,11 +1,11 @@
 // GAME EVENTS
 // High-level run and session lifecycle events.
 
-/// <summary>Player completed a level and is moving to the next.</summary>
-public struct LevelCompletedEvent
+/// <summary>Player completed a floor and is moving to the next.</summary>
+public struct FloorCompletedEvent
 {
-    public int LevelLength; // Based on randomized number of chunks
-    public int LevelDifficulty; // Based on the rolled difficulty of enemies.
+    public int FloorLength; // Based on randomized number of chunks
+    public int FloorDifficulty; // Based on the rolled difficulty of enemies.
     public float CompletionTimeSeconds;
 }
 
@@ -20,11 +20,11 @@ public struct RoomClearedEvent
     public int    EnemiesKilled;
 }
 
-/// <summary>A new level has been loaded and is ready to play.</summary>
-public struct LevelLoadedEvent
+/// <summary>A new floor has been loaded and is ready to play.</summary>
+public struct FloorLoadedEvent
 {
-    public int LevelIndex;
-    public bool IsFirstLevel;
+    public int FloorIndex;
+    public bool IsFirstFloor;
 }
 
 /// <summary>Player opened the upgrade selection screen.</summary>

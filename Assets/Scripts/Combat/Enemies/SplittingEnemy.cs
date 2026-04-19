@@ -14,7 +14,7 @@ public class SplittingEnemy : MeleeEnemy
 
     public void SetSplitDepth(int depth) => _splitDepth = depth;
 
-    protected override void Die()
+    protected override void Die(DamageContext context = default)
     {
         if (_splitDepth < maxSplitDepth && splitEnemyPrefab)
         {
@@ -31,6 +31,6 @@ public class SplittingEnemy : MeleeEnemy
             }
         }
 
-        Destroy(gameObject);
+        base.Die(context);
     }
 }

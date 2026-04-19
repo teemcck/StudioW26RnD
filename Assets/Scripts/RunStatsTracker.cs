@@ -9,26 +9,27 @@ public class RunStatsTracker : MonoBehaviour
     public int TotalXP               { get; private set; }
 
     private IEventBinding<EnemyKilledEvent>     _killBinding;
-    private IEventBinding<LevelCompletedEvent>  _levelBinding;
+    private IEventBinding<FloorCompletedEvent>  _floorBinding;
     private IEventBinding<PlayerDiedEvent>      _deathBinding;
 
     private void Awake()
     {
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     private void OnEnable()
     {
         _killBinding  = EventBus<EnemyKilledEvent>.Register(OnEnemyKilled);
-        _levelBinding = EventBus<LevelCompletedEvent>.Register(OnLevelCompleted);
+        _floorBinding = EventBus<FloorCompletedEvent>.Register(OnFloorCompleted);
         _deathBinding = EventBus<PlayerDiedEvent>.Register(OnPlayerDied);
     }
 
     private void OnDisable()
     {
         EventBus<EnemyKilledEvent>.Unsubscribe(_killBinding);
-        EventBus<LevelCompletedEvent>.Unsubscribe(_levelBinding);
+        EventBus<FloorCompletedEvent>.Unsubscribe(_floorBinding);
         EventBus<PlayerDiedEvent>.Unsubscribe(_deathBinding);
     }
 
@@ -47,9 +48,9 @@ public class RunStatsTracker : MonoBehaviour
         Debug.Log($"XP added: {amount}, Total XP: {TotalXP}");
     }
 
-    private void OnLevelCompleted(LevelCompletedEvent evt)
+    private void OnFloorCompleted(FloorCompletedEvent evt)
     {
-        Debug.Log($"Level complete - kills this run: {TotalKillsThisRun}, " +
+        Debug.Log($"Floor complete - kills this run: {TotalKillsThisRun}, " +
                   $"time: {TotalTimeSeconds:F1}s, total XP: {TotalXP}");
     }
 

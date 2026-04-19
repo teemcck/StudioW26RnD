@@ -1960,7 +1960,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameplayHandler
   mapSpawner: {fileID: 1306030232}
-  levelUI: {fileID: 1985775243}
+  floorUI: {fileID: 1985775243}
   playerPrefab: {fileID: 157006395687664069, guid: 437290eb29e6e99468b91827e51d4b7e, type: 3}
   camera: {fileID: 1270838601}
   minDifficulty: 1
@@ -3243,7 +3243,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelUI
   previewPanel: {fileID: 625663645}
-  previewLevelIndexText: {fileID: 593308521}
+  previewFloorIndexText: {fileID: 593308521}
   previewDifficultyText: {fileID: 724588344}
   previewLengthText: {fileID: 812795666}
   previewBeginButton: {fileID: 1411585491}

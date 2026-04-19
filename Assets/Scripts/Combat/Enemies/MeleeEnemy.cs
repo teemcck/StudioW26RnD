@@ -17,21 +17,24 @@ public class MeleeEnemy : EnemyBase
         if (dist > attackRange)
         {
             Vector2 dir = toPlayer.sqrMagnitude > 0.0001f ? toPlayer.normalized : Vector2.zero;
-            Rb.AddForce(dir * moveSpeed, ForceMode2D.Force);
+            Rb.AddForce(dir * EffectiveMoveSpeed, ForceMode2D.Force);
         }
         else
         {
-            TryDealContactDamage(Player, contactDamage, attackCooldown, 0f, true, toPlayer);
+            float cooldown = attackCooldown / Mathf.Max(0.1f, EffectiveAttackSpeedMultiplier);
+            TryDealContactDamage(Player, contactDamage, cooldown, 0f, true, toPlayer);
         }
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        TryDealContactDamage(collision.collider, contactDamage, attackCooldown, 0f);
+        float cooldown = attackCooldown / Mathf.Max(0.1f, EffectiveAttackSpeedMultiplier);
+        TryDealContactDamage(collision.collider, contactDamage, cooldown, 0f);
     }
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        TryDealContactDamage(other, contactDamage, attackCooldown, 0f);
+        float cooldown = attackCooldown / Mathf.Max(0.1f, EffectiveAttackSpeedMultiplier);
+        TryDealContactDamage(other, contactDamage, cooldown, 0f);
     }
 }
