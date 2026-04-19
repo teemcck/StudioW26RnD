@@ -327,7 +327,7 @@ public sealed class WormBossController : EnemyBase
         _phaseTransitionActive = false;
         _phaseChangePending = false;
     }
-
+    
     private void Update()
     {
         if (IsDead || _state == InternalState.Dead) return;
@@ -1467,7 +1467,7 @@ public sealed class WormBossController : EnemyBase
     }
 
 
-    public override void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce)
+    public override void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce, DamageContext context = default)
     {
         if (IsDead || _state == InternalState.Dead) return;
         if (_introActive) return;
@@ -1514,7 +1514,7 @@ public sealed class WormBossController : EnemyBase
 
         ResolveBossAudio()?.PlayBossDamageSfx();
         float healthBarNormBeforeHpHit = HealthNormalized;
-        base.TakeHit(damage, knockbackDirection, knockbackForce);
+        base.TakeHit(damage, knockbackDirection, knockbackForce, context);
         if (IsDead)
         {
             _deathHealthBarDrainFromNormalized = healthBarNormBeforeHpHit;
@@ -1657,7 +1657,7 @@ public sealed class WormBossController : EnemyBase
         spriteRenderer.transform.localRotation = _spriteVisualBaseLocalRot;
     }
 
-    protected override void Die()
+    protected override void Die(DamageContext context = default)
     {
         if (_state == InternalState.Dead) return;
         _state = InternalState.Dead;
@@ -1679,10 +1679,10 @@ public sealed class WormBossController : EnemyBase
         DisableStunVisual();
         ResetSpriteVisualLocalIfChild();
         DestroyActiveIndicator();
-        StartCoroutine(DeathRoutine());
+        StartCoroutine(DeathRoutine(context));
     }
 
-    private IEnumerator DeathRoutine()
+    private IEnumerator DeathRoutine(DamageContext context)
     {
         SetUndergroundVisuals(false);
         if (_rb) _rb.linearVelocity = Vector2.zero;
@@ -1795,7 +1795,7 @@ public sealed class WormBossController : EnemyBase
         if (postBossTeleporter && escapeSequenceManager)
             escapeSequenceManager.BeginEscapePhase();
 
-        base.Die();
+        base.Die(context);
     }
 
     private void HideBossAfterDeathVisuals()
@@ -2208,27 +2208,14 @@ public sealed class WormBossController : EnemyBase
         yield return new WaitForSeconds(scaled);
     }
 
-    public override void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce)
-    {
-        if (_invulnerable) return;
-        base.TakeHit(damage, knockbackDirection, knockbackForce);
-    }
-
-<<<<<<< HEAD
-    protected override void Die()
-=======
-    protected override void Die(DamageContext context = default)
->>>>>>> 65583fce3e2d136eb3149ec4bd4eef5964c7a17d
-    {
-        _state = BossState.Dead;
-        if (healthBarUI)
-            healthBarUI.HideBar();
-        ClearTelegraphs();
-        base.Die();
-    }
-
     private void UpdateTrackedIndicatorCenter(Vector2 center)
     {
+        _state = BossState.Dead;
+        if(healthBarUI){
+            healthBarUI.HideBar();
+        }
+        ClearTelegraphs();
+        base.Die(context);
         if (!_trackedIndicator) return;
         _trackedIndicator.UpdateCenter(center);
     }
