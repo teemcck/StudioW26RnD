@@ -1060,7 +1060,7 @@ TextureImporter:
       - - {x: 16, y: 8}
         - {x: 0, y: 16}
         - {x: -16, y: 8}
-        - {x: 0, y: -1}
+        - {x: 1, y: -1}
       tessellationDetail: 0
       bones: []
       spriteID: e169ded1e5329124aa0582f1e6ba1a33
@@ -1135,10 +1135,10 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape:
-      - - {x: 16, y: 7}
-        - {x: 1, y: 15}
-        - {x: -15, y: -7}
-        - {x: 0, y: -15}
+      - - {x: 16, y: 9}
+        - {x: 0, y: 16}
+        - {x: -16, y: -8}
+        - {x: 0, y: -16}
       tessellationDetail: 0
       bones: []
       spriteID: c9f3f0bb486089a40b9d490a7974ffc0

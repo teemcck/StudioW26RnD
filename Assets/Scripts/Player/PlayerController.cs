@@ -36,6 +36,18 @@ public class PlayerController : MonoBehaviour
     public Vector2 LastMoveDirection { get; private set; } = Vector2.right;
     public bool IsControlLocked => _isDead || Time.time < _controlLockUntil;
 
+    public void LockControlsForSeconds(float seconds)
+    {
+        if (_isDead) return;
+        _controlLockUntil = Mathf.Max(_controlLockUntil, Time.time + Mathf.Max(0f, seconds));
+    }
+
+    public void UnlockControlsImmediate()
+    {
+        if (_isDead) return;
+        _controlLockUntil = 0f;
+    }
+
     private void Awake()
     {
         if (!rb) rb = GetComponent<Rigidbody2D>();

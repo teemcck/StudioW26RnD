@@ -12,7 +12,9 @@ GameObject:
   - component: {fileID: 990070003}
   - component: {fileID: 990070004}
   - component: {fileID: 990070005}
+  - component: {fileID: 990070008}
   - component: {fileID: 990070006}
+  - component: {fileID: 990070009}
   - component: {fileID: 990070007}
   m_Layer: 7
   m_Name: WormBoss
@@ -85,8 +87,8 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 2063359332131475940, guid: 1631eaa6336814f3eab0c9a51d6d337d, type: 3}
-  m_Color: {r: 0.85, g: 1, b: 0.8, a: 1}
+  m_Sprite: {fileID: -1242788018982281482, guid: 140242fadb18049269bd32ae52a90da6, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -120,8 +122,8 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 4
+  m_CollisionDetection: 1
+  m_Constraints: 7
 --- !u!70 &990070005
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -157,8 +159,30 @@ CapsuleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.95, y: 1.2}
+  m_Size: {x: 0.84, y: 0.83}
   m_Direction: 0
+--- !u!95 &990070008
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990070001}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 8a1b07c24e6f40a4b5c0d0be9f1abc01, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &990070006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -171,66 +195,129 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f7e98c1f54e4e60afb1d56f0176e64c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WormBossController
-  maxHealth: 350
+  maxHealth: 500
   weight: 4
   moveSpeed: 2.5
   damageFlash: {fileID: 990070007}
+  minHitReactionDuration: 0.05
+  maxHitReactionDuration: 0.12
+  showHitPulse: 1
+  hitPulseColor: {r: 1, g: 0.9, b: 0.35, a: 0.9}
+  hitPulseDuration: 0.11
+  hitPulseStartScale: 0.6
+  hitPulseEndScale: 1.2
+  hitPulseSortingOrderBoost: 2
+  animator: {fileID: 990070008}
+  spriteRenderer: {fileID: 990070003}
   baseTilemap: {fileID: 0}
   decorationTilemap: {fileID: 0}
   playerLayerMask:
     serializedVersion: 2
     m_Bits: 8
-  repositionSpeed: 2.4
-  preferredDistance: 3.2
-  repositionDuration: 1.2
-  contactDamage: 8
-  contactTickInterval: 0.55
-  laser:
-    telegraphTime: 1.1
-    activeTime: 0.26
-    cooldownTime: 0.65
-    damage: 24
-  laserTileRadius: 0.42
-  laserMaxRangeTiles: 8
-  swipe:
-    telegraphTime: 0.85
-    activeTime: 0.18
-    cooldownTime: 0.55
-    damage: 18
-  swipeRange: 2.2
-  swipeHalfArcDegrees: 38
-  swipeChainAtLowHp: 2
-  dig:
-    telegraphTime: 0.95
-    activeTime: 0.2
-    cooldownTime: 0.8
-    damage: 30
-  digStrikeRadius: 0.65
-  digTravelTime: 0.7
-  digUndergroundAlpha: 0.15
-  enableBurrowTrail: 1
-  burrowTrail:
-    telegraphTime: 0.7
-    activeTime: 0.2
-    cooldownTime: 0.7
-    damage: 14
-  burrowTrailSteps: 5
-  burrowTrailSpacing: 0.9
-  burrowTrailRadius: 0.45
-  phaseTwoThreshold: 0.7
-  phaseThreeThreshold: 0.35
-  phaseTwoAttackSpeedMultiplier: 1.1
-  phaseThreeAttackSpeedMultiplier: 1.25
-  laserTelegraphColor: {r: 1, g: 0.2, b: 0.2, a: 0.55}
-  laserDamageColor: {r: 1, g: 0.35, b: 0.1, a: 0.85}
-  swipeTelegraphColor: {r: 1, g: 0.65, b: 0.2, a: 0.5}
-  swipeDamageColor: {r: 1, g: 0.8, b: 0.2, a: 0.85}
-  digTelegraphColor: {r: 0.45, g: 0.95, b: 1, a: 0.58}
-  digDamageColor: {r: 0.55, g: 1, b: 1, a: 0.92}
-  burrowTrailTelegraphColor: {r: 0.84, g: 0.4, b: 1, a: 0.5}
-  burrowTrailDamageColor: {r: 0.98, g: 0.6, b: 1, a: 0.9}
   healthBarUI: {fileID: 0}
-  bossDisplayName: Worm Core
+  postBossTeleporter: {fileID: 0}
+  postBossTeleporterPan: {fileID: 0}
+  bossAudioManager: {fileID: 0}
+  indicatorBaseSprite: {fileID: -5417322001271303852, guid: fe835183345284c7a86007c6a55a5c5a, type: 3}
+  indicatorImminentSprite: {fileID: -3013933009502078975, guid: a83bd65ed6ec9428596c5c6be8f9e9a5, type: 3}
+  indicatorBaseColor: {r: 1, g: 1, b: 1, a: 0.82}
+  indicatorImminentColor: {r: 1, g: 1, b: 1, a: 0.95}
+  indicatorSortingOrder: 42
+  indicatorSortingLayerName: 
+  phaseTwoHp: 0.66
+  phaseThreeHp: 0.33
+  maxShieldByPhase:
+  - 42
+  - 50
+  - 58
+  shieldRegenIdleSeconds: 5
+  shieldRegenFillSeconds: 5
+  shieldPingColor: {r: 0.42, g: 0.78, b: 1, a: 1}
+  shieldPingDuration: 0.18
+  damageStunDuration: 0.32
+  phaseTransitionCamera: {fileID: 0}
+  phaseTransitionShieldFillPhase2: 0.95
+  phaseTransitionShieldFillPhase3: 1.35
+  phaseTransitionLaserHoldAfterShieldPhase2: 0.4
+  phaseTransitionLaserHoldAfterShieldPhase3: 0.65
+  phaseTransitionShakeEnterPhase2: 0.38
+  phaseTransitionShakeEnterPhase3: 0.62
+  phaseTransitionShakeResume: 0.14
+  undergroundSpeed: 3.2
+  rubbleTrailInterval: 0.08
+  rubbleColor: {r: 0.48, g: 0.32, b: 0.18, a: 0.82}
+  idleTimeAfterAttackByPhase:
+  - 2
+  - 1.4
+  - 0.9
+  repositionChanceByPhase:
+  - 0.25
+  - 0.45
+  - 0.7
+  minRepositionDistance: 2.2
+  maxRepositionDistance: 6
+  repositionIdealPlayerDistance: 1.85
+  phaseThreeChainChance: 0.35
+  phaseThreeChainCooldownMultiplier: 1.35
+  shieldRegenSeekThreshold: 0.2
+  repositionEmergeDamage: 10
+  repositionEmergeRadius: 0.85
+  spriteFacesRightByDefault: 0
+  minFlipInterval: 0.25
+  flipThreshold: 0.25
+  meleeRange: 2.2
+  meleeArcDegrees: 70
+  meleeDamage: 18
+  meleeFramesBeforeWait: 0.42
+  meleeChargeWait: 0.33
+  meleeStrikeDuration: 0.12
+  meleeRecoveryDuration: 0.13
+  meleeImminentFraction: 0.3
+  bossProjectilePrefab: {fileID: 7200010000, guid: 6b1cf93e4a8a44d7b4e3d12c1a9f7a55, type: 3}
+  shootFramesBeforeWait: 0.42
+  shootChargeWait: 0.33
+  shootRecoveryDuration: 0.25
+  shootSpreadPhase2: 18
+  shootSpreadPhase3: 22
+  shootBurstIntervalPhase3: 0.18
+  shootBulletsPhase2: 3
+  shootBulletsPhase3: 3
+  digTrackDuration: 0.9
+  digLockDuration: 0.35
+  digStrikeRadius: 1.05
+  digDamage: 24
+  digRiseDamageNormalizedTime: 0.22
+  bossLaserBeamPrefab: {fileID: 7250010000, guid: 55eeff2233445566778899aabbbcccdd, type: 3}
+  laserChargeDuration: 0.66
+  laserFireDuration: 0.72
+  laserRecoveryDuration: 0.35
+  laserDamage: 22
+  laserBeamLength: 7.5
+  laserMinBeamLength: 0.35
+  laserStretchSegmentCount: 18
+  laserSegmentStripeWidth: 0.42
+  laserTipHitRadius: 0.48
+  laserChargeStripeWidth: 0.55
+  laserSegmentImminentLead: 0.35
+  laserRowFadeDuration: 0.14
+  laserBeamColor: {r: 1, g: 1, b: 1, a: 1}
+  laserMouthOffset: {x: 0.4, y: 0.05}
+  laserBetweenSweepPause: 0.22
+  riseRubbleColor: {r: 0.55, g: 0.38, b: 0.22, a: 0.92}
+  waitForExternalCutscene: 0
+--- !u!114 &990070009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990070001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a22f4fccdd51d4209beedfea17d698b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WormBossRoomIntro
+  bossAudioManager: {fileID: 0}
 --- !u!114 &990070007
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -16,6 +16,7 @@ public class SimpleProjectile : MonoBehaviour
     [SerializeField] private LayerMask hitMask;
 
     private Rigidbody2D _rb;
+    private Animator _animator;
     private Vector2 _dir;
     private float _animTimer;
     private int _animFrame;
@@ -25,6 +26,7 @@ public class SimpleProjectile : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
         if (!spriteRenderer)
             spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _animator = GetComponent<Animator>();
     }
 
     public void Fire(Vector2 direction)
@@ -51,6 +53,8 @@ public class SimpleProjectile : MonoBehaviour
 
     private void AnimateFlight()
     {
+        if (_animator && _animator.runtimeAnimatorController != null)
+            return;
         if (spriteRenderer == null || flightAnimationSprites == null || flightAnimationSprites.Length == 0)
             return;
 

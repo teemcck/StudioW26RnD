@@ -5,233 +5,425 @@ using UnityEngine.Tilemaps;
 
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(Rigidbody2D))]
 public sealed class WormBossController : EnemyBase
 {
-    private enum BossState
+    public enum BossAttackType
     {
+        Melee,
+        Shoot,
+        Dig,
+        Laser
+    }
+
+    private enum InternalState
+    {
+        Initializing,
         Idle,
-        Repositioning,
-        Telegraphing,
         Attacking,
-        Recovering,
-        Underground,
+        Stunned,
+        Repositioning,
         Dead
     }
 
-    private enum AttackType
-    {
-        LaserCross,
-        Swipe,
-        Dig,
-        BurrowTrail
-    }
+    private const string StateIdle = "BossWorm_Idle";
+    private const string StateShoot = "BossWorm_Shoot";
+    private const string StateMelee = "BossWorm_Melee";
+    private const string StateDigging = "BossWorm_Digging";
+    private const string StateRising = "BossWorm_Rising";
+    private const string StateLaserCharge = "BossWorm_LaserCharge";
+    private const string StateLaserFire = "BossWorm_LaserFire";
+    private const string StatePhaseChange = "BossWorm_PhaseChange";
+    private const string StateDamage = "BossWorm_Damage";
+    private const string StateDying = "BossWorm_Dying";
 
-    private enum LaserPattern
-    {
-        Plus,
-        DiagonalX,
-        Combined
-    }
-
-    [System.Serializable]
-    private struct AttackNumbers
-    {
-        public float telegraphTime;
-        public float activeTime;
-        public float cooldownTime;
-        public float damage;
-    }
-
-    [Header("Arena References")]
+    [Header("References")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Tilemap baseTilemap;
     [SerializeField] private Tilemap decorationTilemap;
     [SerializeField] private LayerMask playerLayerMask;
-
-    [Header("Boss Movement")]
-    [SerializeField] private float repositionSpeed = 2.4f;
-    [SerializeField] private float preferredDistance = 3.2f;
-    [SerializeField] private float repositionDuration = 1.2f;
-    [SerializeField] private bool enablePassiveContactDamage = false;
-    [SerializeField] private float contactDamage = 4f;
-    [SerializeField] private float contactTickInterval = 0.65f;
-    [SerializeField] private float perTargetContactGrace = 1.1f;
-
-    [Header("Laser Attack")]
-    [SerializeField] private AttackNumbers laser = new AttackNumbers
-    {
-        telegraphTime = 1.1f,
-        activeTime = 0.26f,
-        cooldownTime = 0.65f,
-        damage = 24f
-    };
-    [SerializeField] private float laserTileRadius = 0.42f;
-    [SerializeField] private int laserMaxRangeTiles = 8;
-
-    [Header("Swipe Attack")]
-    [SerializeField] private AttackNumbers swipe = new AttackNumbers
-    {
-        telegraphTime = 0.85f,
-        activeTime = 0.18f,
-        cooldownTime = 0.55f,
-        damage = 18f
-    };
-    [SerializeField] private float swipeRange = 2.2f;
-    [SerializeField] private float swipeHalfArcDegrees = 38f;
-    [SerializeField] private int swipeChainAtLowHp = 2;
-
-    [Header("Dig Attack")]
-    [SerializeField] private AttackNumbers dig = new AttackNumbers
-    {
-        telegraphTime = 0.95f,
-        activeTime = 0.2f,
-        cooldownTime = 0.8f,
-        damage = 30f
-    };
-    [SerializeField] private float digStrikeRadius = 0.65f;
-    [SerializeField] private float digTravelTime = 0.7f;
-    [SerializeField] private float digUndergroundAlpha = 0.15f;
-
-    [Header("Extra Attack - Burrow Trail")]
-    [SerializeField] private bool enableBurrowTrail = true;
-    [SerializeField] private AttackNumbers burrowTrail = new AttackNumbers
-    {
-        telegraphTime = 0.7f,
-        activeTime = 0.2f,
-        cooldownTime = 0.7f,
-        damage = 14f
-    };
-    [SerializeField] private int burrowTrailSteps = 5;
-    [SerializeField] private float burrowTrailSpacing = 0.9f;
-    [SerializeField] private float burrowTrailRadius = 0.45f;
-
-    [Header("Phase Thresholds")]
-    [SerializeField] private float phaseTwoThreshold = 0.7f;
-    [SerializeField] private float phaseThreeThreshold = 0.35f;
-    [SerializeField] private float phaseTwoAttackSpeedMultiplier = 1.1f;
-    [SerializeField] private float phaseThreeAttackSpeedMultiplier = 1.25f;
-
-    [Header("Telegraph Colors")]
-    [SerializeField] private Color laserTelegraphColor = new Color(1f, 0.2f, 0.2f, 0.55f);
-    [SerializeField] private Color laserDamageColor = new Color(1f, 0.35f, 0.1f, 0.85f);
-    [SerializeField] private Color swipeTelegraphColor = new Color(1f, 0.65f, 0.2f, 0.5f);
-    [SerializeField] private Color swipeDamageColor = new Color(1f, 0.8f, 0.2f, 0.85f);
-    [SerializeField] private Color digTelegraphColor = new Color(0.45f, 0.95f, 1f, 0.58f);
-    [SerializeField] private Color digDamageColor = new Color(0.55f, 1f, 1f, 0.92f);
-    [SerializeField] private Color burrowTrailTelegraphColor = new Color(1f, 0.78f, 0.28f, 0.5f);
-    [SerializeField] private Color burrowTrailDamageColor = new Color(1f, 0.92f, 0.35f, 0.9f);
-    [SerializeField] private Color telegraphOutlineColor = new Color(1f, 1f, 1f, 0.95f);
-    [SerializeField] private float telegraphCellScale = 0.92f;
-    [SerializeField] private float telegraphOutlineThickness = 0.075f;
-    [SerializeField] private bool enableTelegraphParticles = false;
-    [SerializeField] private float particleScaleMultiplier = 0.62f;
-    [SerializeField] private int telegraphParticleCellCap = 9;
-
-    [Header("UI")]
     [SerializeField] private BossHealthBarUI healthBarUI;
-    [SerializeField] private string bossDisplayName = "Worm Core";
+    [SerializeField] private GameObject postBossTeleporter;
+    [SerializeField] private Transform postBossTeleporterPan;
+    [SerializeField] private BossAudioManager bossAudioManager;
+
+    [Header("Telegraph")]
+    [SerializeField] private Sprite indicatorBaseSprite;
+    [SerializeField] private Sprite indicatorImminentSprite;
+    [SerializeField] private Color indicatorBaseColor = new Color(1f, 1f, 1f, 0.82f);
+    [SerializeField] private Color indicatorImminentColor = new Color(1f, 1f, 1f, 0.95f);
+    [SerializeField] private int indicatorSortingOrder = 42;
+    [SerializeField] private string indicatorSortingLayerName = "";
+
+    [Header("Phase & shield")]
+    [SerializeField] private float phaseTwoHp = 0.64f;
+    [SerializeField] private float phaseThreeHp = 0.31f;
+
+    [SerializeField] private float[] maxShieldByPhase = { 50f, 80f, 120f };
+    [SerializeField] private float shieldRegenIdleSeconds = 5f;
+    [SerializeField] private float shieldRegenFillSeconds = 5f;
+    [SerializeField] private Color shieldPingColor = new Color(0.42f, 0.78f, 1f, 1f);
+    [SerializeField] private float shieldPingDuration = 0.18f;
+    [SerializeField] private float damageStunDuration = 0.32f;
+
+    [Header("Shield break stun")]
+    [SerializeField] private float shieldBreakStunDuration = 2f;
+    [SerializeField] private float shieldBreakKnockbackForce = 4.05f;
+    [SerializeField] private float shieldBreakCameraShake = 0.24f;
+    [SerializeField] private float shieldBreakWobbleDegrees = 4.6f;
+    [SerializeField] private float shieldBreakChildWobbleX = 0.058f;
+    [SerializeField] private float shieldBreakChildWobbleY = 0.042f;
+    [SerializeField] private float shieldBreakChildWobbleDegrees = 4.5f;
+
+    [Header("Phase transition")]
+    [SerializeField] private CameraController phaseTransitionCamera;
+    [SerializeField] private float phaseTransitionShieldFillPhase2 = 0.95f;
+    [SerializeField] private float phaseTransitionShieldFillPhase3 = 1.35f;
+    [SerializeField] private float phaseTransitionLaserHoldAfterShieldPhase2 = 0.4f;
+    [SerializeField] private float phaseTransitionLaserHoldAfterShieldPhase3 = 0.65f;
+    [SerializeField] private float phaseTransitionShakeEnterPhase2 = 0.38f;
+    [SerializeField] private float phaseTransitionShakeEnterPhase3 = 0.62f;
+    [SerializeField] private float phaseTransitionShakeResume = 0.14f;
+
+    [Header("Cutscene")]
+    [SerializeField] private bool waitForExternalCutscene;
+
+    [Header("Death cutscene")]
+    [SerializeField] private float deathPanPlayerToBossSeconds = 1.25f;
+    [SerializeField] private float deathHealthBarFadeSeconds = 1f;
+    [SerializeField] private float deathHealthDrainSeconds = 0.45f;
+    [SerializeField] private float deathPanBossToTeleporterSeconds = 1.25f;
+    [SerializeField] private float deathTeleporterFadeSeconds = 1f;
+    [SerializeField] private float deathPanTeleporterToPlayerSeconds = 1.25f;
+    [SerializeField] private BossEscapeSequenceManager escapeSequenceManager;
+    [Header("Movement")]
+    [SerializeField] private float undergroundSpeed = 3.2f;
+    [SerializeField] private float rubbleTrailInterval = 0.08f;
+    [SerializeField] private Color rubbleColor = new Color(0.48f, 0.32f, 0.18f, 0.82f);
+    [SerializeField] private int rubbleSortingOrder = 50;
+    [SerializeField] private float[] idleTimeAfterAttackByPhase = { 2.0f, 1.4f, 0.9f };
+    [SerializeField] private float[] repositionChanceByPhase = { 0.25f, 0.45f, 0.7f };
+    [SerializeField] private float minRepositionDistance = 2.2f;
+    [SerializeField] private float maxRepositionDistance = 6f;
+    [SerializeField] private float repositionIdealPlayerDistance = 1.85f;
+    [SerializeField] private float phaseThreeChainChance = 0.35f;
+    [SerializeField] private float phaseThreeChainCooldownMultiplier = 1.35f;
+    [Range(0f, 1f)]
+    [SerializeField] private float shieldRegenSeekThreshold = 0.2f;
+    [SerializeField] private float repositionEmergeDamage = 10f;
+    [SerializeField] private float repositionEmergeRadius = 0.85f;
+    [SerializeField] private float baseArenaEdgePadding = 0.52f;
+    [SerializeField] private bool spriteFacesRightByDefault = false;
+    [SerializeField] private float minFlipInterval = 0.25f;
+    [SerializeField] private float flipThreshold = 0.25f;
+
+    [Header("Combat")]
+    [SerializeField] private float meleeRange = 2.2f;
+    [SerializeField] private float meleeArcDegrees = 70f;
+    [SerializeField] private float meleeDamage = 18f;
+    [SerializeField] private float meleeFramesBeforeWait = 0.42f;
+    [SerializeField] private float meleeChargeWait = 0.33f;
+    [SerializeField] private float meleeStrikeDuration = 0.12f;
+    [SerializeField] private float meleeRecoveryDuration = 0.13f;
+    [SerializeField] private float meleeImminentFraction = 0.3f;
+
+    [SerializeField] private GameObject bossProjectilePrefab;
+    [SerializeField] private float shootFramesBeforeWait = 0.42f;
+    [SerializeField] private float shootChargeWait = 0.33f;
+    [SerializeField] private float shootRecoveryDuration = 0.25f;
+    [SerializeField] private float shootSpreadPhase2 = 18f;
+    [SerializeField] private float shootSpreadPhase3 = 22f;
+    [SerializeField] private float shootBurstIntervalPhase3 = 0.18f;
+    [SerializeField] private int shootBulletsPhase2 = 3;
+    [SerializeField] private int shootBulletsPhase3 = 3;
+
+    [SerializeField] private float digTrackDuration = 0.9f;
+    [SerializeField] private float digLockDuration = 0.35f;
+    [SerializeField] private float digStrikeRadius = 1.05f;
+    [SerializeField] private float digDamage = 24f;
+    [SerializeField] private float digRiseDamageNormalizedTime = 0.22f;
+
+    [SerializeField] private GameObject bossLaserBeamPrefab;
+    [SerializeField] private float laserChargeDuration = 0.66f;
+    [SerializeField] private float laserFireDuration = 0.72f;
+    [SerializeField] private float laserRecoveryDuration = 0.35f;
+    [SerializeField] private float laserDamage = 22f;
+    [SerializeField] private float laserBeamLength = 7.5f;
+    [SerializeField] private float laserMinBeamLength = 0.35f;
+    [SerializeField] private int laserStretchSegmentCount = 18;
+    [SerializeField] private float laserSegmentStripeWidth = 0.42f;
+    [SerializeField] private float laserTipHitRadius = 0.48f;
+    [SerializeField] private float laserChargeStripeWidth = 0.55f;
+    [SerializeField] private float laserSegmentImminentLead = 0.35f;
+    [SerializeField] private float laserRowFadeDuration = 0.14f;
+    [SerializeField] private Color laserBeamColor = new Color(1f, 0.3f, 0.2f, 0.95f);
+    [SerializeField] private Vector2 laserMouthOffset = new Vector2(0.4f, 0.05f);
+    [SerializeField] private float laserBetweenSweepPause = 0.22f;
+
+    [SerializeField] private Color riseRubbleColor = new Color(0.55f, 0.38f, 0.22f, 0.92f);
 
     private readonly List<Vector3Int> _walkableCells = new();
     private readonly HashSet<Vector3Int> _walkableCellSet = new();
-    private readonly List<GameObject> _activeTelegraphs = new();
-    private readonly Dictionary<int, float> _contactCooldownByTarget = new();
+    private readonly List<Vector3Int> _pathScratch = new();
 
-    private BossState _state = BossState.Idle;
-    private AttackType _lastAttack = AttackType.LaserCross;
-    private SpriteRenderer _spriteRenderer;
+    private float _arenaMinX;
+    private float _arenaMaxX;
+    private float _arenaMinY;
+    private float _arenaMaxY;
+    private bool _arenaClampReady;
+    private Vector2 _pivotHalfExtentsWorld;
+
+    private BossAudioManager _bossAudioCached;
+
+    private Rigidbody2D _rb;
     private Collider2D _mainCollider;
-    private Coroutine _behaviorRoutine;
-    private bool _invulnerable;
-    private float _nextContactDamageTime;
-    private float _cachedBaseAlpha = 1f;
+    private float _baseAlpha = 1f;
+    private Vector3 _baseScale = Vector3.one;
     private int _lastObservedPhase = 1;
+    private int _sortingLayerId;
 
-    private static Sprite s_whiteSprite;
-    private static Material s_telegraphMaterial;
+    private float _currentShield;
+    private float _lastShieldDamageTime;
+    private bool _shieldBroken;
 
-    private int CurrentPhase
+    private Coroutine _behaviorRoutine;
+    private Coroutine _attackRoutine;
+    private Coroutine _damageRoutine;
+    private readonly List<BossAttackIndicator> _activeIndicators = new();
+    private BossAttackIndicator _trackedIndicator;
+    private InternalState _state = InternalState.Initializing;
+    private BossAttackType _currentAttack;
+    private bool _attackActive;
+    private BossAttackType _lastAttack = BossAttackType.Melee;
+    private bool _digInvulnerable;
+    private bool _immuneDuringDigMove;
+    private bool _isStunned;
+    private float _lastFlipTime = -999f;
+
+    private Coroutine _shieldPingRoutine;
+    private Color _shieldPingBaseColor = Color.white;
+    private GameObject _activeBossLaserBeam;
+    private bool _wormAnimatorHeldOnLaserFireFrame;
+    private bool _wormAnimatorHeldOnPhaseChangeFrame;
+    private readonly List<BossAttackIndicator> _laserStretchSegments = new();
+    private bool[] _laserRowFadeStarted;
+
+    private bool _phaseTransitionActive;
+    private Coroutine _phaseTransitionRoutine;
+    private bool _phaseChangePending;
+    private int _queuedNewPhase = 1;
+    private bool _introActive;
+
+    private Coroutine _repositionRoutine;
+
+    private Coroutine _shieldBreakFeedbackRoutine;
+    private Vector3 _spriteVisualBaseLocal;
+    private Quaternion _spriteVisualBaseLocalRot = Quaternion.identity;
+    private bool _spriteVisualIsChild;
+    private float _deathHealthBarDrainFromNormalized = 1f;
+
+    public int CurrentPhase
     {
         get
         {
-            if (HealthNormalized <= phaseThreeThreshold) return 3;
-            if (HealthNormalized <= phaseTwoThreshold) return 2;
+            if (HealthNormalized <= phaseThreeHp) return 3;
+            if (HealthNormalized <= phaseTwoHp) return 2;
             return 1;
         }
     }
 
+    public float CurrentShieldNormalized => GetMaxShieldForCurrentPhase() <= 0.0001f ? 0f : Mathf.Clamp01(_currentShield / GetMaxShieldForCurrentPhase());
+
+    public bool WaitForExternalCutscene => waitForExternalCutscene;
+
     protected override void Awake()
     {
         base.Awake();
-        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _rb = GetComponent<Rigidbody2D>();
         _mainCollider = GetComponent<Collider2D>();
-        if (_spriteRenderer) _cachedBaseAlpha = _spriteRenderer.color.a;
+        if (!animator) animator = GetComponent<Animator>();
+        if (!spriteRenderer) spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer)
+        {
+            _baseAlpha = spriteRenderer.color.a;
+            _shieldPingBaseColor = spriteRenderer.color;
+            _spriteVisualBaseLocal = spriteRenderer.transform.localPosition;
+            _spriteVisualBaseLocalRot = spriteRenderer.transform.localRotation;
+            _spriteVisualIsChild = spriteRenderer.transform != transform;
+        }
+        _baseScale = transform.localScale;
+        if (!string.IsNullOrEmpty(indicatorSortingLayerName))
+            _sortingLayerId = SortingLayer.NameToID(indicatorSortingLayerName);
+        else if (spriteRenderer)
+            _sortingLayerId = spriteRenderer.sortingLayerID;
+
         ResolveSceneReferences();
+        CacheBossPivotHalfExtentsWorld();
+        CacheBaseArenaWorldBounds();
         CacheWalkableCells();
-        EnsurePlayerDamageReceiver();
+        _currentShield = GetMaxShieldForCurrentPhase();
+    }
+
+    private BossAudioManager ResolveBossAudio()
+    {
+        if (bossAudioManager)
+            return bossAudioManager;
+        if (_bossAudioCached)
+            return _bossAudioCached;
+        _bossAudioCached = FindFirstObjectByType<BossAudioManager>();
+        return _bossAudioCached;
     }
 
     private void OnEnable()
     {
+        if (waitForExternalCutscene)
+        {
+            _state = InternalState.Initializing;
+            _introActive = true;
+            return;
+        }
+
+        _state = InternalState.Idle;
+        PlayAnimState(StateIdle);
         _behaviorRoutine = StartCoroutine(BehaviorLoop());
     }
 
     private void OnDisable()
     {
-        if (_behaviorRoutine != null)
-            StopCoroutine(_behaviorRoutine);
-        ClearTelegraphs();
+        if (_introActive)
+        {
+            _introActive = false;
+            CameraController cam = phaseTransitionCamera ? phaseTransitionCamera : FindFirstObjectByType<CameraController>();
+            if (cam)
+                cam.LockToPlayer();
+        }
+        if (_behaviorRoutine != null) StopCoroutine(_behaviorRoutine);
+        if (_attackRoutine != null) StopCoroutine(_attackRoutine);
+        if (_damageRoutine != null) StopCoroutine(_damageRoutine);
+        if (_shieldPingRoutine != null) StopCoroutine(_shieldPingRoutine);
+        if (_repositionRoutine != null) StopCoroutine(_repositionRoutine);
+        _repositionRoutine = null;
+        if (_shieldBreakFeedbackRoutine != null) StopCoroutine(_shieldBreakFeedbackRoutine);
+        _shieldBreakFeedbackRoutine = null;
+        DisableStunVisual();
+        ResetSpriteVisualLocalIfChild();
+        ReleaseWormLaserFireHoldPose();
+        ReleasePhaseChangeHoldPose();
+        if (_activeBossLaserBeam)
+        {
+            Destroy(_activeBossLaserBeam);
+            _activeBossLaserBeam = null;
+        }
+        DestroyActiveIndicator();
+        _attackActive = false;
+        _digInvulnerable = false;
+        _immuneDuringDigMove = false;
+        if (_phaseTransitionRoutine != null)
+        {
+            StopCoroutine(_phaseTransitionRoutine);
+            _phaseTransitionRoutine = null;
+        }
+        _phaseTransitionActive = false;
+        _phaseChangePending = false;
     }
 
     private void Update()
     {
-        if (IsDead || _state == BossState.Dead || !Player)
-            return;
+        if (IsDead || _state == InternalState.Dead) return;
+        if (_introActive) return;
 
-        if (Time.time >= _nextContactDamageTime)
+        float maxShield = GetMaxShieldForCurrentPhase();
+        float fillDur = Mathf.Max(0.1f, shieldRegenFillSeconds);
+        float regenPerSec = maxShield / fillDur;
+        if (!_phaseTransitionActive && !_shieldBroken && maxShield > 0f && _currentShield < maxShield
+            && Time.time - _lastShieldDamageTime >= shieldRegenIdleSeconds)
         {
-            _nextContactDamageTime = Time.time + contactTickInterval;
-            if (enablePassiveContactDamage)
-                TryContactDamage();
+            _currentShield = Mathf.Min(maxShield, _currentShield + regenPerSec * Time.deltaTime);
+            UpdateShieldUI();
         }
 
         if (healthBarUI)
-            healthBarUI.SetHealth(HealthNormalized, CurrentHealth, MaxHealth, CurrentPhase);
+            healthBarUI.SetHealth(HealthNormalized);
 
         if (CurrentPhase != _lastObservedPhase)
         {
-            _lastObservedPhase = CurrentPhase;
-            OnPhaseChanged(_lastObservedPhase);
+            if (!_phaseChangePending)
+                _phaseChangePending = true;
+            _queuedNewPhase = CurrentPhase;
+        }
+
+        if (_phaseChangePending && _phaseTransitionRoutine == null && CanStartPhaseTransitionNow())
+        {
+            if (_shieldBreakFeedbackRoutine != null)
+            {
+                StopCoroutine(_shieldBreakFeedbackRoutine);
+                _shieldBreakFeedbackRoutine = null;
+            }
+            ResetSpriteVisualLocalIfChild();
+            DisableStunVisual();
+            _lastObservedPhase = _queuedNewPhase;
+            _phaseTransitionRoutine = StartCoroutine(PhaseTransitionSequence(_queuedNewPhase));
         }
     }
 
-    private IEnumerator BehaviorLoop()
+    private bool CanStartPhaseTransitionNow()
     {
-        yield return null;
-        BindHealthBar();
+        if (_introActive) return false;
+        if (_phaseTransitionActive) return false;
+        return true;
+    }
 
-        while (!IsDead)
+    public void SetIntroCutsceneActive(bool active)
+    {
+        _introActive = active;
+    }
+
+    public void StartCombatAfterCutscene()
+    {
+        if (_behaviorRoutine != null)
+            return;
+        _state = InternalState.Idle;
+        PlayAnimState(StateIdle);
+        _behaviorRoutine = StartCoroutine(BehaviorLoop());
+    }
+
+    public void BindHealthBarForFightStart() => BindHealthBar();
+
+    public void Cutscene_PrepareBuriedFacingPlayer()
+    {
+        FaceDirection(AimDirectionToPlayer());
+        SetUndergroundVisuals(true);
+    }
+
+    public void Cutscene_SetUnderground(bool underground) => SetUndergroundVisuals(underground);
+
+    public void Cutscene_PlayAnimatorState(string stateName) => PlayAnimState(stateName);
+
+    public float Cutscene_GetAnimatorClipLength(string stateName, float fallback) => GetAnimClipLength(stateName, fallback);
+
+    private void ResolveSceneReferences()
+    {
+        if (!baseTilemap)
         {
-            if (!Player)
-            {
-                yield return null;
-                continue;
-            }
-
-            _state = BossState.Repositioning;
-            yield return RepositionFor(repositionDuration);
-
-            AttackType nextAttack = PickNextAttack();
-            yield return ExecuteAttack(nextAttack);
+            var go = GameObject.Find("Base");
+            if (go) baseTilemap = go.GetComponent<Tilemap>();
         }
+        if (!decorationTilemap)
+        {
+            var go = GameObject.Find("Decoration");
+            if (go) decorationTilemap = go.GetComponent<Tilemap>();
+        }
+        if (!healthBarUI)
+            healthBarUI = FindFirstObjectByType<BossHealthBarUI>(FindObjectsInactive.Include);
     }
 
     private void CacheWalkableCells()
     {
         _walkableCells.Clear();
         _walkableCellSet.Clear();
-
         Tilemap source = baseTilemap ? baseTilemap : decorationTilemap;
         if (!source) return;
-
         BoundsInt bounds = source.cellBounds;
         for (int x = bounds.xMin; x < bounds.xMax; x++)
         {
@@ -245,386 +437,1695 @@ public sealed class WormBossController : EnemyBase
         }
     }
 
-    private void ResolveSceneReferences()
-    {
-        if (!baseTilemap)
-        {
-            GameObject baseGo = GameObject.Find("Base");
-            if (baseGo) baseTilemap = baseGo.GetComponent<Tilemap>();
-        }
-
-        if (!decorationTilemap)
-        {
-            GameObject decoGo = GameObject.Find("Decoration");
-            if (decoGo) decorationTilemap = decoGo.GetComponent<Tilemap>();
-        }
-
-        if (!healthBarUI)
-        {
-            healthBarUI = FindFirstObjectByType<BossHealthBarUI>(FindObjectsInactive.Include);
-            if (!healthBarUI)
-            {
-                var go = new GameObject("BossHealthBarUI");
-                healthBarUI = go.AddComponent<BossHealthBarUI>();
-            }
-        }
-    }
-
     private bool IsWalkableCell(Vector3Int cell)
     {
-        bool inBase = baseTilemap && baseTilemap.HasTile(cell);
-        bool inDeco = decorationTilemap && decorationTilemap.HasTile(cell);
-        return inBase || inDeco;
+        if (baseTilemap)
+            return baseTilemap.HasTile(cell);
+        if (decorationTilemap)
+            return decorationTilemap.HasTile(cell);
+        return false;
     }
 
-    private IEnumerator RepositionFor(float duration)
+    private void CacheBossPivotHalfExtentsWorld()
     {
-        float endTime = Time.time + duration;
-        float moveScale = CurrentPhase == 3 ? 1.25f : (CurrentPhase == 2 ? 1.1f : 1f);
+        _pivotHalfExtentsWorld = Vector2.zero;
 
-        while (Time.time < endTime && !IsDead && Player)
+        if (_mainCollider is BoxCollider2D box)
         {
-            Vector2 toPlayer = (Player.position - transform.position);
-            float distance = toPlayer.magnitude;
-            Vector2 direction = toPlayer.sqrMagnitude > 0.0001f ? toPlayer.normalized : Vector2.zero;
-
-            if (distance > preferredDistance + 0.5f)
-                Rb.AddForce(direction * repositionSpeed * moveScale, ForceMode2D.Force);
-            else if (distance < preferredDistance - 0.45f)
-                Rb.AddForce(-direction * repositionSpeed * 0.8f * moveScale, ForceMode2D.Force);
-
-            yield return null;
+            Vector2 he = Vector2.Scale(box.size * 0.5f, transform.lossyScale);
+            _pivotHalfExtentsWorld = new Vector2(Mathf.Abs(he.x), Mathf.Abs(he.y));
         }
-    }
-
-    private AttackType PickNextAttack()
-    {
-        List<AttackType> candidates = BuildPhaseAttackPool(CurrentPhase);
-
-        AttackType result = _lastAttack;
-        int safety = 0;
-        while (result == _lastAttack && safety < 8)
+        else if (_mainCollider)
         {
-            result = candidates[Random.Range(0, candidates.Count)];
-            safety++;
+            _pivotHalfExtentsWorld = _mainCollider.bounds.extents;
         }
 
-        _lastAttack = result;
-        return result;
-    }
-
-    private List<AttackType> BuildPhaseAttackPool(int phase)
-    {
-        var pool = new List<AttackType>();
-        if (phase <= 1)
+        if (spriteRenderer && spriteRenderer.sprite)
         {
-            pool.Add(AttackType.Swipe);
-            pool.Add(AttackType.LaserCross);
-            pool.Add(AttackType.Dig);
-            return pool;
+            Bounds ls = spriteRenderer.sprite.bounds;
+            Vector3 sc = transform.lossyScale;
+            var fromSprite = new Vector2(
+                Mathf.Abs(ls.extents.x * sc.x),
+                Mathf.Abs(ls.extents.y * sc.y));
+            _pivotHalfExtentsWorld.x = Mathf.Max(_pivotHalfExtentsWorld.x, fromSprite.x);
+            _pivotHalfExtentsWorld.y = Mathf.Max(_pivotHalfExtentsWorld.y, fromSprite.y);
         }
 
-        if (phase == 2)
-        {
-            pool.Add(AttackType.Swipe);
-            pool.Add(AttackType.LaserCross);
-            pool.Add(AttackType.Dig);
-            if (enableBurrowTrail) pool.Add(AttackType.BurrowTrail);
-            return pool;
-        }
-
-        pool.Add(AttackType.Swipe);
-        pool.Add(AttackType.LaserCross);
-        pool.Add(AttackType.Dig);
-        if (enableBurrowTrail) pool.Add(AttackType.BurrowTrail);
-        return pool;
+        float pad = Mathf.Max(0f, baseArenaEdgePadding);
+        _pivotHalfExtentsWorld.x += pad;
+        _pivotHalfExtentsWorld.y += pad;
     }
 
-    private IEnumerator ExecuteAttack(AttackType attack)
+    private void CacheBaseArenaWorldBounds()
     {
-        switch (attack)
+        _arenaClampReady = false;
+        if (!baseTilemap)
+            return;
+
+        BoundsInt cb = baseTilemap.cellBounds;
+        Vector2 halfCell = new Vector2(
+            Mathf.Abs(baseTilemap.cellSize.x * baseTilemap.transform.lossyScale.x) * 0.5f,
+            Mathf.Abs(baseTilemap.cellSize.y * baseTilemap.transform.lossyScale.y) * 0.5f);
+
+        bool any = false;
+        float minX = 0f, maxX = 0f, minY = 0f, maxY = 0f;
+        for (int x = cb.xMin; x < cb.xMax; x++)
         {
-            case AttackType.LaserCross:
-                yield return DoLaserCrossAttack();
-                break;
-            case AttackType.Swipe:
-                yield return DoSwipeAttack();
-                break;
-            case AttackType.Dig:
-                yield return DoDigAttack();
-                break;
-            case AttackType.BurrowTrail:
-                yield return DoBurrowTrailAttack();
-                break;
-        }
-    }
-
-    private IEnumerator DoLaserCrossAttack()
-    {
-        _state = BossState.Telegraphing;
-        var cells = GetLaserCellsForCurrentPhase();
-        SpawnLaserCrossTelegraph(cells, laserTelegraphColor, laser.telegraphTime, true, 8.8f, 0.28f, 0.82f, 0.65f, 1f);
-        yield return WaitWithPhaseSpeed(laser.telegraphTime);
-
-        _state = BossState.Attacking;
-        SpawnLaserCrossTelegraph(cells, laserDamageColor, laser.activeTime, false, 0f, 1f, 1f, 1f, 1f);
-        SpawnLaserBeamVfx(cells, laserDamageColor);
-        DealDamageOnCells(cells, laserTileRadius, laser.damage);
-        yield return WaitWithPhaseSpeed(laser.activeTime);
-
-        _state = BossState.Recovering;
-        ClearTelegraphs();
-        yield return WaitWithPhaseSpeed(laser.cooldownTime);
-    }
-
-    private IEnumerator DoSwipeAttack()
-    {
-        int swipes = CurrentPhase >= 3 ? Mathf.Max(2, swipeChainAtLowHp) : 1;
-        Vector2 toPlayer = Player ? ((Vector2)(Player.position - transform.position)).normalized : Vector2.right;
-        if (toPlayer.sqrMagnitude <= 0.0001f) toPlayer = Vector2.right;
-
-        for (int i = 0; i < swipes; i++)
-        {
-            _state = BossState.Telegraphing;
-            var cells = GetArcCells(transform.position, toPlayer, swipeRange, swipeHalfArcDegrees);
-            SpawnSwipeTelegraph(cells, swipeTelegraphColor, swipe.telegraphTime, true, 6.2f, 0.24f, 0.74f, 0.58f, 1f);
-            yield return WaitWithPhaseSpeed(swipe.telegraphTime);
-
-            _state = BossState.Attacking;
-            SpawnSwipeTelegraph(cells, swipeDamageColor, swipe.activeTime, false, 0f, 1f, 1f, 1f, 1f);
-            SpawnSwipeVfx(toPlayer, swipeDamageColor);
-            DealDamageOnCells(cells, 0.45f, swipe.damage);
-            yield return WaitWithPhaseSpeed(swipe.activeTime);
-
-            ClearTelegraphs();
-            toPlayer = Quaternion.Euler(0f, 0f, i % 2 == 0 ? 35f : -35f) * toPlayer;
-        }
-
-        _state = BossState.Recovering;
-        yield return WaitWithPhaseSpeed(swipe.cooldownTime);
-    }
-
-    private IEnumerator DoDigAttack()
-    {
-        _state = BossState.Underground;
-        SetUndergroundVisuals(true);
-
-        Vector3Int targetCell = GetNearestValidCellToPlayer();
-        Vector3 targetWorld = CellCenterWorld(targetCell);
-        float startTime = Time.time;
-        Vector3 startPos = transform.position;
-
-        while (Time.time < startTime + digTravelTime)
-        {
-            float t = Mathf.InverseLerp(startTime, startTime + digTravelTime, Time.time);
-            transform.position = Vector3.Lerp(startPos, targetWorld, t);
-            yield return null;
-        }
-        transform.position = targetWorld;
-
-        _state = BossState.Telegraphing;
-        List<Vector3Int> strikeCells = GetCellsInRadius(targetWorld, digStrikeRadius + 0.45f);
-        SpawnTelegraphCells(strikeCells, digTelegraphColor, 1.02f, dig.telegraphTime, true, 4.1f, 0.22f, 0.68f, 0.55f, 1f);
-        yield return WaitWithPhaseSpeed(dig.telegraphTime);
-
-        _state = BossState.Attacking;
-        SetUndergroundVisuals(false);
-        SpawnTelegraphCells(strikeCells, digDamageColor, 1.08f, dig.activeTime, false, 0f, 1f, 1f, 1f, 1f);
-        SpawnDigVfx(strikeCells, digDamageColor);
-        DealDamageOnCells(strikeCells, digStrikeRadius, dig.damage);
-        yield return WaitWithPhaseSpeed(dig.activeTime);
-
-        ClearTelegraphs();
-        _state = BossState.Recovering;
-        yield return WaitWithPhaseSpeed(dig.cooldownTime);
-    }
-
-    private IEnumerator DoBurrowTrailAttack()
-    {
-        if (!Player)
-            yield break;
-
-        Vector2 baseDir = ((Vector2)(Player.position - transform.position)).normalized;
-        if (baseDir.sqrMagnitude <= 0.0001f) baseDir = Vector2.right;
-
-        var cells = new List<Vector3Int>();
-        for (int i = 1; i <= burrowTrailSteps; i++)
-        {
-            Vector2 pos = (Vector2)transform.position + baseDir * (burrowTrailSpacing * i);
-            cells.Add(GetNearestWalkableCell(pos));
-        }
-
-        _state = BossState.Telegraphing;
-        SpawnTelegraphCells(cells, burrowTrailTelegraphColor, 1.25f, burrowTrail.telegraphTime, true, 7.4f, 0.2f, 0.7f, 0.55f, 1f);
-        yield return WaitWithPhaseSpeed(burrowTrail.telegraphTime);
-
-        _state = BossState.Attacking;
-        SpawnTelegraphCells(cells, burrowTrailDamageColor, 1.6f, burrowTrail.activeTime, false, 0f, 1f, 1f, 1f, 1f);
-        DealDamageOnCells(cells, burrowTrailRadius, burrowTrail.damage);
-        yield return WaitWithPhaseSpeed(burrowTrail.activeTime);
-
-        ClearTelegraphs();
-        _state = BossState.Recovering;
-        yield return WaitWithPhaseSpeed(burrowTrail.cooldownTime);
-    }
-
-    private void DealDamageOnCells(List<Vector3Int> cells, float radius, float damage)
-    {
-        if (cells == null || cells.Count == 0) return;
-
-        var dealt = new HashSet<IDamageable>();
-        foreach (var cell in cells)
-        {
-            Vector2 center = CellCenterWorld(cell);
-            Collider2D[] hits = Physics2D.OverlapCircleAll(center, radius, playerLayerMask);
-            foreach (var hit in hits)
+            for (int y = cb.yMin; y < cb.yMax; y++)
             {
-                if (!hit) continue;
-                IDamageable damageable = hit.GetComponentInParent<IDamageable>();
-                if (damageable == null || dealt.Contains(damageable)) continue;
+                var cell = new Vector3Int(x, y, 0);
+                if (!baseTilemap.HasTile(cell))
+                    continue;
 
-                Vector2 knockbackDir = ((Vector2)hit.bounds.center - center).normalized;
-                if (knockbackDir.sqrMagnitude <= 0.0001f) knockbackDir = Vector2.up;
-                damageable.TakeHit(damage, knockbackDir, 1.25f);
-                dealt.Add(damageable);
+                Vector2 center = baseTilemap.GetCellCenterWorld(cell);
+                if (!any)
+                {
+                    minX = center.x - halfCell.x;
+                    maxX = center.x + halfCell.x;
+                    minY = center.y - halfCell.y;
+                    maxY = center.y + halfCell.y;
+                    any = true;
+                }
+                else
+                {
+                    minX = Mathf.Min(minX, center.x - halfCell.x);
+                    maxX = Mathf.Max(maxX, center.x + halfCell.x);
+                    minY = Mathf.Min(minY, center.y - halfCell.y);
+                    maxY = Mathf.Max(maxY, center.y + halfCell.y);
+                }
             }
         }
+
+        if (!any)
+            return;
+
+        _arenaMinX = minX;
+        _arenaMaxX = maxX;
+        _arenaMinY = minY;
+        _arenaMaxY = maxY;
+        _arenaClampReady = true;
     }
 
-    private void TryContactDamage()
+    private Tilemap PrimaryTilemap => baseTilemap ? baseTilemap : decorationTilemap;
+
+    private Vector2 CellCenterWorld(Vector3Int cell)
     {
-        if (!Player || _mainCollider == null) return;
-        Collider2D[] overlaps = new Collider2D[8];
-        ContactFilter2D filter = new ContactFilter2D
-        {
-            useLayerMask = true,
-            layerMask = playerLayerMask,
-            useTriggers = true
-        };
-
-        int count = _mainCollider.Overlap(filter, overlaps);
-        for (int i = 0; i < count; i++)
-        {
-            var hit = overlaps[i];
-            if (!hit) continue;
-
-            IDamageable damageable = hit.GetComponentInParent<IDamageable>();
-            if (damageable == null) continue;
-            Component damageComponent = damageable as Component;
-            if (damageComponent == null) continue;
-            int id = damageComponent.GetInstanceID();
-            if (_contactCooldownByTarget.TryGetValue(id, out float nextAllowed) && Time.time < nextAllowed)
-                continue;
-
-            Vector2 dir = ((Vector2)hit.bounds.center - (Vector2)transform.position).normalized;
-            if (dir.sqrMagnitude <= 0.0001f) dir = Vector2.up;
-            damageable.TakeHit(contactDamage, dir, 1.1f);
-            _contactCooldownByTarget[id] = Time.time + perTargetContactGrace;
-            break;
-        }
+        return PrimaryTilemap ? (Vector2)PrimaryTilemap.GetCellCenterWorld(cell) : (Vector2)transform.position;
     }
 
-    private Vector3Int GetCurrentCell()
+    private Vector3Int WorldToCell(Vector2 world)
     {
-        Tilemap source = baseTilemap ? baseTilemap : decorationTilemap;
-        if (!source) return Vector3Int.zero;
-        return source.WorldToCell(transform.position);
+        return PrimaryTilemap ? PrimaryTilemap.WorldToCell(world) : Vector3Int.zero;
     }
 
-    private Vector3Int GetNearestValidCellToPlayer()
-    {
-        if (!Player) return GetCurrentCell();
-        return GetNearestWalkableCell(Player.position);
-    }
+    private Vector3Int GetCurrentCell() => WorldToCell(transform.position);
 
-    private Vector3Int GetNearestWalkableCell(Vector2 worldPoint)
+    private Vector3Int NearestWalkableCell(Vector2 world)
     {
         if (_walkableCells.Count == 0) return GetCurrentCell();
-
-        Tilemap source = baseTilemap ? baseTilemap : decorationTilemap;
-        Vector3Int direct = source.WorldToCell(worldPoint);
+        Vector3Int direct = WorldToCell(world);
         if (_walkableCellSet.Contains(direct)) return direct;
 
         float best = float.PositiveInfinity;
         Vector3Int bestCell = _walkableCells[0];
-        for (int i = 0; i < _walkableCells.Count; i++)
+        foreach (Vector3Int c in _walkableCells)
         {
-            Vector2 c = CellCenterWorld(_walkableCells[i]);
-            float d = (c - worldPoint).sqrMagnitude;
+            float d = ((Vector2)CellCenterWorld(c) - world).sqrMagnitude;
             if (d < best)
             {
                 best = d;
-                bestCell = _walkableCells[i];
+                bestCell = c;
             }
         }
         return bestCell;
     }
 
-    private List<Vector3Int> GetCrossCells(Vector3Int origin, int maxRange)
+    private bool TryGetWalkablePath(Vector3Int from, Vector3Int to, List<Vector3Int> outPath)
     {
-        var result = new List<Vector3Int> { origin };
-        var dirs = new[]
+        outPath.Clear();
+        if (_walkableCellSet.Count == 0) return false;
+        if (!_walkableCellSet.Contains(from)) from = NearestWalkableCell(CellCenterWorld(from));
+        if (!_walkableCellSet.Contains(to)) to = NearestWalkableCell(CellCenterWorld(to));
+        if (from == to)
         {
-            Vector3Int.right, Vector3Int.left, Vector3Int.up, Vector3Int.down
-        };
-
-        foreach (Vector3Int dir in dirs)
-        {
-            for (int i = 1; i <= maxRange; i++)
-            {
-                Vector3Int cell = origin + dir * i;
-                if (!_walkableCellSet.Contains(cell))
-                    break;
-                result.Add(cell);
-            }
-        }
-        return result;
-    }
-
-    private List<Vector3Int> GetDiagonalCrossCells(Vector3Int origin, int maxRange)
-    {
-        var result = new List<Vector3Int> { origin };
-        var dirs = new[]
-        {
-            new Vector3Int(1, 1, 0),
-            new Vector3Int(1, -1, 0),
-            new Vector3Int(-1, 1, 0),
-            new Vector3Int(-1, -1, 0)
-        };
-
-        foreach (Vector3Int dir in dirs)
-        {
-            for (int i = 1; i <= maxRange; i++)
-            {
-                Vector3Int cell = origin + dir * i;
-                if (!_walkableCellSet.Contains(cell))
-                    break;
-                result.Add(cell);
-            }
+            outPath.Add(from);
+            return true;
         }
 
-        return result;
+        var prev = new Dictionary<Vector3Int, Vector3Int>();
+        var q = new Queue<Vector3Int>();
+        q.Enqueue(from);
+        prev[from] = from;
+
+        void EnqueueNeighbor(Vector3Int n, Vector3Int parent)
+        {
+            if (!_walkableCellSet.Contains(n) || prev.ContainsKey(n)) return;
+            prev[n] = parent;
+            q.Enqueue(n);
+        }
+
+        while (q.Count > 0)
+        {
+            Vector3Int c = q.Dequeue();
+            if (c == to)
+            {
+                Vector3Int w = to;
+                while (w != from)
+                {
+                    outPath.Add(w);
+                    w = prev[w];
+                }
+                outPath.Add(from);
+                outPath.Reverse();
+                return true;
+            }
+
+            EnqueueNeighbor(new Vector3Int(c.x + 1, c.y, 0), c);
+            EnqueueNeighbor(new Vector3Int(c.x - 1, c.y, 0), c);
+            EnqueueNeighbor(new Vector3Int(c.x, c.y + 1, 0), c);
+            EnqueueNeighbor(new Vector3Int(c.x, c.y - 1, 0), c);
+        }
+
+        return false;
     }
 
-    private List<Vector3Int> GetLaserCellsForCurrentPhase()
+    private float MeasurePathWorldLength(List<Vector3Int> path)
     {
-        Vector3Int origin = GetCurrentCell();
-        if (CurrentPhase <= 1)
-            return GetCrossCells(origin, laserMaxRangeTiles);
+        if (path == null || path.Count < 2) return 0f;
+        float s = 0f;
+        for (int i = 0; i < path.Count - 1; i++)
+            s += Vector2.Distance(CellCenterWorld(path[i]), CellCenterWorld(path[i + 1]));
+        return s;
+    }
 
-        LaserPattern pattern = CurrentPhase == 2
-            ? (Random.value < 0.5f ? LaserPattern.Plus : LaserPattern.DiagonalX)
-            : (Random.value < 0.35f ? LaserPattern.Combined : (Random.value < 0.5f ? LaserPattern.Plus : LaserPattern.DiagonalX));
+    private Vector2 PointOnWalkablePathAtDistance(List<Vector3Int> path, float distAlong)
+    {
+        if (path == null || path.Count == 0) return (Vector2)transform.position;
+        distAlong = Mathf.Max(0f, distAlong);
+        if (path.Count == 1) return CellCenterWorld(path[0]);
+        float acc = 0f;
+        for (int i = 0; i < path.Count - 1; i++)
+        {
+            Vector2 a = CellCenterWorld(path[i]);
+            Vector2 b = CellCenterWorld(path[i + 1]);
+            float seg = Vector2.Distance(a, b);
+            if (acc + seg >= distAlong - 0.0001f)
+            {
+                float t = seg > 1e-5f ? (distAlong - acc) / seg : 0f;
+                return Vector2.Lerp(a, b, Mathf.Clamp01(t));
+            }
+            acc += seg;
+        }
+        return CellCenterWorld(path[path.Count - 1]);
+    }
 
-        List<Vector3Int> plus = GetCrossCells(origin, laserMaxRangeTiles);
-        if (pattern == LaserPattern.Plus) return plus;
+    private Vector2 TangentOnWalkablePathAtDistance(List<Vector3Int> path, float distAlong, float delta)
+    {
+        if (path == null || path.Count < 2) return Vector2.right;
+        delta = Mathf.Max(0.02f, delta);
+        Vector2 p0 = PointOnWalkablePathAtDistance(path, Mathf.Max(0f, distAlong - delta));
+        Vector2 p1 = PointOnWalkablePathAtDistance(path, distAlong + delta);
+        Vector2 d = p1 - p0;
+        return d.sqrMagnitude > 0.0001f ? d.normalized : Vector2.right;
+    }
 
-        List<Vector3Int> diag = GetDiagonalCrossCells(origin, laserMaxRangeTiles);
-        if (pattern == LaserPattern.DiagonalX) return diag;
+    private void SetBossWorldPosition(Vector2 world)
+    {
+        float z = transform.position.z;
+        if (_rb)
+            _rb.position = world;
+        else
+            transform.position = new Vector3(world.x, world.y, z);
+    }
 
-        var combined = new HashSet<Vector3Int>(plus);
-        combined.UnionWith(diag);
-        return new List<Vector3Int>(combined);
+    private IEnumerator BehaviorLoop()
+    {
+        yield return null;
+        BindHealthBar();
+
+        while (!IsDead)
+        {
+            if (_phaseTransitionActive)
+            {
+                yield return null;
+                continue;
+            }
+
+            if (!Player || _state == InternalState.Dead)
+            {
+                yield return null;
+                continue;
+            }
+
+            if (_isStunned || _attackActive)
+            {
+            yield return null;
+                continue;
+            }
+
+            if (ShouldReposition())
+            {
+                _repositionRoutine = StartCoroutine(RepositionRoutine());
+                yield return _repositionRoutine;
+                _repositionRoutine = null;
+                if (_isStunned || IsDead)
+                    continue;
+            }
+
+            BossAttackType next = PickNextAttack();
+            StartAttack(next);
+
+            while (_attackActive && !_isStunned && !IsDead)
+                yield return null;
+
+            bool chained = false;
+            if (CurrentPhase >= 3 && !_isStunned && !IsDead
+                && Random.value < phaseThreeChainChance)
+            {
+                float chainBreather = Mathf.Max(0.2f, GetIdleTimeForCurrentPhase() * 0.25f);
+                float gapUntil = Time.time + chainBreather;
+                while (Time.time < gapUntil && !_isStunned && !IsDead)
+                    yield return null;
+
+                BossAttackType chain = PickChainAttack(next);
+                StartAttack(chain);
+                while (_attackActive && !_isStunned && !IsDead)
+                    yield return null;
+                chained = true;
+            }
+
+            float idleTime = GetIdleTimeForCurrentPhase();
+            if (chained) idleTime *= phaseThreeChainCooldownMultiplier;
+            float waitUntil = Time.time + idleTime;
+            PlayAnimState(StateIdle);
+            while (Time.time < waitUntil && !_isStunned && !IsDead)
+                yield return null;
+        }
+    }
+
+    private bool ShouldReposition()
+    {
+        if (!Player) return false;
+        float chance = GetArrayValue(repositionChanceByPhase, CurrentPhase - 1, 0.5f);
+        return Random.value < chance;
+    }
+
+    private float GetIdleTimeForCurrentPhase()
+    {
+        return GetArrayValue(idleTimeAfterAttackByPhase, CurrentPhase - 1, 0.9f);
+    }
+
+    private float GetMaxShieldForCurrentPhase()
+    {
+        return GetArrayValue(maxShieldByPhase, CurrentPhase - 1, 58f);
+    }
+
+    private static float GetArrayValue(float[] arr, int index, float fallback)
+    {
+        if (arr == null || arr.Length == 0) return fallback;
+        return arr[Mathf.Clamp(index, 0, arr.Length - 1)];
+    }
+
+
+    private BossAttackType PickNextAttack()
+    {
+        List<BossAttackType> pool = BuildPhaseAttackPool(CurrentPhase);
+        BossAttackType pick = pool[Random.Range(0, pool.Count)];
+        int safety = 0;
+        while (pick == _lastAttack && safety < 6 && pool.Count > 1)
+        {
+            pick = pool[Random.Range(0, pool.Count)];
+            safety++;
+        }
+        _lastAttack = pick;
+        return pick;
+    }
+
+    private BossAttackType PickChainAttack(BossAttackType previous)
+    {
+        List<BossAttackType> pool = BuildPhaseAttackPool(CurrentPhase);
+        pool.RemoveAll(a => a == previous);
+        if (previous == BossAttackType.Laser || previous == BossAttackType.Dig)
+            pool.RemoveAll(a => a == BossAttackType.Laser);
+        if (pool.Count == 0) return BossAttackType.Melee;
+        return pool[Random.Range(0, pool.Count)];
+    }
+
+    private List<BossAttackType> BuildPhaseAttackPool(int phase)
+    {
+        var pool = new List<BossAttackType>();
+        pool.Add(BossAttackType.Melee);
+        pool.Add(BossAttackType.Shoot);
+        pool.Add(BossAttackType.Dig);
+        if (phase >= 2) pool.Add(BossAttackType.Laser);
+            return pool;
+        }
+
+
+    private void StartAttack(BossAttackType type)
+    {
+        _currentAttack = type;
+        _attackActive = true;
+        _state = InternalState.Attacking;
+
+        IEnumerator routine = type switch
+        {
+            BossAttackType.Melee => MeleeRoutine(),
+            BossAttackType.Shoot => ShootRoutine(),
+            BossAttackType.Dig => DigRoutine(),
+            BossAttackType.Laser => LaserRoutine(),
+            _ => null
+        };
+        if (routine != null)
+            _attackRoutine = StartCoroutine(routine);
+    }
+
+    private void EndAttack()
+    {
+        _immuneDuringDigMove = false;
+        ReleaseWormLaserFireHoldPose();
+        _attackActive = false;
+        _attackRoutine = null;
+        if (_state == InternalState.Attacking)
+            _state = InternalState.Idle;
+        PlayAnimState(StateIdle);
+    }
+
+    private void PriorityCancelOngoingMoves()
+    {
+        ReleaseWormLaserFireHoldPose();
+        ReleasePhaseChangeHoldPose();
+        DestroyLaserStretchSegments();
+        if (_activeBossLaserBeam)
+        {
+            Destroy(_activeBossLaserBeam);
+            _activeBossLaserBeam = null;
+        }
+        if (_attackRoutine != null)
+        {
+            StopCoroutine(_attackRoutine);
+            _attackRoutine = null;
+        }
+        if (_repositionRoutine != null)
+        {
+            StopCoroutine(_repositionRoutine);
+            _repositionRoutine = null;
+        }
+        if (_damageRoutine != null)
+        {
+            StopCoroutine(_damageRoutine);
+            _damageRoutine = null;
+        }
+        DestroyActiveIndicator();
+        _attackActive = false;
+        _immuneDuringDigMove = false;
+        if (_digInvulnerable)
+            SetUndergroundVisuals(false);
+        if (_rb)
+            _rb.linearVelocity = Vector2.zero;
+        if (_state == InternalState.Repositioning || _state == InternalState.Attacking)
+            _state = InternalState.Idle;
+    }
+
+    private IEnumerator MeleeRoutine()
+    {
+        Vector2 aim = AimDirectionToPlayer();
+        FaceDirection(aim);
+        PlayAnimState(StateMelee);
+
+        List<Vector3Int> coneCells = GetArcCells(transform.position, aim, meleeRange, meleeArcDegrees * 0.5f);
+        float totalTelegraph = meleeFramesBeforeWait + meleeChargeWait;
+
+        Vector2 center = (Vector2)transform.position + aim * (meleeRange * 0.5f);
+        float width = 2f * meleeRange * Mathf.Tan(meleeArcDegrees * 0.5f * Mathf.Deg2Rad);
+        float angle = Mathf.Atan2(aim.y, aim.x) * Mathf.Rad2Deg;
+        SpawnRectIndicator(center, new Vector2(meleeRange, width), angle, totalTelegraph, meleeImminentFraction);
+
+        yield return new WaitForSeconds(meleeFramesBeforeWait);
+        yield return new WaitForSeconds(meleeChargeWait);
+
+        ResolveBossAudio()?.PlayMeleeSfx();
+        DealDamageOnCells(coneCells, 0.55f, meleeDamage, 2.5f);
+        DestroyActiveIndicator();
+
+        yield return new WaitForSeconds(meleeStrikeDuration);
+        yield return new WaitForSeconds(meleeRecoveryDuration);
+
+        EndAttack();
+    }
+
+
+    private IEnumerator ShootRoutine()
+    {
+        Vector2 aim = AimDirectionToPlayer();
+        FaceDirection(aim);
+        PlayAnimState(StateShoot);
+
+        float totalTelegraph = shootFramesBeforeWait + shootChargeWait;
+        float sightLength = 5f;
+        float sightWidth = 0.8f;
+        Vector2 sightCenter = (Vector2)transform.position + aim * (sightLength * 0.5f);
+        float sightAngle = Mathf.Atan2(aim.y, aim.x) * Mathf.Rad2Deg;
+        SpawnRectIndicator(sightCenter, new Vector2(sightLength, sightWidth), sightAngle,
+            totalTelegraph, 0.32f);
+
+        yield return new WaitForSeconds(shootFramesBeforeWait);
+        yield return new WaitForSeconds(shootChargeWait);
+
+        FireBossBullets(aim);
+        DestroyActiveIndicator();
+
+        if (CurrentPhase >= 3)
+        {
+            yield return new WaitForSeconds(shootBurstIntervalPhase3);
+            FireBossBullets(AimDirectionToPlayer());
+        }
+
+        yield return new WaitForSeconds(shootRecoveryDuration);
+        EndAttack();
+    }
+
+    private void FireBossBullets(Vector2 aim)
+    {
+        if (!bossProjectilePrefab) return;
+
+        ResolveBossAudio()?.PlayRangedShootSfx();
+
+        int bullets;
+        float spread;
+        if (CurrentPhase >= 3)
+        {
+            bullets = shootBulletsPhase3;
+            spread = shootSpreadPhase3;
+        }
+        else if (CurrentPhase == 2)
+        {
+            bullets = shootBulletsPhase2;
+            spread = shootSpreadPhase2;
+        }
+        else
+        {
+            bullets = 1;
+            spread = 0f;
+        }
+
+        Vector3 firePos = transform.position;
+        for (int i = 0; i < bullets; i++)
+        {
+            float offset = bullets == 1 ? 0f : Mathf.Lerp(-spread, spread, i / (float)(bullets - 1));
+            Vector2 dir = Rotate(aim, offset);
+            GameObject go = Instantiate(bossProjectilePrefab, firePos, Quaternion.identity);
+            SimpleProjectile proj = go.GetComponent<SimpleProjectile>();
+            if (proj) proj.Fire(dir);
+        }
+    }
+
+
+    private IEnumerator DigRoutine()
+    {
+        _immuneDuringDigMove = true;
+        PlayAnimState(StateDigging);
+        ResolveBossAudio()?.PlayDigSfx();
+        float digClipLen = GetAnimClipLength(StateDigging, 0.62f);
+        yield return new WaitForSeconds(digClipLen);
+
+        SetUndergroundVisuals(true);
+
+        Vector3Int followingCell = NearestWalkableCell(Player ? Player.position : (Vector2)transform.position);
+        Vector3Int startCell = GetCurrentCell();
+        float indicatorRadius = digStrikeRadius * 1.15f;
+        SpawnCircleIndicator(CellCenterWorld(followingCell), indicatorRadius,
+            digTrackDuration + digLockDuration,
+            digLockDuration / Mathf.Max(0.01f, digTrackDuration + digLockDuration),
+            tracked: true);
+
+        float trackElapsed = 0f;
+        float nextRubble = 0f;
+        while (trackElapsed < digTrackDuration)
+        {
+            trackElapsed += Time.deltaTime;
+            if (Player)
+            {
+                Vector3Int candidate = NearestWalkableCell(Player.position);
+                if (candidate != followingCell)
+                {
+                    followingCell = candidate;
+                    UpdateTrackedIndicatorCenter(CellCenterWorld(followingCell));
+                }
+            }
+
+            float u = Mathf.Clamp01(trackElapsed / Mathf.Max(0.01f, digTrackDuration));
+            Vector2 pos;
+            Vector2 trailDir = Vector2.right;
+            if (TryGetWalkablePath(startCell, followingCell, _pathScratch))
+            {
+                float len = MeasurePathWorldLength(_pathScratch);
+                if (len < 0.001f)
+                    pos = CellCenterWorld(_pathScratch[0]);
+                else
+                {
+                    float distAlong = u * len;
+                    pos = PointOnWalkablePathAtDistance(_pathScratch, distAlong);
+                    trailDir = TangentOnWalkablePathAtDistance(_pathScratch, distAlong, 0.12f);
+                }
+            }
+            else
+            {
+                Vector2 a = CellCenterWorld(startCell);
+                Vector2 b = CellCenterWorld(followingCell);
+                pos = Vector2.Lerp(a, b, u);
+                trailDir = (b - a).sqrMagnitude > 0.0001f ? (b - a).normalized : Vector2.right;
+            }
+
+            SetBossWorldPosition(pos);
+
+            if (trackElapsed >= nextRubble)
+            {
+                nextRubble += rubbleTrailInterval;
+                SpawnRubbleBurst(transform.position, 2, 1.2f, rubbleColor, trailDir);
+            }
+            yield return null;
+        }
+
+        Vector3Int lockedPrimary = followingCell;
+        ForceAllIndicatorsImminent();
+
+        List<Vector3Int> strikeCells = new() { lockedPrimary };
+
+        yield return new WaitForSeconds(digLockDuration);
+
+        Vector2 risePos = CellCenterWorld(lockedPrimary);
+        SetBossWorldPosition(risePos);
+
+        SetUndergroundVisuals(false);
+        PlayAnimState(StateRising);
+        ResolveBossAudio()?.PlayRiseSfx();
+        foreach (var cell in strikeCells)
+            SpawnRubbleBurst(CellCenterWorld(cell), 5, 1.52f, riseRubbleColor, default);
+
+        float riseClipLen = GetAnimClipLength(StateRising, 0.72f);
+        float riseDmgDelay = riseClipLen * Mathf.Clamp01(digRiseDamageNormalizedTime);
+        yield return new WaitForSeconds(riseDmgDelay);
+
+        DealDamageOnCells(strikeCells, digStrikeRadius, digDamage, 4f);
+        DestroyActiveIndicator();
+
+        yield return new WaitForSeconds(riseClipLen - riseDmgDelay);
+        EndAttack();
+    }
+
+
+    private IEnumerator LaserRoutine()
+    {
+        int sweepCount = CurrentPhase >= 3 ? 2 : 1;
+        for (int sweepIndex = 0; sweepIndex < sweepCount; sweepIndex++)
+        {
+            Vector2 aim = AimDirectionToPlayer();
+            FaceDirection(aim);
+            float aimAngleDeg = Mathf.Atan2(aim.y, aim.x) * Mathf.Rad2Deg;
+            yield return ExecuteSingleLaserSweep(aimAngleDeg);
+            if (sweepIndex < sweepCount - 1 && laserBetweenSweepPause > 0f)
+                yield return new WaitForSeconds(laserBetweenSweepPause);
+        }
+
+        yield return new WaitForSeconds(laserRecoveryDuration);
+        EndAttack();
+    }
+
+    private IEnumerator ExecuteSingleLaserSweep(float aimAngleDeg)
+    {
+        float castAngleDeg = aimAngleDeg;
+        Vector2 castDir = AngleToVector(castAngleDeg);
+
+        PlayAnimState(StateLaserCharge);
+
+        Vector2 mouthStart = ComputeMouthWorldPosition();
+        Vector2 telegraphCenter = mouthStart + castDir * (laserBeamLength * 0.5f);
+
+        BossAttackIndicator chargeTelegraph = SpawnRectIndicator(telegraphCenter,
+            new Vector2(laserBeamLength, laserChargeStripeWidth), castAngleDeg,
+            Mathf.Max(0.05f, laserChargeDuration), 0.32f);
+
+        yield return new WaitForSeconds(laserChargeDuration);
+
+        if (chargeTelegraph)
+        {
+            Destroy(chargeTelegraph.gameObject);
+            _activeIndicators.Remove(chargeTelegraph);
+        }
+
+        if (!bossLaserBeamPrefab)
+        {
+            PlayAnimState(StateIdle);
+            yield break;
+        }
+
+        FreezeWormLaserFireHoldPose();
+        ResolveBossAudio()?.PlayLaserShootSfx();
+
+        GameObject beamGo = Instantiate(bossLaserBeamPrefab);
+        _activeBossLaserBeam = beamGo;
+        var beamFx = beamGo.GetComponent<BossLaserBeamInstance>();
+        if (beamFx)
+        {
+            beamFx.ApplyVisualTint(laserBeamColor);
+            if (spriteRenderer) beamFx.CopySortingFrom(spriteRenderer);
+        }
+
+        EnsureLaserStretchSegmentsCreated();
+        int segN = Mathf.Max(4, laserStretchSegmentCount);
+        if (_laserRowFadeStarted == null || _laserRowFadeStarted.Length != segN)
+            _laserRowFadeStarted = new bool[segN];
+        else
+            System.Array.Clear(_laserRowFadeStarted, 0, segN);
+
+        foreach (var seg in _laserStretchSegments)
+        {
+            if (seg) seg.SetVisualEnabled(false);
+        }
+
+        float segmentLenFixed = laserBeamLength / segN;
+        var damagedThisSweep = new HashSet<IDamageable>();
+        float elapsed = 0f;
+        float beamZ = transform.position.z - 0.01f;
+
+        while (elapsed < laserFireDuration)
+        {
+            float progress = Mathf.Clamp01(elapsed / Mathf.Max(0.0001f, laserFireDuration));
+            float eased = Mathf.SmoothStep(0f, 1f, progress);
+            float beamLen = Mathf.Lerp(laserMinBeamLength, laserBeamLength, eased);
+            Vector2 mouthNow = ComputeMouthWorldPosition();
+            Vector2 tip = mouthNow + castDir * beamLen;
+            float u = beamLen / Mathf.Max(0.001f, laserBeamLength);
+
+            _laserStretchSegments.RemoveAll(static s => s == null);
+
+            if (beamFx)
+                beamFx.ApplyBeam(mouthNow, castAngleDeg, beamLen, beamZ);
+
+            for (int i = 0; i < segN && i < _laserStretchSegments.Count; i++)
+            {
+                BossAttackIndicator seg = _laserStretchSegments[i];
+                if (!seg) continue;
+
+                float rowStartU = i / (float)segN;
+                if (u < rowStartU)
+                {
+                    seg.SetVisualEnabled(false);
+                    continue;
+                }
+
+                seg.SetVisualEnabled(true);
+                Vector2 center = mouthNow + castDir * ((i + 0.5f) * segmentLenFixed);
+                seg.UpdateRect(center, new Vector2(segmentLenFixed, laserSegmentStripeWidth), castAngleDeg);
+
+                float rowEndU = (i + 1f) / segN;
+                float imminentAt = rowEndU - (laserSegmentImminentLead / segN);
+                if (u >= imminentAt && seg.CurrentPhase != BossAttackIndicator.Phase.Imminent)
+                    seg.ForceImminent();
+
+                if (u >= rowEndU && !_laserRowFadeStarted[i])
+                {
+                    _laserRowFadeStarted[i] = true;
+                    seg.FadeOutAndDestroy(Mathf.Max(0.04f, laserRowFadeDuration));
+                }
+            }
+
+            DealDamageLaserTip(tip, laserTipHitRadius, laserDamage, damagedThisSweep);
+
+            _activeIndicators.RemoveAll(static r => r == null);
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        if (beamFx)
+        {
+            Vector2 mouthFinal = ComputeMouthWorldPosition();
+            beamFx.ApplyBeam(mouthFinal, castAngleDeg, laserBeamLength, beamZ);
+        }
+
+        ReleaseWormLaserFireHoldPose();
+        _activeBossLaserBeam = null;
+
+        _laserStretchSegments.RemoveAll(static s => s == null);
+        foreach (var seg in _laserStretchSegments)
+        {
+            if (!seg) continue;
+            _activeIndicators.Remove(seg);
+            Destroy(seg.gameObject);
+        }
+        _laserStretchSegments.Clear();
+
+        if (beamFx) beamFx.FadeAndDestroy(0.18f);
+        else if (beamGo) Destroy(beamGo);
+    }
+
+    private void EnsureLaserStretchSegmentsCreated()
+    {
+        if (indicatorBaseSprite == null) return;
+        _laserStretchSegments.RemoveAll(static s => s == null);
+        int n = Mathf.Max(4, laserStretchSegmentCount);
+        if (_laserStretchSegments.Count >= n) return;
+        float longDur = laserFireDuration + laserChargeDuration + 8f;
+        for (int i = _laserStretchSegments.Count; i < n; i++)
+        {
+            BossAttackIndicator ind = CreateIndicator();
+            ind.BeginRect(indicatorBaseSprite, indicatorImminentSprite,
+                indicatorBaseColor, indicatorImminentColor,
+                ComputeMouthWorldPosition(), new Vector2(0.2f, laserSegmentStripeWidth), 0f,
+                longDur, 0.08f, 5.5f, indicatorSortingOrder, _sortingLayerId);
+            _laserStretchSegments.Add(ind);
+        }
+    }
+
+    private void DestroyLaserStretchSegments()
+    {
+        foreach (var seg in _laserStretchSegments)
+        {
+            if (!seg) continue;
+            _activeIndicators.Remove(seg);
+            Destroy(seg.gameObject);
+        }
+        _laserStretchSegments.Clear();
+        _laserRowFadeStarted = null;
+    }
+
+    private void DealDamageLaserTip(Vector2 tipWorld, float radius, float damage,
+        HashSet<IDamageable> alreadyDamaged)
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(tipWorld, radius, playerLayerMask);
+        foreach (var hit in hits)
+        {
+            if (!hit) continue;
+            IDamageable d = hit.GetComponentInParent<IDamageable>();
+            if (d == null || alreadyDamaged.Contains(d)) continue;
+            Vector2 kb = ((Vector2)hit.bounds.center - tipWorld);
+            if (kb.sqrMagnitude <= 0.0001f) kb = Vector2.up;
+            else kb.Normalize();
+            d.TakeHit(damage, kb, 3.5f);
+            alreadyDamaged.Add(d);
+        }
+    }
+
+    private void FreezeWormLaserFireHoldPose()
+    {
+        if (!animator) return;
+        animator.Play(StateLaserFire, 0, 1f);
+        animator.Update(0f);
+        animator.speed = 0f;
+        _wormAnimatorHeldOnLaserFireFrame = true;
+    }
+
+    private void ReleaseWormLaserFireHoldPose()
+    {
+        if (!_wormAnimatorHeldOnLaserFireFrame) return;
+        _wormAnimatorHeldOnLaserFireFrame = false;
+        if (animator) animator.speed = 1f;
+    }
+
+    private void FreezePhaseChangeHoldPose()
+    {
+        if (!animator) return;
+        animator.Play(StatePhaseChange, 0, 1f);
+        animator.Update(0f);
+        animator.speed = 0f;
+        _wormAnimatorHeldOnPhaseChangeFrame = true;
+    }
+
+    private void ReleasePhaseChangeHoldPose()
+    {
+        if (!_wormAnimatorHeldOnPhaseChangeFrame) return;
+        _wormAnimatorHeldOnPhaseChangeFrame = false;
+        if (animator) animator.speed = 1f;
+    }
+
+    private Vector2 ComputeMouthWorldPosition()
+    {
+        Vector2 pos = transform.position;
+        Vector2 offset = laserMouthOffset;
+        bool flipX = spriteRenderer && spriteRenderer.flipX;
+        bool facingRight = spriteFacesRightByDefault ^ flipX;
+        if (!facingRight) offset.x = -offset.x;
+        return pos + offset;
+    }
+
+    private static Vector2 AngleToVector(float degrees)
+    {
+        float rad = degrees * Mathf.Deg2Rad;
+        return new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+    }
+
+
+    private IEnumerator RepositionRoutine()
+    {
+        _immuneDuringDigMove = true;
+        _state = InternalState.Repositioning;
+        Vector3Int targetCell = ChooseRepositionTarget();
+        Vector3 startWorld = transform.position;
+        Vector2 targetWorld2 = CellCenterWorld(targetCell);
+        Vector3 targetWorld = new Vector3(targetWorld2.x, targetWorld2.y, transform.position.z);
+        if (Vector3.Distance(startWorld, targetWorld) < 0.25f)
+        {
+            _immuneDuringDigMove = false;
+            _state = InternalState.Idle;
+            yield break;
+        }
+
+        PlayAnimState(StateDigging);
+        ResolveBossAudio()?.PlayDigSfx();
+        float digClipLen = GetAnimClipLength(StateDigging, 0.62f);
+        for (float digT = 0f; digT < digClipLen; digT += Time.deltaTime)
+        {
+            if (_phaseTransitionActive)
+            {
+                _immuneDuringDigMove = false;
+                _state = InternalState.Idle;
+                yield break;
+            }
+            yield return null;
+        }
+        if (_phaseTransitionActive)
+        {
+            _immuneDuringDigMove = false;
+            _state = InternalState.Idle;
+            yield break;
+        }
+
+        SetUndergroundVisuals(true);
+
+        Vector3Int reposFrom = WorldToCell((Vector2)startWorld);
+        bool pathOk = TryGetWalkablePath(reposFrom, targetCell, _pathScratch);
+        float pathWorldLen = pathOk && _pathScratch.Count > 0 ? MeasurePathWorldLength(_pathScratch) : 0f;
+        if (pathWorldLen < 0.02f)
+        {
+            pathOk = false;
+            pathWorldLen = Vector2.Distance((Vector2)startWorld, targetWorld2);
+        }
+        pathWorldLen = Mathf.Max(0.02f, pathWorldLen);
+        float travelTime = pathWorldLen / Mathf.Max(0.5f, undergroundSpeed);
+        float elapsed = 0f;
+        float nextRubble = 0f;
+        Vector3 lastRubblePos = startWorld;
+
+        while (elapsed < travelTime)
+        {
+            if (_phaseTransitionActive)
+            {
+                _immuneDuringDigMove = false;
+                SetUndergroundVisuals(false);
+                _state = InternalState.Idle;
+                yield break;
+            }
+
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / travelTime);
+            Vector2 pos;
+            Vector2 trailDir = Vector2.right;
+            if (pathOk && _pathScratch.Count > 0)
+            {
+                float distAlong = t * pathWorldLen;
+                pos = PointOnWalkablePathAtDistance(_pathScratch, distAlong);
+                trailDir = TangentOnWalkablePathAtDistance(_pathScratch, distAlong, 0.1f);
+            }
+            else
+            {
+                pos = Vector2.Lerp((Vector2)startWorld, targetWorld2, t);
+                Vector2 seg = targetWorld2 - (Vector2)startWorld;
+                trailDir = seg.sqrMagnitude > 0.0001f ? seg.normalized : Vector2.right;
+            }
+
+            SetBossWorldPosition(pos);
+
+            if (elapsed >= nextRubble)
+            {
+                nextRubble += rubbleTrailInterval;
+                Vector3 here = transform.position;
+                if ((here - lastRubblePos).sqrMagnitude > 0.005f)
+                {
+                    SpawnRubbleBurst(here, 2, 1.12f, rubbleColor, trailDir);
+                    lastRubblePos = here;
+                }
+            }
+            yield return null;
+        }
+
+        SetBossWorldPosition(new Vector2(targetWorld.x, targetWorld.y));
+
+        SetUndergroundVisuals(false);
+        PlayAnimState(StateRising);
+        ResolveBossAudio()?.PlayRiseSfx();
+        SpawnRubbleBurst(targetWorld, 5, 1.52f, riseRubbleColor, default);
+
+        float riseClipLen = GetAnimClipLength(StateRising, 0.72f);
+        float riseDmgDelay = riseClipLen * 0.55f;
+        for (float riseT = 0f; riseT < riseDmgDelay; riseT += Time.deltaTime)
+        {
+            if (_phaseTransitionActive)
+            {
+                _immuneDuringDigMove = false;
+                _state = InternalState.Idle;
+                yield break;
+            }
+            yield return null;
+        }
+        if (_phaseTransitionActive)
+        {
+            _immuneDuringDigMove = false;
+            _state = InternalState.Idle;
+            yield break;
+        }
+
+        DealDamageOnCells(new List<Vector3Int> { targetCell }, repositionEmergeRadius, repositionEmergeDamage, 3f);
+
+        float riseRemain = Mathf.Max(0f, riseClipLen - riseDmgDelay);
+        for (float riseT = 0f; riseT < riseRemain; riseT += Time.deltaTime)
+        {
+            if (_phaseTransitionActive)
+            {
+                _immuneDuringDigMove = false;
+                _state = InternalState.Idle;
+                yield break;
+            }
+            yield return null;
+        }
+
+        _immuneDuringDigMove = false;
+        _state = InternalState.Idle;
+        PlayAnimState(StateIdle);
+    }
+
+    private Vector3Int ChooseRepositionTarget()
+    {
+        if (_walkableCells.Count == 0) return GetCurrentCell();
+
+        Vector2 playerPos = Player ? (Vector2)Player.position : (Vector2)transform.position;
+        float shieldNorm = CurrentShieldNormalized;
+        bool wantDistance = !_shieldBroken && shieldNorm > 0.01f && shieldNorm < shieldRegenSeekThreshold;
+
+        int bestScore = int.MinValue;
+        Vector3Int best = _walkableCells[Random.Range(0, _walkableCells.Count)];
+
+        int samples = Mathf.Min(32, _walkableCells.Count);
+        float edgeKeep = 0.58f;
+        for (int i = 0; i < samples; i++)
+        {
+            Vector3Int candidate = _walkableCells[Random.Range(0, _walkableCells.Count)];
+            Vector2 candidateWorld = CellCenterWorld(candidate);
+            if (_arenaClampReady)
+            {
+                float ax0 = _arenaMinX + _pivotHalfExtentsWorld.x + edgeKeep;
+                float ax1 = _arenaMaxX - _pivotHalfExtentsWorld.x - edgeKeep;
+                float ay0 = _arenaMinY + _pivotHalfExtentsWorld.y + edgeKeep;
+                float ay1 = _arenaMaxY - _pivotHalfExtentsWorld.y - edgeKeep;
+                if (candidateWorld.x < ax0 || candidateWorld.x > ax1 || candidateWorld.y < ay0 || candidateWorld.y > ay1)
+                    continue;
+            }
+            float distPlayer = (candidateWorld - playerPos).magnitude;
+            float distSelf = ((Vector2)transform.position - candidateWorld).magnitude;
+            if (distSelf < minRepositionDistance) continue;
+            if (distSelf > maxRepositionDistance) continue;
+
+            int score = 0;
+            if (wantDistance)
+            {
+                score = Mathf.RoundToInt(distPlayer * 10f);
+            }
+            else
+            {
+                float ideal = Mathf.Clamp(repositionIdealPlayerDistance, 0.8f, Mathf.Max(1f, meleeRange * 0.95f));
+                score = Mathf.RoundToInt(1000f - Mathf.Abs(distPlayer - ideal) * 40f);
+            }
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                best = candidate;
+            }
+        }
+        return best;
+    }
+
+
+    public override void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce)
+    {
+        if (IsDead || _state == InternalState.Dead) return;
+        if (_introActive) return;
+        if (_phaseTransitionActive) return;
+        if (damage <= 0f) return;
+
+        if (_immuneDuringDigMove || _digInvulnerable)
+            return;
+
+        float maxS = GetMaxShieldForCurrentPhase();
+
+        if (_currentShield > 0f)
+        {
+            float absorbed = Mathf.Min(_currentShield, damage);
+            _currentShield -= absorbed;
+            ResolveBossAudio()?.PlayShieldDamageSfx();
+            if (maxS > 0f && _currentShield < maxS)
+                _lastShieldDamageTime = Time.time;
+            UpdateShieldUI();
+            PlayShieldPingFlash();
+            if (_currentShield <= 0f)
+            {
+                _currentShield = 0f;
+                _shieldBroken = true;
+                if (healthBarUI) healthBarUI.NotifyShieldBroken();
+                PriorityCancelOngoingMoves();
+                _isStunned = true;
+                _state = InternalState.Stunned;
+                if (_rb)
+                    _rb.linearVelocity = Vector2.zero;
+                CrossFadeAnimState(StateDamage, 0.1f);
+                if (_shieldBreakFeedbackRoutine != null)
+                    StopCoroutine(_shieldBreakFeedbackRoutine);
+                Vector2 kb = knockbackDirection.sqrMagnitude > 0.0001f
+                    ? knockbackDirection.normalized
+                    : -AimDirectionToPlayer();
+                _shieldBreakFeedbackRoutine = StartCoroutine(ShieldBreakFeedbackRoutine(kb));
+            }
+            return;
+        }
+
+        if (maxS > 0f && _currentShield < maxS)
+            _lastShieldDamageTime = Time.time;
+
+        ResolveBossAudio()?.PlayBossDamageSfx();
+        float healthBarNormBeforeHpHit = HealthNormalized;
+        base.TakeHit(damage, knockbackDirection, knockbackForce);
+        if (IsDead)
+        {
+            _deathHealthBarDrainFromNormalized = healthBarNormBeforeHpHit;
+            return;
+        }
+
+        if (!_attackActive)
+            StartDamageReaction();
+    }
+
+    private void StartDamageReaction()
+    {
+        if (_damageRoutine != null) StopCoroutine(_damageRoutine);
+        _damageRoutine = StartCoroutine(DamageReactionRoutine());
+    }
+
+    private IEnumerator DamageReactionRoutine()
+    {
+        _isStunned = true;
+        _state = InternalState.Stunned;
+        PlayAnimState(StateDamage);
+        if (_rb) _rb.linearVelocity = Vector2.zero;
+        yield return new WaitForSeconds(damageStunDuration);
+        _isStunned = false;
+        if (!IsDead)
+        {
+            _state = InternalState.Idle;
+            PlayAnimState(StateIdle);
+        }
+        _damageRoutine = null;
+    }
+
+    private void PlayShieldPingFlash()
+    {
+        if (!spriteRenderer) return;
+        if (_shieldPingRoutine != null) StopCoroutine(_shieldPingRoutine);
+        _shieldPingRoutine = StartCoroutine(ShieldPingRoutine());
+    }
+
+    private IEnumerator ShieldPingRoutine()
+    {
+        if (!spriteRenderer) yield break;
+        Color baseColor = _shieldPingBaseColor;
+        float t = 0f;
+        while (t < shieldPingDuration && spriteRenderer)
+        {
+            t += Time.deltaTime;
+            float u = Mathf.Clamp01(t / shieldPingDuration);
+            float amount = Mathf.Sin(u * Mathf.PI);
+            spriteRenderer.color = Color.Lerp(baseColor, shieldPingColor, amount);
+            yield return null;
+        }
+        if (spriteRenderer) spriteRenderer.color = baseColor;
+        _shieldPingRoutine = null;
+    }
+
+    private void UpdateShieldUI()
+    {
+        if (!healthBarUI) return;
+        healthBarUI.SetShield(CurrentShieldNormalized);
+    }
+
+    private IEnumerator ShieldBreakFeedbackRoutine(Vector2 knockbackDirection)
+    {
+        yield return ShieldBreakSurfacedFeedbackCore(knockbackDirection);
+    }
+
+    private IEnumerator ShieldBreakSurfacedFeedbackCore(Vector2 knockbackDirection)
+    {
+        CameraController camCtrl = phaseTransitionCamera ? phaseTransitionCamera : FindFirstObjectByType<CameraController>();
+        if (camCtrl)
+            camCtrl.Shake(shieldBreakCameraShake);
+
+        ResolveBossAudio()?.PlayShieldBreakSfx();
+
+        ShieldBreakShockwaveVfx.Spawn(transform, spriteRenderer);
+
+        float prevScale = Time.timeScale;
+        Time.timeScale = 0.1f;
+        yield return new WaitForSecondsRealtime(0.055f);
+        Time.timeScale = prevScale > 0.02f ? prevScale : 1f;
+
+        if (Rb)
+        {
+            Rb.linearVelocity = Vector2.zero;
+            Vector2 dir = knockbackDirection.sqrMagnitude > 0.0001f ? knockbackDirection.normalized : -AimDirectionToPlayer();
+            Rb.AddForce(dir * shieldBreakKnockbackForce, ForceMode2D.Impulse);
+        }
+
+        float endTime = Time.time + Mathf.Max(0.1f, shieldBreakStunDuration);
+        float zWobbleBase = transform.eulerAngles.z;
+
+        while (Time.time < endTime && !IsDead && !_phaseTransitionActive)
+        {
+            float t = Time.time;
+            if (_spriteVisualIsChild && spriteRenderer)
+            {
+                float wx = Mathf.Sin(t * 13f) * shieldBreakChildWobbleX
+                    + Mathf.Sin(t * 21f) * (shieldBreakChildWobbleX * 0.35f);
+                float wy = Mathf.Sin(t * 10f) * shieldBreakChildWobbleY
+                    + Mathf.Sin(t * 16.5f) * (shieldBreakChildWobbleY * 0.4f);
+                float rz = Mathf.Sin(t * 11.3f) * shieldBreakChildWobbleDegrees
+                    + Mathf.Sin(t * 18f) * (shieldBreakChildWobbleDegrees * 0.42f);
+                spriteRenderer.transform.localPosition = _spriteVisualBaseLocal + new Vector3(wx, wy, 0f);
+                spriteRenderer.transform.localRotation = _spriteVisualBaseLocalRot * Quaternion.Euler(0f, 0f, rz);
+            }
+            else
+            {
+                float dz = Mathf.Sin(t * 11f) * shieldBreakWobbleDegrees
+                    + Mathf.Sin(t * 17.5f) * (shieldBreakWobbleDegrees * 0.42f)
+                    + Mathf.Sin(t * 6.2f) * (shieldBreakWobbleDegrees * 0.22f);
+                transform.rotation = Quaternion.Euler(0f, 0f, zWobbleBase + dz);
+            }
+
+            yield return null;
+        }
+
+        if (!_spriteVisualIsChild)
+            transform.rotation = Quaternion.Euler(0f, 0f, zWobbleBase);
+
+        ResetSpriteVisualLocalIfChild();
+        DisableStunVisual();
+        _isStunned = false;
+        _shieldBreakFeedbackRoutine = null;
+        if (!IsDead && !_phaseTransitionActive)
+        {
+            _state = InternalState.Idle;
+            PlayAnimState(StateIdle);
+        }
+    }
+
+    private void DisableStunVisual()
+    {
+    }
+
+    private void ResetSpriteVisualLocalIfChild()
+    {
+        if (!_spriteVisualIsChild || !spriteRenderer) return;
+        spriteRenderer.transform.localPosition = _spriteVisualBaseLocal;
+        spriteRenderer.transform.localRotation = _spriteVisualBaseLocalRot;
+    }
+
+    protected override void Die()
+    {
+        if (_state == InternalState.Dead) return;
+        _state = InternalState.Dead;
+        _immuneDuringDigMove = false;
+        _introActive = false;
+        if (_behaviorRoutine != null) StopCoroutine(_behaviorRoutine);
+        if (_attackRoutine != null) StopCoroutine(_attackRoutine);
+        if (_damageRoutine != null) StopCoroutine(_damageRoutine);
+        if (_repositionRoutine != null) StopCoroutine(_repositionRoutine);
+        _repositionRoutine = null;
+        if (_phaseTransitionRoutine != null) StopCoroutine(_phaseTransitionRoutine);
+        _phaseTransitionActive = false;
+        _phaseChangePending = false;
+        ReleaseWormLaserFireHoldPose();
+        ReleasePhaseChangeHoldPose();
+        if (_shieldPingRoutine != null) StopCoroutine(_shieldPingRoutine);
+        if (_shieldBreakFeedbackRoutine != null) StopCoroutine(_shieldBreakFeedbackRoutine);
+        _shieldBreakFeedbackRoutine = null;
+        DisableStunVisual();
+        ResetSpriteVisualLocalIfChild();
+        DestroyActiveIndicator();
+        StartCoroutine(DeathRoutine());
+    }
+
+    private IEnumerator DeathRoutine()
+    {
+        SetUndergroundVisuals(false);
+        if (_rb) _rb.linearVelocity = Vector2.zero;
+
+        if (healthBarUI)
+            yield return healthBarUI.AnimateHealthFillTo(0f, deathHealthDrainSeconds, _deathHealthBarDrainFromNormalized);
+
+        CameraController cam = phaseTransitionCamera ? phaseTransitionCamera : FindFirstObjectByType<CameraController>();
+        if (cam)
+            yield return cam.PlayDeathKillImpactRoutine();
+        if (!escapeSequenceManager)
+            escapeSequenceManager = FindFirstObjectByType<BossEscapeSequenceManager>();
+        var playerGo = GameObject.FindGameObjectWithTag("Player");
+        var playerController = playerGo ? playerGo.GetComponent<PlayerController>() : null;
+        Transform playerTf = playerGo ? playerGo.transform : null;
+
+        if (playerController)
+            playerController.LockControlsForSeconds(600f);
+
+        Transform bossTf = transform;
+        Transform panProxy = null;
+
+        PlayAnimState(StateIdle);
+
+        if (playerTf && cam)
+        {
+            panProxy = new GameObject("DeathCutscenePanProxy").transform;
+            Vector3 fromPos = playerTf.position;
+            fromPos.z = bossTf.position.z;
+            Vector3 toPos = bossTf.position;
+            panProxy.position = fromPos;
+            cam.LockToTransform(panProxy);
+            yield return PanProxyLerp(panProxy, fromPos, toPos, deathPanPlayerToBossSeconds);
+            cam.LockToTransform(bossTf);
+        }
+        else if (cam)
+            cam.LockToTransform(bossTf);
+
+        float dyingLen = GetAnimClipLength(StateDying, 0.96f);
+        PlayAnimState(StateDying);
+        ResolveBossAudio()?.PlayDeathSfxForAnimationDuration(dyingLen);
+
+        yield return new WaitForSeconds(dyingLen);
+
+        HideBossAfterDeathVisuals();
+
+        if (healthBarUI)
+            yield return healthBarUI.FadeOutForDeath(deathHealthBarFadeSeconds);
+
+        bool teleporterPanFinished = false;
+        if (postBossTeleporter && cam)
+        {
+            float zRef = postBossTeleporter.transform.position.z;
+            Vector3 bossPos = bossTf.position;
+            bossPos.z = zRef;
+            Vector3 telePos = GetTeleporterPanWorldPosition(zRef);
+
+            postBossTeleporter.SetActive(true);
+            if (!panProxy)
+            {
+                panProxy = new GameObject("DeathCutscenePanProxy").transform;
+                panProxy.position = bossPos;
+                }
+                else
+                panProxy.position = bossPos;
+
+            cam.LockToTransform(panProxy);
+            yield return PanAndFadeTeleporterReveal(panProxy, bossPos, telePos, postBossTeleporter, deathPanBossToTeleporterSeconds, deathTeleporterFadeSeconds);
+
+            if (escapeSequenceManager)
+                yield return escapeSequenceManager.RunTeleporterRevealRumble(cam);
+
+            if (playerTf)
+            {
+                Vector3 fromT = telePos;
+                fromT.z = playerTf.position.z;
+                Vector3 toP = playerTf.position;
+                panProxy.position = fromT;
+                cam.LockToTransform(panProxy);
+                yield return PanProxyLerp(panProxy, fromT, toP, deathPanTeleporterToPlayerSeconds);
+            }
+
+            cam.LockToPlayer();
+            teleporterPanFinished = true;
+        }
+        else if (postBossTeleporter)
+        {
+            postBossTeleporter.SetActive(true);
+            yield return FadeTeleporterInPlace(postBossTeleporter, deathTeleporterFadeSeconds);
+            if (escapeSequenceManager)
+                yield return escapeSequenceManager.RunTeleporterRevealRumble(cam);
+        }
+
+        if (cam && !teleporterPanFinished)
+            cam.LockToPlayer();
+
+        if (panProxy)
+        {
+            Destroy(panProxy.gameObject);
+            panProxy = null;
+        }
+
+        if (playerController)
+            playerController.UnlockControlsImmediate();
+
+        var bossAudio = ResolveBossAudio();
+        if (postBossTeleporter && bossAudio)
+            bossAudio.BeginEscapeMusic();
+
+        if (postBossTeleporter && escapeSequenceManager)
+            escapeSequenceManager.BeginEscapePhase();
+
+        base.Die();
+    }
+
+    private void HideBossAfterDeathVisuals()
+    {
+        if (_activeBossLaserBeam)
+        {
+            Destroy(_activeBossLaserBeam);
+            _activeBossLaserBeam = null;
+        }
+
+        foreach (var sr in GetComponentsInChildren<SpriteRenderer>(true))
+            sr.enabled = false;
+        if (animator)
+            animator.enabled = false;
+        if (_rb)
+        {
+            _rb.linearVelocity = Vector2.zero;
+            _rb.simulated = false;
+        }
+
+        foreach (var c in GetComponentsInChildren<Collider2D>(true))
+            c.enabled = false;
+    }
+
+    private Vector3 GetTeleporterPanWorldPosition(float zWorld)
+    {
+        if (!postBossTeleporterPan)
+            return new Vector3(0f, 0f, zWorld);
+
+        Vector3 p = postBossTeleporterPan.position;
+        p.z = zWorld;
+        return p;
+    }
+
+    private static IEnumerator PanProxyLerp(Transform proxy, Vector3 from, Vector3 to, float duration)
+    {
+        if (!proxy)
+            yield break;
+        if (duration <= 0.0001f)
+        {
+            proxy.position = to;
+            yield break;
+        }
+
+        float t = 0f;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float u = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / duration));
+            proxy.position = Vector3.Lerp(from, to, u);
+            yield return null;
+        }
+        proxy.position = to;
+    }
+
+    private static IEnumerator PanAndFadeTeleporterReveal(Transform panProxy, Vector3 fromPos, Vector3 toPos,
+        GameObject teleporterGo, float panDuration, float fadeDuration)
+    {
+        var tilemaps = teleporterGo.GetComponentsInChildren<Tilemap>(true);
+        var sprites = teleporterGo.GetComponentsInChildren<SpriteRenderer>(true);
+        var cols = teleporterGo.GetComponentsInChildren<Collider2D>(true);
+        foreach (var c in cols)
+            c.enabled = false;
+
+        var tileBase = new Color[tilemaps.Length];
+        for (int i = 0; i < tilemaps.Length; i++)
+        {
+            tileBase[i] = tilemaps[i].color;
+            var tc = tileBase[i];
+            tc.a = 0f;
+            tilemaps[i].color = tc;
+        }
+
+        var spriteBase = new Color[sprites.Length];
+        for (int i = 0; i < sprites.Length; i++)
+        {
+            spriteBase[i] = sprites[i].color;
+            var sc = spriteBase[i];
+            sc.a = 0f;
+            sprites[i].color = sc;
+        }
+
+        float dur = Mathf.Max(0.01f, Mathf.Max(panDuration, fadeDuration));
+        float elapsed = 0f;
+        while (elapsed < dur)
+        {
+            elapsed += Time.deltaTime;
+            float uPan = Mathf.Clamp01(elapsed / Mathf.Max(0.0001f, panDuration));
+            float uFade = Mathf.Clamp01(elapsed / Mathf.Max(0.0001f, fadeDuration));
+            float smoothPan = Mathf.SmoothStep(0f, 1f, uPan);
+            if (panProxy)
+                panProxy.position = Vector3.Lerp(fromPos, toPos, smoothPan);
+            for (int i = 0; i < tilemaps.Length; i++)
+            {
+                var c = tileBase[i];
+                c.a = tileBase[i].a * uFade;
+                tilemaps[i].color = c;
+            }
+
+            for (int i = 0; i < sprites.Length; i++)
+            {
+                var c = spriteBase[i];
+                c.a = spriteBase[i].a * uFade;
+                sprites[i].color = c;
+            }
+
+            yield return null;
+        }
+
+        if (panProxy)
+            panProxy.position = toPos;
+        for (int i = 0; i < tilemaps.Length; i++)
+            tilemaps[i].color = tileBase[i];
+        for (int i = 0; i < sprites.Length; i++)
+            sprites[i].color = spriteBase[i];
+        foreach (var c in cols)
+            c.enabled = true;
+    }
+
+    private static IEnumerator FadeTeleporterInPlace(GameObject teleporterGo, float fadeDuration)
+    {
+        fadeDuration = Mathf.Max(0.01f, fadeDuration);
+        var tilemaps = teleporterGo.GetComponentsInChildren<Tilemap>(true);
+        var sprites = teleporterGo.GetComponentsInChildren<SpriteRenderer>(true);
+        var cols = teleporterGo.GetComponentsInChildren<Collider2D>(true);
+        foreach (var c in cols)
+            c.enabled = false;
+
+        var tileBase = new Color[tilemaps.Length];
+        for (int i = 0; i < tilemaps.Length; i++)
+        {
+            tileBase[i] = tilemaps[i].color;
+            var tc = tileBase[i];
+            tc.a = 0f;
+            tilemaps[i].color = tc;
+        }
+
+        var spriteBase = new Color[sprites.Length];
+        for (int i = 0; i < sprites.Length; i++)
+        {
+            spriteBase[i] = sprites[i].color;
+            var sc = spriteBase[i];
+            sc.a = 0f;
+            sprites[i].color = sc;
+        }
+
+        float t = 0f;
+        while (t < fadeDuration)
+        {
+            t += Time.deltaTime;
+            float uFade = Mathf.Clamp01(t / fadeDuration);
+            for (int i = 0; i < tilemaps.Length; i++)
+            {
+                var c = tileBase[i];
+                c.a = tileBase[i].a * uFade;
+                tilemaps[i].color = c;
+            }
+
+            for (int i = 0; i < sprites.Length; i++)
+            {
+                var c = spriteBase[i];
+                c.a = spriteBase[i].a * uFade;
+                sprites[i].color = c;
+            }
+
+            yield return null;
+        }
+
+        for (int i = 0; i < tilemaps.Length; i++)
+            tilemaps[i].color = tileBase[i];
+        for (int i = 0; i < sprites.Length; i++)
+            sprites[i].color = spriteBase[i];
+        foreach (var c in cols)
+            c.enabled = true;
+    }
+
+
+    private void BindHealthBar()
+    {
+        if (!healthBarUI) return;
+        healthBarUI.Bind(this);
+        healthBarUI.SetHealth(HealthNormalized);
+        healthBarUI.SetShield(CurrentShieldNormalized);
+        _lastObservedPhase = CurrentPhase;
+        _phaseChangePending = false;
+    }
+
+    private IEnumerator PhaseTransitionSequence(int newPhase)
+    {
+        _phaseTransitionActive = true;
+        _phaseChangePending = false;
+        if (_shieldBreakFeedbackRoutine != null)
+        {
+            StopCoroutine(_shieldBreakFeedbackRoutine);
+            _shieldBreakFeedbackRoutine = null;
+        }
+        ResetSpriteVisualLocalIfChild();
+        DisableStunVisual();
+        PriorityCancelOngoingMoves();
+        _isStunned = false;
+        _state = InternalState.Idle;
+
+        _shieldBroken = false;
+        _currentShield = 0f;
+        _lastShieldDamageTime = Time.time;
+        UpdateShieldUI();
+
+        Vector2 aim = AimDirectionToPlayer();
+        FaceDirection(aim);
+
+        CameraController cam = phaseTransitionCamera ? phaseTransitionCamera : FindFirstObjectByType<CameraController>();
+        float enterShake = newPhase >= 3 ? phaseTransitionShakeEnterPhase3 : phaseTransitionShakeEnterPhase2;
+        if (cam) cam.Shake(enterShake);
+        if (cam) cam.PhaseTransitionZoomIn(transform);
+
+        if (newPhase == 2) ResolveBossAudio()?.PlayPhaseTransitionToPhase2Sfx();
+        else if (newPhase == 3) ResolveBossAudio()?.PlayPhaseTransitionToPhase3Sfx();
+
+        if (healthBarUI)
+            healthBarUI.NotifyPhaseChange(newPhase);
+
+        float phaseClipLen = GetAnimClipLength(StatePhaseChange, 0.88f);
+        CrossFadeAnimState(StatePhaseChange, 0.1f);
+        float introT = 0f;
+        while (introT < phaseClipLen)
+        {
+            introT += Time.deltaTime;
+            if (_rb) _rb.linearVelocity = Vector2.zero;
+            yield return null;
+        }
+
+        FreezePhaseChangeHoldPose();
+
+        float maxShield = GetMaxShieldForCurrentPhase();
+        float fillDur = newPhase >= 3 ? phaseTransitionShieldFillPhase3 : phaseTransitionShieldFillPhase2;
+        fillDur = Mathf.Max(0.05f, fillDur);
+        float fillT = 0f;
+        while (fillT < fillDur)
+        {
+            fillT += Time.deltaTime;
+            float u = Mathf.Clamp01(fillT / fillDur);
+            _currentShield = maxShield * u;
+            UpdateShieldUI();
+            if (_rb) _rb.linearVelocity = Vector2.zero;
+            yield return null;
+        }
+
+        _currentShield = maxShield;
+        _lastShieldDamageTime = Time.time;
+        UpdateShieldUI();
+        if (healthBarUI)
+            healthBarUI.NotifyShieldRestored(newPhase);
+
+        float holdAfter = newPhase >= 3 ? phaseTransitionLaserHoldAfterShieldPhase3 : phaseTransitionLaserHoldAfterShieldPhase2;
+        holdAfter = Mathf.Max(0f, holdAfter);
+        float holdT = 0f;
+        while (holdT < holdAfter)
+        {
+            holdT += Time.deltaTime;
+            if (_rb) _rb.linearVelocity = Vector2.zero;
+            yield return null;
+        }
+
+        ReleasePhaseChangeHoldPose();
+        PlayAnimState(StateIdle);
+
+        if (cam) cam.PhaseTransitionZoomRestore();
+        if (cam && phaseTransitionShakeResume > 0.0001f)
+            cam.Shake(phaseTransitionShakeResume);
+
+        var bossAudio = ResolveBossAudio();
+        if (bossAudio)
+            bossAudio.NotifyBossPhase(newPhase);
+
+        _phaseTransitionActive = false;
+        _phaseTransitionRoutine = null;
+    }
+
+    private Vector2 AimDirectionToPlayer()
+    {
+        if (!Player) return Vector2.right;
+        Vector2 d = (Player.position - transform.position);
+        return d.sqrMagnitude > 0.0001f ? d.normalized : Vector2.right;
+    }
+
+    private void FaceDirection(Vector2 direction)
+    {
+        if (!spriteRenderer) return;
+        if (Mathf.Abs(direction.x) < Mathf.Max(0.001f, flipThreshold)) return;
+        bool playerOnRight = direction.x > 0f;
+        bool desiredFlipX = spriteFacesRightByDefault ? (direction.x < 0f) : playerOnRight;
+        if (desiredFlipX == spriteRenderer.flipX) return;
+        if (Time.time - _lastFlipTime < Mathf.Max(0f, minFlipInterval)) return;
+        spriteRenderer.flipX = desiredFlipX;
+        _lastFlipTime = Time.time;
+    }
+
+    private void PlayAnimState(string stateName)
+    {
+        if (!animator) return;
+        if (!animator.enabled) animator.enabled = true;
+        animator.speed = 1f;
+        animator.Play(stateName, 0, 0f);
+    }
+
+    private void CrossFadeAnimState(string stateName, float duration)
+    {
+        if (!animator) return;
+        if (!animator.enabled) animator.enabled = true;
+        animator.speed = 1f;
+        animator.CrossFade(stateName, duration, 0, 0f);
+    }
+
+    private float GetAnimClipLength(string stateName, float fallback)
+    {
+        if (!animator || animator.runtimeAnimatorController == null) return fallback;
+        foreach (var clip in animator.runtimeAnimatorController.animationClips)
+        {
+            if (clip && clip.name == stateName)
+                return clip.length;
+        }
+        return fallback;
+    }
+
+    private static Vector2 Rotate(Vector2 v, float degrees)
+    {
+        float rad = degrees * Mathf.Deg2Rad;
+        float cos = Mathf.Cos(rad);
+        float sin = Mathf.Sin(rad);
+        return new Vector2(v.x * cos - v.y * sin, v.x * sin + v.y * cos);
     }
 
     private List<Vector3Int> GetArcCells(Vector2 center, Vector2 forward, float range, float halfArcDegrees)
@@ -634,466 +2135,201 @@ public sealed class WormBossController : EnemyBase
         foreach (var cell in _walkableCells)
         {
             Vector2 world = CellCenterWorld(cell);
-            Vector2 dir = world - center;
-            float mag = dir.magnitude;
+            Vector2 d = world - center;
+            float mag = d.magnitude;
             if (mag <= 0.001f || mag > range) continue;
-
-            Vector2 dirN = dir / mag;
-            if (Vector2.Dot(forward, dirN) >= cosThreshold)
+            Vector2 dn = d / mag;
+            if (Vector2.Dot(forward, dn) >= cosThreshold)
                 cells.Add(cell);
         }
-        return cells;
-    }
-
-    private List<Vector3Int> GetCellsInRadius(Vector2 center, float radius)
-    {
-        var cells = new List<Vector3Int>();
-        float radiusSq = radius * radius;
-        for (int i = 0; i < _walkableCells.Count; i++)
-        {
-            Vector3Int cell = _walkableCells[i];
-            float d = (((Vector2)CellCenterWorld(cell)) - center).sqrMagnitude;
-            if (d <= radiusSq)
-                cells.Add(cell);
-        }
-
         if (cells.Count == 0)
-            cells.Add(GetNearestWalkableCell(center));
+        {
+            cells.Add(NearestWalkableCell(center + forward * Mathf.Max(0.5f, range * 0.5f)));
+        }
         return cells;
     }
 
-    private Vector2 CellCenterWorld(Vector3Int cell)
-    {
-        Tilemap source = baseTilemap ? baseTilemap : decorationTilemap;
-        if (!source) return transform.position;
-        return source.GetCellCenterWorld(cell);
-    }
-
-    private void SpawnTelegraphCells(List<Vector3Int> cells, Color color, float scale, float lifetime, bool pulse,
-        float pulseSpeed, float fillAlphaMin, float fillAlphaMax, float outlineAlphaMin, float outlineAlphaMax)
-    {
-        ClearTelegraphs();
-        if (cells == null || cells.Count == 0) return;
-
-        BuildTelegraphRegion(cells, color, scale, lifetime, pulse, pulseSpeed, fillAlphaMin, fillAlphaMax, outlineAlphaMin, outlineAlphaMax);
-    }
-
-    private void BuildTelegraphRegion(List<Vector3Int> cells, Color color, float scale, float lifetime, bool pulse,
-        float pulseSpeed, float fillAlphaMin, float fillAlphaMax, float outlineAlphaMin, float outlineAlphaMax)
-    {
-        if (!TryGetCellBasis(out Vector2 a, out Vector2 b))
-            return;
-
-        var cellSet = new HashSet<Vector3Int>(cells);
-        Mesh fillMesh = BuildFillMesh(cells, a, b, scale);
-        Mesh outlineMesh = BuildOutlineMesh(cellSet, a, b, scale, telegraphOutlineThickness);
-
-        var root = new GameObject("BossTelegraphRegion");
-        root.transform.position = new Vector3(0f, 0f, transform.position.z + 0.05f);
-        _activeTelegraphs.Add(root);
-
-        if (fillMesh != null)
-        {
-            var fillGo = new GameObject("FillMesh");
-            fillGo.transform.SetParent(root.transform, false);
-            var mf = fillGo.AddComponent<MeshFilter>();
-            mf.sharedMesh = fillMesh;
-            var mr = fillGo.AddComponent<MeshRenderer>();
-            mr.sharedMaterial = CreateTelegraphMaterial(color);
-            mr.sortingOrder = 76;
-            _activeTelegraphs.Add(fillGo);
-        }
-
-        if (outlineMesh != null)
-        {
-            var outlineGo = new GameObject("OutlineMesh");
-            outlineGo.transform.SetParent(root.transform, false);
-            var mf = outlineGo.AddComponent<MeshFilter>();
-            mf.sharedMesh = outlineMesh;
-            var mr = outlineGo.AddComponent<MeshRenderer>();
-            mr.sharedMaterial = CreateTelegraphMaterial(telegraphOutlineColor);
-            mr.sortingOrder = 77;
-            _activeTelegraphs.Add(outlineGo);
-        }
-
-        if (pulse)
-            StartCoroutine(PulseTelegraph(root, color, telegraphOutlineColor, lifetime, pulseSpeed, fillAlphaMin, fillAlphaMax, outlineAlphaMin, outlineAlphaMax));
-    }
-
-    private void SpawnLaserCrossTelegraph(List<Vector3Int> cells, Color color, float lifetime, bool pulse,
-        float pulseSpeed, float fillAlphaMin, float fillAlphaMax, float outlineAlphaMin, float outlineAlphaMax)
-    {
-        SpawnTelegraphCells(cells, color, telegraphCellScale, lifetime, pulse, pulseSpeed, fillAlphaMin, fillAlphaMax, outlineAlphaMin, outlineAlphaMax);
-    }
-
-    private void SpawnSwipeTelegraph(List<Vector3Int> cells, Color color, float lifetime, bool pulse,
-        float pulseSpeed, float fillAlphaMin, float fillAlphaMax, float outlineAlphaMin, float outlineAlphaMax)
-    {
-        SpawnTelegraphCells(cells, color, telegraphCellScale, lifetime, pulse, pulseSpeed, fillAlphaMin, fillAlphaMax, outlineAlphaMin, outlineAlphaMax);
-    }
-
-    private IEnumerator PulseTelegraph(GameObject telegraphRoot, Color fillBase, Color outlineBase, float duration, float pulseSpeed,
-        float fillAlphaMin, float fillAlphaMax, float outlineAlphaMin, float outlineAlphaMax)
-    {
-        if (!telegraphRoot || duration <= 0.001f)
-            yield break;
-
-        var renderers = telegraphRoot.GetComponentsInChildren<MeshRenderer>();
-        float end = Time.time + duration;
-        while (Time.time < end && telegraphRoot)
-        {
-            float t = Mathf.InverseLerp(end - duration, end, Time.time);
-            float pulse = 0.5f + 0.5f * Mathf.Sin(t * Mathf.PI * Mathf.Max(0.25f, pulseSpeed));
-            float ramp = Mathf.Lerp(0.75f, 1f, t);
-
-            for (int i = 0; i < renderers.Length; i++)
-            {
-                var r = renderers[i];
-                if (!r || !r.sharedMaterial) continue;
-
-                if (r.gameObject.name.Contains("Outline"))
-                {
-                    Color c = outlineBase;
-                    c.a *= Mathf.Lerp(outlineAlphaMin, outlineAlphaMax, pulse) * ramp;
-                    r.sharedMaterial.color = c;
-                }
-                else
-                {
-                    Color c = fillBase;
-                    c.a *= Mathf.Lerp(fillAlphaMin, fillAlphaMax, pulse) * ramp;
-                    r.sharedMaterial.color = c;
-                }
-            }
-            yield return null;
-        }
-    }
-
-    private bool TryGetCellBasis(out Vector2 basisRight, out Vector2 basisUp)
-    {
-        basisRight = Vector2.right * 0.5f;
-        basisUp = Vector2.up * 0.5f;
-        if (_walkableCells.Count == 0) return false;
-
-        Vector3Int sample = _walkableCells[0];
-        Vector2 center = CellCenterWorld(sample);
-        basisRight = CellCenterWorld(sample + Vector3Int.right) - center;
-        basisUp = CellCenterWorld(sample + Vector3Int.up) - center;
-
-        if (basisRight.sqrMagnitude < 0.0001f) basisRight = new Vector2(0.5f, 0f);
-        if (basisUp.sqrMagnitude < 0.0001f) basisUp = new Vector2(0f, 0.5f);
-        return true;
-    }
-
-    private Mesh BuildFillMesh(List<Vector3Int> cells, Vector2 basisRight, Vector2 basisUp, float scale)
-    {
-        if (cells == null || cells.Count == 0) return null;
-
-        var vertices = new List<Vector3>(cells.Count * 4);
-        var triangles = new List<int>(cells.Count * 6);
-        Vector2 r = basisRight * 0.5f * scale;
-        Vector2 u = basisUp * 0.5f * scale;
-
-        for (int i = 0; i < cells.Count; i++)
-        {
-            Vector2 c = CellCenterWorld(cells[i]);
-            Vector3 v0 = c - r - u;
-            Vector3 v1 = c + r - u;
-            Vector3 v2 = c + r + u;
-            Vector3 v3 = c - r + u;
-
-            int idx = vertices.Count;
-            vertices.Add(v0);
-            vertices.Add(v1);
-            vertices.Add(v2);
-            vertices.Add(v3);
-
-            triangles.Add(idx + 0);
-            triangles.Add(idx + 1);
-            triangles.Add(idx + 2);
-            triangles.Add(idx + 0);
-            triangles.Add(idx + 2);
-            triangles.Add(idx + 3);
-        }
-
-        var mesh = new Mesh { name = "TelegraphFillMesh" };
-        mesh.SetVertices(vertices);
-        mesh.SetTriangles(triangles, 0);
-        mesh.RecalculateBounds();
-        return mesh;
-    }
-
-    private Mesh BuildOutlineMesh(HashSet<Vector3Int> cells, Vector2 basisRight, Vector2 basisUp, float scale, float thickness)
-    {
-        if (cells == null || cells.Count == 0) return null;
-
-        var vertices = new List<Vector3>(cells.Count * 16);
-        var triangles = new List<int>(cells.Count * 24);
-        Vector2 r = basisRight * 0.5f * scale;
-        Vector2 u = basisUp * 0.5f * scale;
-
-        foreach (Vector3Int cell in cells)
-        {
-            Vector2 c = CellCenterWorld(cell);
-            Vector2 v0 = c - r - u;
-            Vector2 v1 = c + r - u;
-            Vector2 v2 = c + r + u;
-            Vector2 v3 = c - r + u;
-
-            if (!cells.Contains(cell + Vector3Int.left)) AddEdgeQuad(v0, v3, thickness, vertices, triangles);
-            if (!cells.Contains(cell + Vector3Int.right)) AddEdgeQuad(v1, v2, thickness, vertices, triangles);
-            if (!cells.Contains(cell + Vector3Int.down)) AddEdgeQuad(v0, v1, thickness, vertices, triangles);
-            if (!cells.Contains(cell + Vector3Int.up)) AddEdgeQuad(v3, v2, thickness, vertices, triangles);
-        }
-
-        var mesh = new Mesh { name = "TelegraphOutlineMesh" };
-        mesh.SetVertices(vertices);
-        mesh.SetTriangles(triangles, 0);
-        mesh.RecalculateBounds();
-        return mesh;
-    }
-
-    private static void AddEdgeQuad(Vector2 p0, Vector2 p1, float thickness, List<Vector3> vertices, List<int> triangles)
-    {
-        Vector2 edge = p1 - p0;
-        if (edge.sqrMagnitude < 0.00001f) return;
-
-        Vector2 n = new Vector2(-edge.y, edge.x).normalized * (thickness * 0.5f);
-        Vector3 q0 = p0 - n;
-        Vector3 q1 = p0 + n;
-        Vector3 q2 = p1 + n;
-        Vector3 q3 = p1 - n;
-
-        int idx = vertices.Count;
-        vertices.Add(q0);
-        vertices.Add(q1);
-        vertices.Add(q2);
-        vertices.Add(q3);
-
-        triangles.Add(idx + 0);
-        triangles.Add(idx + 1);
-        triangles.Add(idx + 2);
-        triangles.Add(idx + 0);
-        triangles.Add(idx + 2);
-        triangles.Add(idx + 3);
-    }
-
-    private Material CreateTelegraphMaterial(Color color)
-    {
-        if (!s_telegraphMaterial)
-        {
-            Shader shader = Shader.Find("Sprites/Default");
-            s_telegraphMaterial = new Material(shader);
-        }
-
-        var m = new Material(s_telegraphMaterial) { color = color };
-        return m;
-    }
-
-    private void SpawnLaserBeamVfx(List<Vector3Int> cells, Color color)
+    private void DealDamageOnCells(List<Vector3Int> cells, float radius, float damage, float knockbackForce)
     {
         if (cells == null || cells.Count == 0) return;
-
-        Vector3Int center = cells[0];
-        int minX = center.x;
-        int maxX = center.x;
-        int minY = center.y;
-        int maxY = center.y;
-        for (int i = 0; i < cells.Count; i++)
+        var dealt = new HashSet<IDamageable>();
+        foreach (var cell in cells)
         {
-            Vector3Int c = cells[i];
-            if (c.y == center.y)
+            Vector2 center = CellCenterWorld(cell);
+            Collider2D[] hits = Physics2D.OverlapCircleAll(center, radius, playerLayerMask);
+            foreach (var hit in hits)
             {
-                minX = Mathf.Min(minX, c.x);
-                maxX = Mathf.Max(maxX, c.x);
-            }
-
-            if (c.x == center.x)
-            {
-                minY = Mathf.Min(minY, c.y);
-                maxY = Mathf.Max(maxY, c.y);
+                if (!hit) continue;
+                IDamageable d = hit.GetComponentInParent<IDamageable>();
+                if (d == null || dealt.Contains(d)) continue;
+                Vector2 kb = ((Vector2)hit.bounds.center - center);
+                if (kb.sqrMagnitude <= 0.0001f) kb = Vector2.up;
+                else kb.Normalize();
+                d.TakeHit(damage, kb, knockbackForce);
+                dealt.Add(d);
             }
         }
-
-        SpawnAttackStrip(CellCenterWorld(new Vector3Int(minX, center.y, 0)),
-            CellCenterWorld(new Vector3Int(maxX, center.y, 0)),
-            0.52f, new Color(color.r, color.g, color.b, 0.9f), 0.22f, "LaserBeamH");
-        SpawnAttackStrip(CellCenterWorld(new Vector3Int(center.x, minY, 0)),
-            CellCenterWorld(new Vector3Int(center.x, maxY, 0)),
-            0.52f, new Color(color.r, color.g, color.b, 0.9f), 0.22f, "LaserBeamV");
-
-    }
-
-    private void SpawnSwipeVfx(Vector2 direction, Color color)
-    {
-        var go = new GameObject("SwipeVFX");
-        go.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 0.08f);
-        go.transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
-
-        SpawnAttackStrip(transform.position, (Vector2)transform.position + direction.normalized * (swipeRange * 1.05f),
-            0.44f, new Color(color.r, color.g, color.b, 0.72f), 0.18f, "SwipeSlash");
-        Destroy(go, 0.01f);
-    }
-
-    private void SpawnDigVfx(List<Vector3Int> cells, Color color)
-    {
-        if (cells == null || cells.Count == 0) return;
-
-        int count = Mathf.Min(cells.Count, 6);
-        for (int i = 0; i < count; i++)
-        {
-            Vector2 center = CellCenterWorld(cells[i]);
-            SpawnAttackStrip(center + new Vector2(-0.22f, 0f), center + new Vector2(0.22f, 0f),
-                0.36f, new Color(color.r, color.g, color.b, 0.62f), 0.2f, "DigBurst");
-        }
-    }
-
-    private void SpawnAttackStrip(Vector2 start, Vector2 end, float width, Color color, float lifetime, string name)
-    {
-        Vector2 delta = end - start;
-        float length = Mathf.Max(0.1f, delta.magnitude);
-        Vector2 center = (start + end) * 0.5f;
-
-        var go = new GameObject(name);
-        go.transform.position = new Vector3(center.x, center.y, transform.position.z + 0.09f);
-        go.transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
-        go.transform.localScale = new Vector3(length, width, 1f);
-
-        var sr = go.AddComponent<SpriteRenderer>();
-        sr.sprite = GetWhiteSprite();
-        ApplySpriteSorting(sr, 22);
-        sr.color = color;
-
-        StartCoroutine(FadeAndDestroyStrip(sr, lifetime));
-    }
-
-    private IEnumerator FadeAndDestroyStrip(SpriteRenderer sr, float lifetime)
-    {
-        if (!sr || lifetime <= 0.001f)
-            yield break;
-
-        Color baseColor = sr.color;
-        float end = Time.time + lifetime;
-        while (Time.time < end && sr)
-        {
-            float t = Mathf.InverseLerp(end - lifetime, end, Time.time);
-            Color c = baseColor;
-            c.a = Mathf.Lerp(baseColor.a, 0f, t);
-            sr.color = c;
-            yield return null;
-        }
-
-        if (sr)
-            Destroy(sr.gameObject);
-    }
-
-    private void ApplySpriteSorting(SpriteRenderer renderer, int extraOrder)
-    {
-        if (!renderer) return;
-        if (_spriteRenderer)
-        {
-            renderer.sortingLayerID = _spriteRenderer.sortingLayerID;
-            renderer.sortingOrder = _spriteRenderer.sortingOrder + extraOrder;
-        }
-        else
-        {
-            renderer.sortingOrder = extraOrder;
-        }
-    }
-
-    private void ClearTelegraphs()
-    {
-        for (int i = 0; i < _activeTelegraphs.Count; i++)
-        {
-            if (_activeTelegraphs[i]) Destroy(_activeTelegraphs[i]);
-        }
-        _activeTelegraphs.Clear();
     }
 
     private void SetUndergroundVisuals(bool underground)
     {
-        _invulnerable = underground;
+        _digInvulnerable = underground;
         if (_mainCollider) _mainCollider.enabled = !underground;
-
-        if (_spriteRenderer)
+        if (spriteRenderer)
         {
-            Color c = _spriteRenderer.color;
-            c.a = underground ? digUndergroundAlpha : _cachedBaseAlpha;
-            _spriteRenderer.color = c;
+            spriteRenderer.enabled = !underground;
+            if (!underground)
+            {
+                Color c = spriteRenderer.color;
+                c.a = _baseAlpha;
+                spriteRenderer.color = c;
+                _shieldPingBaseColor = c;
+            }
         }
     }
 
-    private float PhaseSpeedMultiplier()
+
+    private BossAttackIndicator SpawnRectIndicator(Vector2 center, Vector2 size, float angleDegrees,
+        float duration, float imminentFraction, bool tracked = false)
     {
-        if (CurrentPhase == 3) return phaseThreeAttackSpeedMultiplier;
-        if (CurrentPhase == 2) return phaseTwoAttackSpeedMultiplier;
-        return 1f;
+        if (indicatorBaseSprite == null) return null;
+        var ind = CreateIndicator();
+        ind.BeginRect(indicatorBaseSprite, indicatorImminentSprite,
+            indicatorBaseColor, indicatorImminentColor,
+            center, size, angleDegrees,
+            duration, imminentFraction, 5.5f, indicatorSortingOrder, _sortingLayerId);
+        if (tracked) _trackedIndicator = ind;
+        return ind;
     }
 
-    private IEnumerator WaitWithPhaseSpeed(float seconds)
+    private BossAttackIndicator SpawnCircleIndicator(Vector2 center, float radius,
+        float duration, float imminentFraction, bool tracked = false)
     {
-        float scaled = seconds / Mathf.Max(0.01f, PhaseSpeedMultiplier());
-        yield return new WaitForSeconds(scaled);
+        if (indicatorBaseSprite == null) return null;
+        var ind = CreateIndicator();
+        ind.BeginCircle(indicatorBaseSprite, indicatorImminentSprite,
+            indicatorBaseColor, indicatorImminentColor,
+            center, radius,
+            duration, imminentFraction, 5.5f, indicatorSortingOrder, _sortingLayerId);
+        if (tracked) _trackedIndicator = ind;
+        return ind;
     }
 
-    public override void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce)
+    private BossAttackIndicator CreateIndicator()
     {
-        if (_invulnerable) return;
-        base.TakeHit(damage, knockbackDirection, knockbackForce);
+        var go = new GameObject("BossIndicator");
+        go.transform.position = new Vector3(0f, 0f, transform.position.z + 0.05f);
+        var ind = go.AddComponent<BossAttackIndicator>();
+        _activeIndicators.Add(ind);
+        return ind;
     }
 
-    protected override void Die()
+    private void UpdateTrackedIndicatorCenter(Vector2 center)
     {
-        _state = BossState.Dead;
-        if (healthBarUI)
-            healthBarUI.HideBar();
-        ClearTelegraphs();
-        base.Die();
+        if (!_trackedIndicator) return;
+        _trackedIndicator.UpdateCenter(center);
     }
 
-    private void BindHealthBar()
+    private void ForceAllIndicatorsImminent()
     {
-        if (!healthBarUI) return;
-        healthBarUI.Bind(this, bossDisplayName, phaseTwoThreshold, phaseThreeThreshold);
-        healthBarUI.SetHealth(HealthNormalized, CurrentHealth, MaxHealth, CurrentPhase);
-        healthBarUI.NotifyPhaseChange(CurrentPhase);
-        _lastObservedPhase = CurrentPhase;
+        foreach (var ind in _activeIndicators)
+        {
+            if (ind) ind.ForceImminent();
+        }
     }
 
-    private void OnPhaseChanged(int phase)
+    private void DestroyActiveIndicator()
     {
-        if (healthBarUI)
-            healthBarUI.NotifyPhaseChange(phase);
-
-        Color phaseColor = phase == 2
-            ? new Color(1f, 0.62f, 0.2f, 0.95f)
-            : new Color(1f, 0.9f, 0.28f, 0.95f);
-
-        List<Vector3Int> ringCells = GetCellsInRadius(transform.position, 1.3f + phase * 0.3f);
-        SpawnTelegraphCells(ringCells, phaseColor, 1.15f, 0.24f, false, 0f, 1f, 1f, 1f, 1f);
-        SpawnAttackStrip((Vector2)transform.position + new Vector2(-0.9f, 0f),
-            (Vector2)transform.position + new Vector2(0.9f, 0f), 0.5f, phaseColor, 0.28f, "PhaseShiftVFX");
+        foreach (var ind in _activeIndicators)
+        {
+            if (ind) Destroy(ind.gameObject);
+        }
+        _activeIndicators.Clear();
+        _laserStretchSegments.Clear();
+        _trackedIndicator = null;
     }
 
-    private void EnsurePlayerDamageReceiver()
+
+    private void SpawnRubbleBurst(Vector3 position, int puffs, float lifetime, Color color, Vector2 trailDirection = default)
     {
-        if (!Player) return;
-        var damageable = Player.GetComponent<IDamageable>();
-        if (damageable != null) return;
-        if (!Player.GetComponent<PlayerHealth>())
-            Player.gameObject.AddComponent<PlayerHealth>();
+        if (puffs <= 0) return;
+        bool alongPath = trailDirection.sqrMagnitude > 0.0001f;
+        Vector2 dirN = alongPath ? trailDirection.normalized : Vector2.right;
+        Vector2 perp = new Vector2(-dirN.y, dirN.x);
+
+        for (int i = 0; i < puffs * 3; i++)
+        {
+            Vector2 offset;
+            Vector2 burstVel;
+            if (alongPath)
+            {
+                float along = Random.Range(-0.03f, 0.1f);
+                float across = Random.Range(-0.11f, 0.11f);
+                offset = dirN * along + perp * across + Random.insideUnitCircle * 0.035f;
+                burstVel = perp * Random.Range(-0.65f, 0.65f) + dirN * Random.Range(-0.12f, 0.45f) + Random.insideUnitCircle * 0.12f;
+            }
+            else
+            {
+                float a = Random.Range(0f, Mathf.PI * 2f);
+                float rad = Random.Range(0.12f, 0.28f);
+                offset = new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * rad;
+                float a2 = Random.Range(0f, Mathf.PI * 2f);
+                burstVel = new Vector2(Mathf.Cos(a2), Mathf.Sin(a2)) * Random.Range(0.45f, 1.15f) + Random.insideUnitCircle * 0.15f;
+            }
+
+            var go = new GameObject("BossRubblePuff");
+            go.transform.position = new Vector3(position.x + offset.x, position.y + offset.y, position.z + 0.02f);
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = GetWhiteSprite();
+            sr.color = color;
+            if (spriteRenderer)
+                sr.sortingLayerID = spriteRenderer.sortingLayerID;
+            sr.sortingOrder = rubbleSortingOrder;
+            float s = Random.Range(1.5f, 2.5f);
+            go.transform.localScale = Vector3.one * s;
+            go.AddComponent<BossRubblePuffFx>().Run(sr, color, lifetime, burstVel);
+        }
     }
 
+    private static Sprite s_whiteSprite;
     private static Sprite GetWhiteSprite()
     {
         if (s_whiteSprite) return s_whiteSprite;
-        Texture2D texture = Texture2D.whiteTexture;
-        s_whiteSprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
+        Texture2D t = Texture2D.whiteTexture;
+        s_whiteSprite = Sprite.Create(t, new Rect(0, 0, t.width, t.height), new Vector2(0.5f, 0.5f), 100f);
         return s_whiteSprite;
     }
+}
 
-    private void OnDrawGizmosSelected()
+public sealed class BossRubblePuffFx : MonoBehaviour
+{
+    public void Run(SpriteRenderer sr, Color baseColor, float lifetime, Vector2 outwardVelocity)
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, swipeRange);
+        StartCoroutine(RunRoutine(sr, baseColor, lifetime, outwardVelocity));
+    }
+
+    private IEnumerator RunRoutine(SpriteRenderer sr, Color baseColor, float lifetime, Vector2 velocity)
+    {
+        if (!sr) yield break;
+        float t = 0f;
+        Vector3 startScale = transform.localScale;
+        Vector3 endScale = startScale * Random.Range(1.12f, 1.42f);
+        float spin = Random.Range(-180f, 180f);
+        float ang = Random.Range(0f, 360f);
+        while (t < lifetime && sr)
+        {
+            t += Time.deltaTime;
+            float u = Mathf.Clamp01(t / lifetime);
+            var c = baseColor;
+            c.a = Mathf.Lerp(baseColor.a, 0f, u * u);
+            sr.color = c;
+            transform.localScale = Vector3.Lerp(startScale, endScale, Mathf.SmoothStep(0f, 1f, u));
+            velocity *= Mathf.Exp(-8f * Time.deltaTime);
+            transform.position += (Vector3)(velocity * Time.deltaTime);
+            ang += spin * Time.deltaTime;
+            transform.rotation = Quaternion.Euler(0f, 0f, ang);
+            yield return null;
+        }
+        if (sr) Destroy(sr.gameObject);
     }
 }

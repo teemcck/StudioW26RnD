@@ -4,61 +4,177 @@ using UnityEngine.UI;
 
 public sealed class BossHealthBarUI : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] private Canvas rootCanvas;
-    [SerializeField] private RectTransform barRoot;
-    [SerializeField] private RectTransform fillRect;
-    [SerializeField] private Image fillImage;
-    [SerializeField] private Image phaseFlashImage;
-    [SerializeField] private Text bossNameText;
-    [SerializeField] private Text hpValueText;
-    [SerializeField] private Image phaseTwoMarker;
-    [SerializeField] private Image phaseThreeMarker;
+    [SerializeField] private Image healthImage;
+    [SerializeField] private Image shieldImage;
+    [SerializeField] private CanvasGroup introFadeGroup;
 
-    private WormBossController _boss;
-    private int _lastPhase = 1;
-    private Color _baseFillColor = new Color(0.96f, 0.24f, 0.24f, 1f);
+    [Header("Flashes")]
+    [SerializeField] private Color phaseTwoEnterFlash = new Color(1f, 0.95f, 0.55f, 0.88f);
+    [SerializeField] private float phaseTwoEnterFlashDuration = 0.5f;
+    [SerializeField] private Color phaseThreeEnterFlash = new Color(1f, 0.35f, 0.15f, 0.92f);
+    [SerializeField] private float phaseThreeEnterFlashDuration = 0.78f;
+    [SerializeField] private Color shieldRestoreFlashColor = new Color(0.55f, 0.9f, 1f, 0.75f);
+    [SerializeField] private float shieldRestoreFlashDuration = 0.35f;
+    [SerializeField] private Color shieldRestoreFlashColorPhase3 = new Color(1f, 0.65f, 0.25f, 0.82f);
+    [SerializeField] private float shieldRestoreFlashDurationPhase3 = 0.48f;
 
-    public void Bind(WormBossController boss, string bossName, float phaseTwoThreshold, float phaseThreeThreshold)
+    private Color _healthBaseColor;
+    private Color _shieldBaseColor;
+    private Coroutine _healthFlashRoutine;
+    private Coroutine _shieldFlashRoutine;
+    private bool _initialized;
+
+    private void Awake()
     {
-        _boss = boss;
-        EnsureUi();
-        if (bossNameText) bossNameText.text = bossName;
-        PlaceMarker(phaseTwoMarker, phaseTwoThreshold);
-        PlaceMarker(phaseThreeMarker, phaseThreeThreshold);
-        ShowBar();
+        if (!introFadeGroup)
+        {
+            introFadeGroup = GetComponent<CanvasGroup>();
+            if (!introFadeGroup && rootCanvas)
+                introFadeGroup = rootCanvas.GetComponent<CanvasGroup>();
+        }
+        CacheBaseColors();
     }
 
-    public void SetHealth(float normalized, float current, float max, int phase)
+    private void CacheBaseColors()
     {
-        EnsureUi();
-        float n = Mathf.Clamp01(normalized);
-        if (fillRect)
-        {
-            fillRect.anchorMax = new Vector2(Mathf.Lerp(0.02f, 0.98f, n), fillRect.anchorMax.y);
-            fillRect.offsetMin = Vector2.zero;
-            fillRect.offsetMax = Vector2.zero;
-        }
+        if (healthImage) _healthBaseColor = healthImage.color;
+        if (shieldImage) _shieldBaseColor = shieldImage.color;
+        _initialized = true;
+    }
 
-        if (phase != _lastPhase)
+    public void Bind(WormBossController boss)
+    {
+        if (!_initialized) CacheBaseColors();
+        SetHealth(boss.HealthNormalized);
+        SetShield(boss.CurrentShieldNormalized);
+        if (introFadeGroup)
         {
-            _lastPhase = phase;
-            ApplyPhaseTheme(phase);
+            if (rootCanvas) rootCanvas.enabled = true;
+            gameObject.SetActive(true);
         }
+        else
+            ShowBar();
+    }
 
-        if (hpValueText) hpValueText.text = $"HP {Mathf.CeilToInt(current)} / {Mathf.CeilToInt(max)}    P{phase}";
+    public void HideForIntroFade()
+    {
+        if (introFadeGroup)
+        {
+            introFadeGroup.alpha = 0f;
+            introFadeGroup.blocksRaycasts = false;
+            if (rootCanvas) rootCanvas.enabled = true;
+            gameObject.SetActive(true);
+        }
+        else
+            HideBar();
+    }
+
+    public IEnumerator FadeInFromIntro(float duration)
+    {
+        duration = Mathf.Max(0.01f, duration);
+        if (introFadeGroup)
+        {
+            float t = 0f;
+            while (t < duration)
+            {
+                t += Time.deltaTime;
+                introFadeGroup.alpha = Mathf.Clamp01(t / duration);
+                yield return null;
+            }
+            introFadeGroup.alpha = 1f;
+            introFadeGroup.blocksRaycasts = true;
+        }
+        else
+            ShowBar();
+    }
+
+    public IEnumerator FadeOutForDeath(float duration)
+    {
+        duration = Mathf.Max(0.01f, duration);
+        if (introFadeGroup)
+        {
+            float start = introFadeGroup.alpha;
+            float t = 0f;
+            while (t < duration)
+            {
+                t += Time.deltaTime;
+                float u = Mathf.Clamp01(t / duration);
+                introFadeGroup.alpha = Mathf.Lerp(start, 0f, u);
+                yield return null;
+            }
+            introFadeGroup.alpha = 0f;
+            introFadeGroup.blocksRaycasts = false;
+        }
+        HideBar();
+    }
+
+    public void SetHealth(float normalized)
+    {
+        if (!healthImage) return;
+        healthImage.fillAmount = Mathf.Clamp01(normalized);
+    }
+
+    public IEnumerator AnimateHealthFillTo(float targetNormalized, float duration, float fromNormalized)
+    {
+        if (!healthImage) yield break;
+        duration = Mathf.Max(0.02f, duration);
+        float from = Mathf.Clamp01(fromNormalized);
+        float to = Mathf.Clamp01(targetNormalized);
+        float t = 0f;
+        while (t < duration && healthImage)
+        {
+            t += Time.deltaTime;
+            float u = Mathf.Clamp01(t / duration);
+            float s = Mathf.SmoothStep(0f, 1f, u);
+            healthImage.fillAmount = Mathf.Lerp(from, to, s);
+            yield return null;
+        }
+        if (healthImage)
+            healthImage.fillAmount = to;
+    }
+
+    public void SetShield(float normalized)
+    {
+        if (!shieldImage) return;
+        shieldImage.fillAmount = Mathf.Clamp01(normalized);
+    }
+
+    public void SetShieldVisible(bool visible)
+    {
+        if (shieldImage) shieldImage.enabled = visible;
     }
 
     public void NotifyPhaseChange(int phase)
     {
-        EnsureUi();
-        _lastPhase = phase;
-        ApplyPhaseTheme(phase);
+        if (!healthImage) return;
+        Color flash = phase >= 3 ? phaseThreeEnterFlash : phaseTwoEnterFlash;
+        float duration = phase >= 3 ? phaseThreeEnterFlashDuration : phaseTwoEnterFlashDuration;
+        if (_healthFlashRoutine != null) StopCoroutine(_healthFlashRoutine);
+        _healthFlashRoutine = StartCoroutine(FlashImage(healthImage, _healthBaseColor, flash, duration));
+    }
+
+    public void NotifyShieldRestored(int currentBossPhase = 2)
+    {
+        if (!shieldImage) return;
+        Color c = currentBossPhase >= 3 ? shieldRestoreFlashColorPhase3 : shieldRestoreFlashColor;
+        float d = currentBossPhase >= 3 ? shieldRestoreFlashDurationPhase3 : shieldRestoreFlashDuration;
+        if (_shieldFlashRoutine != null) StopCoroutine(_shieldFlashRoutine);
+        _shieldFlashRoutine = StartCoroutine(FlashImage(shieldImage, _shieldBaseColor, c, d));
+    }
+
+    public void NotifyShieldBroken()
+    {
+        if (!shieldImage) return;
+        if (_shieldFlashRoutine != null) StopCoroutine(_shieldFlashRoutine);
+        _shieldFlashRoutine = StartCoroutine(FlashImage(shieldImage, _shieldBaseColor, new Color(1f, 1f, 1f, 0.9f), 0.22f));
     }
 
     public void ShowBar()
     {
-        EnsureUi();
         if (rootCanvas) rootCanvas.enabled = true;
+        gameObject.SetActive(true);
     }
 
     public void HideBar()
@@ -66,135 +182,18 @@ public sealed class BossHealthBarUI : MonoBehaviour
         if (rootCanvas) rootCanvas.enabled = false;
     }
 
-    private void EnsureUi()
+    private static IEnumerator FlashImage(Image target, Color baseColor, Color flashColor, float duration)
     {
-        if (!rootCanvas || !barRoot || !fillImage || !bossNameText || !hpValueText || !phaseTwoMarker || !phaseThreeMarker)
-            BuildRuntimeUi();
-
-        if (!fillRect && fillImage) fillRect = fillImage.rectTransform;
-    }
-
-    private void BuildRuntimeUi()
-    {
-        if (!rootCanvas)
+        if (!target) yield break;
+        float t = 0f;
+        while (t < duration && target)
         {
-            var canvasGo = new GameObject("BossHealthCanvas");
-            rootCanvas = canvasGo.AddComponent<Canvas>();
-            rootCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvasGo.AddComponent<CanvasScaler>();
-            canvasGo.AddComponent<GraphicRaycaster>();
-        }
-
-        if (!barRoot)
-        {
-            var barGo = new GameObject("BossBarRoot");
-            barGo.transform.SetParent(rootCanvas.transform, false);
-            barRoot = barGo.AddComponent<RectTransform>();
-            barRoot.anchorMin = new Vector2(0.2f, 0.94f);
-            barRoot.anchorMax = new Vector2(0.8f, 0.985f);
-            barRoot.offsetMin = Vector2.zero;
-            barRoot.offsetMax = Vector2.zero;
-        }
-
-        GameObject frame = CreateImage("Frame", barRoot, new Color(0.08f, 0.08f, 0.08f, 0.95f), new Vector2(0f, 0f), new Vector2(1f, 1f));
-        CreateImage("Background", frame.GetComponent<RectTransform>(), new Color(0.22f, 0.08f, 0.08f, 1f), new Vector2(0.02f, 0.18f), new Vector2(0.98f, 0.74f));
-
-        GameObject fillGo = CreateImage("Fill", frame.GetComponent<RectTransform>(), new Color(0.96f, 0.24f, 0.24f, 1f), new Vector2(0.02f, 0.18f), new Vector2(0.98f, 0.74f));
-        fillImage = fillGo.GetComponent<Image>();
-        fillRect = fillGo.GetComponent<RectTransform>();
-        fillImage.type = Image.Type.Simple;
-
-        GameObject flashGo = CreateImage("PhaseFlash", frame.GetComponent<RectTransform>(), new Color(1f, 1f, 1f, 0f), new Vector2(0.02f, 0.18f), new Vector2(0.98f, 0.74f));
-        phaseFlashImage = flashGo.GetComponent<Image>();
-
-        phaseTwoMarker = CreateImage("Phase2Marker", frame.GetComponent<RectTransform>(), new Color(1f, 0.85f, 0.35f, 1f), new Vector2(0.5f, 0.2f), new Vector2(0.505f, 0.74f)).GetComponent<Image>();
-        phaseThreeMarker = CreateImage("Phase3Marker", frame.GetComponent<RectTransform>(), new Color(1f, 0.95f, 0.7f, 1f), new Vector2(0.5f, 0.2f), new Vector2(0.505f, 0.74f)).GetComponent<Image>();
-
-        bossNameText = CreateText("BossName", frame.GetComponent<RectTransform>(), new Vector2(0f, 0.76f), new Vector2(0.5f, 1f), TextAnchor.MiddleLeft, 18);
-        hpValueText = CreateText("BossHp", frame.GetComponent<RectTransform>(), new Vector2(0.5f, 0.76f), new Vector2(1f, 1f), TextAnchor.MiddleRight, 16);
-    }
-
-    private void ApplyPhaseTheme(int phase)
-    {
-        Color target = phase switch
-        {
-            1 => new Color(0.96f, 0.24f, 0.24f, 1f),
-            2 => new Color(1f, 0.54f, 0.2f, 1f),
-            _ => new Color(1f, 0.86f, 0.26f, 1f)
-        };
-        _baseFillColor = target;
-        if (fillImage) fillImage.color = target;
-        if (bossNameText)
-        {
-            bossNameText.color = Color.Lerp(Color.white, target, 0.4f);
-            bossNameText.text = $"Worm Core  -  PHASE {phase}";
-        }
-        if (phaseFlashImage) StartCoroutine(FlashPhaseBanner(target));
-    }
-
-    private IEnumerator FlashPhaseBanner(Color target)
-    {
-        if (!phaseFlashImage) yield break;
-        float duration = 0.5f;
-        float end = Time.time + duration;
-        while (Time.time < end && phaseFlashImage)
-        {
-            float t = Mathf.InverseLerp(end - duration, end, Time.time);
-            float a = Mathf.Lerp(0.45f, 0f, t);
-            phaseFlashImage.color = new Color(target.r, target.g, target.b, a);
+            t += Time.deltaTime;
+            float u = Mathf.Clamp01(t / duration);
+            float flashAmount = Mathf.Sin(u * Mathf.PI);
+            target.color = Color.Lerp(baseColor, flashColor, flashAmount);
             yield return null;
         }
-        if (phaseFlashImage) phaseFlashImage.color = new Color(target.r, target.g, target.b, 0f);
-    }
-
-    private static GameObject CreateImage(string name, RectTransform parent, Color color, Vector2 anchorMin, Vector2 anchorMax)
-    {
-        var go = new GameObject(name);
-        go.transform.SetParent(parent, false);
-        var rt = go.AddComponent<RectTransform>();
-        rt.anchorMin = anchorMin;
-        rt.anchorMax = anchorMax;
-        rt.offsetMin = Vector2.zero;
-        rt.offsetMax = Vector2.zero;
-        var img = go.AddComponent<Image>();
-        img.color = color;
-        return go;
-    }
-
-    private static Text CreateText(string name, RectTransform parent, Vector2 anchorMin, Vector2 anchorMax, TextAnchor alignment, int fontSize)
-    {
-        var go = new GameObject(name);
-        go.transform.SetParent(parent, false);
-        var rt = go.AddComponent<RectTransform>();
-        rt.anchorMin = anchorMin;
-        rt.anchorMax = anchorMax;
-        rt.offsetMin = Vector2.zero;
-        rt.offsetMax = Vector2.zero;
-        var txt = go.AddComponent<Text>();
-        txt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        txt.fontSize = fontSize;
-        txt.color = Color.white;
-        txt.alignment = alignment;
-        txt.horizontalOverflow = HorizontalWrapMode.Overflow;
-        txt.verticalOverflow = VerticalWrapMode.Overflow;
-        txt.text = string.Empty;
-        return txt;
-    }
-
-    private static void PlaceMarker(Image marker, float threshold)
-    {
-        if (!marker) return;
-        RectTransform rt = marker.rectTransform;
-        float x = Mathf.Clamp01(threshold);
-        rt.anchorMin = new Vector2(x, rt.anchorMin.y);
-        rt.anchorMax = new Vector2(x + 0.004f, rt.anchorMax.y);
-        rt.offsetMin = Vector2.zero;
-        rt.offsetMax = Vector2.zero;
-    }
-
-    private void LateUpdate()
-    {
-        if (_boss && rootCanvas && !rootCanvas.enabled)
-            rootCanvas.enabled = true;
+        if (target) target.color = baseColor;
     }
 }
