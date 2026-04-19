@@ -206,6 +206,29 @@ public class MapSpawner : MonoBehaviour
         return false;
     }
 
+    public bool TryGetChunkWorldBoundsAtWorldPosition(Vector2 worldPos, out Bounds bounds)
+    {
+        bounds = default;
+        for (int i = 0; i < _chunks.Count; i++)
+        {
+            GameObject chunk = _chunks[i];
+            if (!chunk) continue;
+
+            Tilemap tm = chunk.GetComponentInChildren<Tilemap>();
+            if (!tm) continue;
+
+            Bounds worldBounds = GetTilemapWorldBounds(tm);
+            Vector3 p = new Vector3(worldPos.x, worldPos.y, worldBounds.center.z);
+            if (!worldBounds.Contains(p))
+                continue;
+
+            bounds = worldBounds;
+            return true;
+        }
+
+        return false;
+    }
+
     private static Bounds GetTilemapWorldBounds(Tilemap tilemap)
     {
         Bounds local = tilemap.localBounds;

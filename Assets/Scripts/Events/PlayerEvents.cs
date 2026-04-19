@@ -30,6 +30,7 @@ public struct PlayerMeleeAttackEvent
     public Vector2 Direction;
     public float Damage;
     public int EnemiesHit;
+    public int EnemiesInRange;
 }
 
 /// <summary>Player was healed (upgrade on-kill heal, pickup, etc.).</summary>

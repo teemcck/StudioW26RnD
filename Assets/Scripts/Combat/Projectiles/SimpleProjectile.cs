@@ -19,6 +19,9 @@ public class SimpleProjectile : MonoBehaviour
     private Vector2 _dir;
     private float _animTimer;
     private int _animFrame;
+    private float _runtimeDamage;
+    private float _runtimeKnockback;
+    private DamageContext _damageContext;
 
     private void Awake()
     {
@@ -27,9 +30,12 @@ public class SimpleProjectile : MonoBehaviour
             spriteRenderer = GetComponentInChildren<SpriteRenderer>();
     }
 
-    public void Fire(Vector2 direction)
+    public void Fire(Vector2 direction, float damageOverride, float knockbackOverride, DamageContext context)
     {
         _dir = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector2.right;
+        _runtimeDamage = damageOverride > 0f ? damageOverride : damage;
+        _runtimeKnockback = knockbackOverride > 0f ? knockbackOverride : knockbackForce;
+        _damageContext = context;
         _animTimer = 0f;
         _animFrame = 0;
         ApplyAnimationFrame(_animFrame);
@@ -79,7 +85,7 @@ public class SimpleProjectile : MonoBehaviour
 
         var dmg = other.GetComponentInParent<IDamageable>();
         if (dmg != null)
-            dmg.TakeHit(damage, _dir, knockbackForce);
+            dmg.TakeHit(_runtimeDamage > 0f ? _runtimeDamage : damage, _dir, _runtimeKnockback > 0f ? _runtimeKnockback : knockbackForce, _damageContext);
         
         Destroy(gameObject);
     }

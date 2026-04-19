@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 880010013}
   - component: {fileID: 880010006}
   - component: {fileID: 880010007}
+  - component: {fileID: -1386014493017173576}
+  - component: {fileID: 4593300384897260323}
   m_Layer: 7
   m_Name: LobbingEnemy
   m_TagString: Untagged
@@ -209,7 +211,7 @@ MonoBehaviour:
   hitPulseSortingOrderBoost: 2
   projectilePrefab: {fileID: 772001000005, guid: e7f3a2b1c4d5846e9a0f1b2c3d4e5f70, type: 3}
   firePoint: {fileID: 880010012}
-  horizontalShotSpeed: 2.6
+  horizontalShotSpeed: 2
   projectileAimDistance: 5.5
   shotMomentSeconds: 0.9
   attackAnimationDuration: 1.5
@@ -251,6 +253,67 @@ MonoBehaviour:
   spriteRenderer: {fileID: 880010003}
   flashColor: {r: 1, g: 1, b: 1, a: 1}
   flashDuration: 0.12
+--- !u!114 &-1386014493017173576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880010001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b499ad4995a9f4ab0a49687f39ea42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyStatusEffectController
+--- !u!114 &4593300384897260323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880010001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17ea60cc7cfb8d44ca9ec4d5d1ff9999, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyWorldVisuals
+  poisonAppliedFrames:
+  - {fileID: 6575615714053172638, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: -5607801964180926322, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: -8398037206054802880, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: 4188840048091893655, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: 5623573624590046129, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: -5348996288146680357, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: -7761461406772590200, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  confusionAppliedFrames:
+  - {fileID: 658048475786312441, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: -7598424153424933911, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: -7374637216595608952, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: 659310198826612530, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: 8557774928509588268, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: -6983058561312571595, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: 4669615746068492531, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: 2046308411957584145, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  swiftnessAppliedFrames:
+  - {fileID: -260121430, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: -2117477892, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: 1462528253, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: -1544873869, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: 1058519062, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: 1603991494, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: 2074658110, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: -945739937, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  frailtyAppliedFrames:
+  - {fileID: 175287004, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: -1220340809, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: -1491588736, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: -2059818027, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: -609799000, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: 422245674, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  - {fileID: -1508365351, guid: 62556415271650743826ce2a4429c3fd, type: 3}
+  statusFrameDuration: 0.06
+  statusYOffset: 0.3
+  statusScaleMultiplier: 1
 --- !u!1 &880010011
 GameObject:
   m_ObjectHideFlags: 0

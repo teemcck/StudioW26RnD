@@ -33,9 +33,8 @@ public class LevelUI : MonoBehaviour
 
     [Header("XP Bar Animation Panel")]
     [SerializeField] private GameObject xpBarPanel;
-    [SerializeField] private Image xpBarFill;
+    [SerializeField] private RawImage xpBarFill;
     [SerializeField] private TextMeshProUGUI xpBarText;
-    [SerializeField] private TextMeshProUGUI xpBarStatsText;
     [SerializeField] private Button xpBarContinueButton;
 
     [Header("World Transition")]
@@ -49,6 +48,9 @@ public class LevelUI : MonoBehaviour
 
     private IEventBinding<UpgradeSelectedEvent> _upgradeSelectedBinding;
     private Coroutine _difficultyRollCoroutine;
+    private RectTransform _xpBarFillRect;
+    private float _xpBarBaseWidth;
+    private bool _cachedXpBarWidth;
 
     private void Awake()
     {
@@ -94,6 +96,7 @@ public class LevelUI : MonoBehaviour
         previewBeginButton.onClick.RemoveAllListeners();
         previewBeginButton.onClick.AddListener(() =>
         {
+            AudioManager.Instance?.PlayUiButton();
             previewPanel.SetActive(false);
             PlayerConfirmedStart = true;
         });
@@ -125,6 +128,7 @@ public class LevelUI : MonoBehaviour
         summaryContinueButton.onClick.RemoveAllListeners();
         summaryContinueButton.onClick.AddListener(() =>
         {
+            AudioManager.Instance?.PlayUiButton();
             summaryPanel.SetActive(false);
             SummaryConfirmed = true;
         });
@@ -135,6 +139,7 @@ public class LevelUI : MonoBehaviour
         XPBarAnimationComplete = false;
         xpBarPanel.SetActive(true);
         if (xpBarContinueButton != null) xpBarContinueButton.gameObject.SetActive(false);
+        CacheXpBarWidth();
 
         int startXP = previousXP;
         int targetXP = previousXP + floorXP;
@@ -154,13 +159,8 @@ public class LevelUI : MonoBehaviour
         float initialFill = (float)startDisplayXP / xpPerFloor;
 
         // Set initial state
-        if (xpBarFill != null) xpBarFill.fillAmount = initialFill;
-        if (xpBarText != null) xpBarText.text = $"{startDisplayXP} / {xpPerFloor} XP";
-
-        // Display floor stats
-        int avoided = total - killed;
-        if (xpBarStatsText != null)
-            xpBarStatsText.text = $"Enemies Killed: {killed}\nEnemies Avoided: {avoided}\nTime: {elapsed:F1}s";
+        SetXpBarFill(initialFill);
+        if (xpBarText != null) xpBarText.text = $"{startDisplayXP}";
 
         // Start animation coroutine
         StartCoroutine(AnimateXPBar(startXP, targetXP, xpPerFloor));
@@ -206,8 +206,8 @@ public class LevelUI : MonoBehaviour
         float initialFill = (float)startDisplayXP / xpPerFloor;
 
         // Set initial fill based on previous XP
-        xpBarFill.fillAmount = initialFill;
-        xpBarText.text = $"{startDisplayXP} / {xpPerFloor} XP";
+        SetXpBarFill(initialFill);
+        xpBarText.text = $"{startDisplayXP}";
 
         // Wait a moment to show the starting state
         yield return new WaitForSeconds(0.5f);
@@ -228,22 +228,23 @@ public class LevelUI : MonoBehaviour
             // Calculate fill amount
             float fillAmount = (float)displayXP / xpPerFloor;
 
-            xpBarFill.fillAmount = fillAmount;
-            xpBarText.text = $"{displayXP} / {xpPerFloor} XP";
+            SetXpBarFill(fillAmount);
+            xpBarText.text = $"{displayXP}";
 
             yield return null;
         }
 
         // Ensure final state
         int finalDisplayXP = targetXP % xpPerFloor;
-        xpBarFill.fillAmount = (float)finalDisplayXP / xpPerFloor;
-        xpBarText.text = $"{finalDisplayXP} / {xpPerFloor} XP";
+        SetXpBarFill((float)finalDisplayXP / xpPerFloor);
+        xpBarText.text = $"{finalDisplayXP}";
 
         // Show continue button
         xpBarContinueButton.gameObject.SetActive(true);
         xpBarContinueButton.onClick.RemoveAllListeners();
         xpBarContinueButton.onClick.AddListener(() =>
         {
+            AudioManager.Instance?.PlayUiButton();
             xpBarPanel.SetActive(false);
             XPBarAnimationComplete = true;
         });
@@ -259,5 +260,34 @@ public class LevelUI : MonoBehaviour
     public void ResetRewardConfirmed()
     {
         RewardConfirmed = false;
+    }
+
+    private void CacheXpBarWidth()
+    {
+        if (_cachedXpBarWidth || xpBarFill == null)
+            return;
+
+        _xpBarFillRect = xpBarFill.rectTransform;
+        if (_xpBarFillRect == null)
+            return;
+
+        if (_xpBarFillRect.pivot.x != 0f)
+            _xpBarFillRect.pivot = new Vector2(0f, _xpBarFillRect.pivot.y);
+
+        _xpBarBaseWidth = _xpBarFillRect.sizeDelta.x;
+        _cachedXpBarWidth = _xpBarBaseWidth > 0f;
+    }
+
+    private void SetXpBarFill(float normalized)
+    {
+        if (xpBarFill == null)
+            return;
+
+        CacheXpBarWidth();
+        if (_xpBarFillRect == null || !_cachedXpBarWidth)
+            return;
+
+        float clamped = Mathf.Clamp01(normalized);
+        _xpBarFillRect.sizeDelta = new Vector2(_xpBarBaseWidth * clamped, _xpBarFillRect.sizeDelta.y);
     }
 }

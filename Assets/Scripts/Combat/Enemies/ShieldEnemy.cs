@@ -88,21 +88,21 @@ public class ShieldEnemy : MeleeEnemy
         return f.sqrMagnitude > 0.0001f ? f.normalized : Vector2.right;
     }
 
-    public override void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce)
+    public override void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce, DamageContext context = default)
     {
         if (damage <= 0f)
             return;
 
         if (_shieldHp <= 0f)
         {
-            base.TakeHit(damage, knockbackDirection, knockbackForce);
+            base.TakeHit(damage, knockbackDirection, knockbackForce, context);
             return;
         }
 
         Vector2 towardPlayer = (Vector2)(Player.position - transform.position);
         if (towardPlayer.sqrMagnitude < 0.0001f)
         {
-            base.TakeHit(damage, knockbackDirection, knockbackForce);
+            base.TakeHit(damage, knockbackDirection, knockbackForce, context);
             return;
         }
         towardPlayer.Normalize();
@@ -118,7 +118,7 @@ public class ShieldEnemy : MeleeEnemy
 
         if (!blocked)
         {
-            base.TakeHit(damage, knockbackDirection, knockbackForce);
+            base.TakeHit(damage, knockbackDirection, knockbackForce, context);
             return;
         }
 

@@ -121,9 +121,9 @@ public class LobbingEnemy : EnemyBase
         }
 
         if (dist > desiredDistance + keepDistanceDeadZone)
-            Rb.AddForce(dir * moveSpeed, ForceMode2D.Force);
+            Rb.AddForce(dir * EffectiveMoveSpeed, ForceMode2D.Force);
         else if (dist < desiredDistance - keepDistanceDeadZone)
-            Rb.AddForce(-dir * moveSpeed * 0.8f, ForceMode2D.Force);
+            Rb.AddForce(-dir * EffectiveMoveSpeed * 0.8f, ForceMode2D.Force);
         else
             Rb.linearVelocity = Vector2.Lerp(Rb.linearVelocity, Vector2.zero, 0.2f);
 
@@ -137,7 +137,8 @@ public class LobbingEnemy : EnemyBase
 
     private void BeginAttack(Vector2 dirToPlayer)
     {
-        _nextShootTime = Time.time + (shootCooldown / Mathf.Max(0.2f, attackCadenceMultiplier));
+        float cadence = Mathf.Max(0.2f, attackCadenceMultiplier * EffectiveAttackSpeedMultiplier);
+        _nextShootTime = Time.time + (shootCooldown / cadence);
         _firedThisAttack = false;
         _isAttackLocked = true;
 

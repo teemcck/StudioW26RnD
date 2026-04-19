@@ -122,7 +122,7 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
         if (distanceToPlayer > attackRange)
         {
             Vector2 direction = toPlayer.sqrMagnitude > 0.0001f ? toPlayer.normalized : Vector2.zero;
-            Rb.AddForce(direction * moveSpeed * chaseForceMultiplier, ForceMode2D.Force);
+            Rb.AddForce(direction * EffectiveMoveSpeed * chaseForceMultiplier, ForceMode2D.Force);
             PlayState(idleStateName, forceRestart: false);
             return;
         }
@@ -166,14 +166,15 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
 
         _isVulnerable = false;
         _isAttackLocked = false;
-        _nextAttackTime = Time.time + Mathf.Max(0.05f, attackCooldown);
+        float cooldown = attackCooldown / Mathf.Max(0.1f, EffectiveAttackSpeedMultiplier);
+        _nextAttackTime = Time.time + Mathf.Max(0.05f, cooldown);
         _attackRoutine = null;
         PlayState(idleStateName, forceRestart: true);
         ResetVisuals();
     }
 
-    public override void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce)
-        => base.TakeHit(damage, knockbackDirection, knockbackForce);
+    public override void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce, DamageContext context = default)
+        => base.TakeHit(damage, knockbackDirection, knockbackForce, context);
 
     private void TryApplyDirectionalSwingDamage(Vector2 attackDirection)
     {
@@ -193,7 +194,8 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
         float minDot = Mathf.Cos(Mathf.Clamp(swingHalfAngleDegrees, 1f, 89f) * Mathf.Deg2Rad);
         if (dot < minDot) return;
 
-        TryDealContactDamage(Player, contactDamage, attackCooldown + vulnerableDuration, 0f, true, forward);
+        float cooldown = (attackCooldown / Mathf.Max(0.1f, EffectiveAttackSpeedMultiplier)) + vulnerableDuration;
+        TryDealContactDamage(Player, contactDamage, cooldown, 0f, true, forward);
     }
 
     private void UpdateFacing(Vector2 toPlayer)

@@ -53,6 +53,7 @@ public class WorldTransitionUI : MonoBehaviour
 
     private void Confirm()
     {
+        AudioManager.Instance?.PlayUiButton();
         if (transitionPanel != null)
             transitionPanel.SetActive(false);
 

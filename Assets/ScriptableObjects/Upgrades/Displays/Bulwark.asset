@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeDisplaySO
   upgradeID: Bulwark
   upgradeName: Bulwark
-  upgradeDescription: 
-  cardImage: {fileID: -8258265728413054500, guid: 69cac2815955ccd44a4f67982658ccd4, type: 3}
-  rarity: 2
+  upgradeDescription: For every enemy in melee range, take 10% reduced damage.
+  cardImage: {fileID: 7028616704906629411, guid: 744802c6d21f08b46b575547d7866c56, type: 3}
+  rarity: 0
   category: 2

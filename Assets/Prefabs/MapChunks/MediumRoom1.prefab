@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 7546009666370434923}
   - component: {fileID: 3148769954322671679}
   - component: {fileID: 52667282361169102}
-  - component: {fileID: 9082906408305551919}
   - component: {fileID: 1381558501708907724}
+  - component: {fileID: 1407208739666182891}
+  - component: {fileID: 2724059403266757791}
   m_Layer: 0
   m_Name: Decoration1
   m_TagString: Untagged
@@ -263,19 +264,6 @@ TilemapRenderer:
   m_SortOrder: 3
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
---- !u!114 &9082906408305551919
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1013539513278362746}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7888b0cbeb2416e84991bd00a3993b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Teleporter
-  destination: {fileID: 0}
 --- !u!19719996 &1381558501708907724
 TilemapCollider2D:
   m_ObjectHideFlags: 0
@@ -314,6 +302,176 @@ TilemapCollider2D:
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0
   m_UseDelaunayMesh: 0
+--- !u!50 &1407208739666182891
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013539513278362746}
+  m_BodyType: 2
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!66 &2724059403266757791
+CompositeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013539513278362746}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_GeometryType: 0
+  m_GenerationType: 0
+  m_EdgeRadius: 0
+  m_ColliderPaths:
+  - m_Collider: {fileID: 1381558501708907724}
+    m_ColliderPaths:
+    - - X: -125000000
+        Y: 130031248
+      - X: -130000000
+        Y: 132531248
+      - X: -135000000
+        Y: 130031248
+      - X: -130000000
+        Y: 127531248
+    - - X: -155000000
+        Y: 115031248
+      - X: -160000000
+        Y: 117531248
+      - X: -165000000
+        Y: 115031248
+      - X: -160000000
+        Y: 112531248
+    - - X: -80000000
+        Y: 102531248
+      - X: -85000000
+        Y: 105031248
+      - X: -90000000
+        Y: 102531248
+      - X: -85000000
+        Y: 100031248
+    - - X: -110000000
+        Y: 87531248
+      - X: -115000000
+        Y: 90031248
+      - X: -120000000
+        Y: 87531248
+      - X: -115000000
+        Y: 85031248
+    - - X: -30000000
+        Y: 77531248
+      - X: -35000000
+        Y: 80031248
+      - X: -40000000
+        Y: 77531248
+      - X: -35000000
+        Y: 75031248
+    - - X: -65000000
+        Y: 60031252
+      - X: -70000000
+        Y: 62531252
+      - X: -75000000
+        Y: 60031252
+      - X: -70000000
+        Y: 57531252
+    - - X: 20000000
+        Y: 47531252
+      - X: 15000000
+        Y: 50031252
+      - X: 10000000
+        Y: 47531252
+      - X: 15000000
+        Y: 45031252
+    - - X: -10000000
+        Y: 32531250
+      - X: -15000000
+        Y: 35031248
+      - X: -20000000
+        Y: 32531250
+      - X: -15000000
+        Y: 30031250
+  m_CompositePaths:
+    m_Paths:
+    - - {x: -13.000012, y: 12.753131}
+      - {x: -12.500062, y: 13.003156}
+      - {x: -13.000012, y: 13.253119}
+      - {x: -13.499938, y: 13.003094}
+    - - {x: -16.000011, y: 11.253131}
+      - {x: -15.500063, y: 11.503156}
+      - {x: -16.000011, y: 11.753119}
+      - {x: -16.499937, y: 11.503094}
+    - - {x: -8.500012, y: 10.003131}
+      - {x: -8.000062, y: 10.253156}
+      - {x: -8.500012, y: 10.503119}
+      - {x: -8.999939, y: 10.253094}
+    - - {x: -11.500012, y: 8.503131}
+      - {x: -11.000062, y: 8.753156}
+      - {x: -11.500012, y: 9.003119}
+      - {x: -11.999939, y: 8.753094}
+    - - {x: -3.5000122, y: 7.5031304}
+      - {x: -3.0000618, y: 7.753156}
+      - {x: -3.5000122, y: 8.003119}
+      - {x: -3.9999385, y: 7.7530937}
+    - - {x: -7.000012, y: 5.7531314}
+      - {x: -6.5000615, y: 6.003156}
+      - {x: -7.000012, y: 6.2531195}
+      - {x: -7.4999385, y: 6.0030947}
+    - - {x: 1.4999882, y: 4.5031314}
+      - {x: 1.9999384, y: 4.753156}
+      - {x: 1.4999882, y: 5.0031195}
+      - {x: 1.0000618, y: 4.7530947}
+    - - {x: -1.5000118, y: 3.003131}
+      - {x: -1.0000618, y: 3.253156}
+      - {x: -1.5000118, y: 3.5031192}
+      - {x: -1.9999384, y: 3.253094}
+  m_VertexDistance: 0.0005
+  m_OffsetDistance: 0.00005
+  m_UseDelaunayMesh: 0
+  m_CompositeGameObject: {fileID: 1013539513278362746}
 --- !u!1 &4033536086807877419
 GameObject:
   m_ObjectHideFlags: 0
@@ -563,7 +721,6 @@ GameObject:
   - component: {fileID: 2294507767040570343}
   - component: {fileID: 7552430885493429309}
   - component: {fileID: 1884382057152462615}
-  - component: {fileID: 6130974000974141821}
   - component: {fileID: 8136364840087972923}
   m_Layer: 0
   m_Name: Decoration3
@@ -782,9 +939,9 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 1329374815
-  m_SortingLayer: -1
-  m_SortingOrder: 3
+  m_SortingLayerID: -2037770603
+  m_SortingLayer: 3
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 2.203125, z: 0}
@@ -793,19 +950,6 @@ TilemapRenderer:
   m_SortOrder: 3
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
---- !u!114 &6130974000974141821
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4058478055723964299}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7888b0cbeb2416e84991bd00a3993b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Teleporter
-  destination: {fileID: 0}
 --- !u!19719996 &8136364840087972923
 TilemapCollider2D:
   m_ObjectHideFlags: 0
@@ -10085,7 +10229,6 @@ GameObject:
   - component: {fileID: 296862037731903794}
   - component: {fileID: 2499141732696925093}
   - component: {fileID: 5007257853343423864}
-  - component: {fileID: 4055882154094666739}
   - component: {fileID: 3038143595257402784}
   m_Layer: 0
   m_Name: Decoration2
@@ -10334,9 +10477,9 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 1329374815
-  m_SortingLayer: -1
-  m_SortingOrder: 2
+  m_SortingLayerID: -2037770603
+  m_SortingLayer: 3
+  m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 1.203125, z: 0}
@@ -10345,19 +10488,6 @@ TilemapRenderer:
   m_SortOrder: 3
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
---- !u!114 &4055882154094666739
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7359680583492444728}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7888b0cbeb2416e84991bd00a3993b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Teleporter
-  destination: {fileID: 0}
 --- !u!19719996 &3038143595257402784
 TilemapCollider2D:
   m_ObjectHideFlags: 0

@@ -10,21 +10,27 @@ public class UpgradeContext
     public PlayerController Player { get; }
     public PlayerStats Stats { get; }
     public StatusEffectManager StatusEffects { get; }
+    public PlayerUpgradeRuntime Runtime { get; }
     public EnemySpawnManager SpawnManager { get; }
     public GameRules GameRules { get; }
+    public UpgradeManager UpgradeManager { get; }
 
     public UpgradeContext(
         PlayerController player,
         PlayerStats stats,
         StatusEffectManager statusEffects,
+        PlayerUpgradeRuntime runtime,
         EnemySpawnManager spawnManager,
-        GameRules gameRules)
+        GameRules gameRules,
+        UpgradeManager upgradeManager)
     {
         Player = player;
         Stats = stats;
         StatusEffects = statusEffects;
+        Runtime = runtime;
         SpawnManager = spawnManager;
         GameRules = gameRules;
+        UpgradeManager = upgradeManager;
     }
 
     /// <summary>
@@ -33,12 +39,16 @@ public class UpgradeContext
     /// </summary>
     public static UpgradeContext FromScene(PlayerController player)
     {
+        var statusEffects = player.GetComponent<StatusEffectManager>() ?? player.gameObject.AddComponent<StatusEffectManager>();
+        var runtime = player.GetComponent<PlayerUpgradeRuntime>() ?? player.gameObject.AddComponent<PlayerUpgradeRuntime>();
         return new UpgradeContext(
             player,
             player.GetComponent<PlayerStats>(),
-            player.GetComponent<StatusEffectManager>(),
+            statusEffects,
+            runtime,
             EnemySpawnManager.Instance,
-            GameRules.Instance
+            GameRules.Instance,
+            UpgradeManager.Instance
         );
     }
 }

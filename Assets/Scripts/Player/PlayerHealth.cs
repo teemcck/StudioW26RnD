@@ -3,7 +3,6 @@ using UnityEngine;
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
     private PlayerStats playerStats;
-    private float maxHealth;
 
     [Header("Damage Tuning")]
     [Tooltip("Seconds of invulnerability after being hit.")]
@@ -28,6 +27,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     private Coroutine _hitStopCo;
     private bool _isHitStopActive;
     private float _savedTimeScale = 1f;
+    private PlayerUpgradeRuntime _upgradeRuntime;
 
     public float CurrentHealth { get; private set; }
 
@@ -38,21 +38,31 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         _spawnTime = Time.time;
         playerStats = GetComponent<PlayerStats>();
         _playerController = GetComponent<PlayerController>();
-        maxHealth = playerStats.Get(PlayerStatType.MaxHealth);
+        _upgradeRuntime = GetComponent<PlayerUpgradeRuntime>();
+        playerStats.StatChanged += OnStatChanged;
+        float maxHealth = playerStats.Get(PlayerStatType.MaxHealth);
         CurrentHealth = maxHealth;
         if (!damageFlash) damageFlash = GetComponent<DamageFlash>();
         if (!cameraController) cameraController = FindObjectOfType<CameraController>();
     }
 
-    public void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce)
+    private void OnDestroy()
+    {
+        if (playerStats != null)
+            playerStats.StatChanged -= OnStatChanged;
+    }
+
+    public void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce, DamageContext context = default)
     {
         if (damage <= 0f) return;
         if (Time.time < _invulnerableUntil) return;
 
+        float adjustedDamage = ApplyDamageReduction(damage);
+
         float totalInvulnerability = Mathf.Max(invulnerableTime, damageStunDuration);
         _invulnerableUntil = Time.time + totalInvulnerability;
 
-        CurrentHealth = Mathf.Max(0f, CurrentHealth - damage);
+        CurrentHealth = Mathf.Max(0f, CurrentHealth - adjustedDamage);
         if (_playerController)
         {
             float stunDuration = Mathf.Max(damageStunDuration, damageAnimationDuration * 0.9f);
@@ -79,8 +89,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             damageFlash.PlayInvulnerabilityBlink(totalInvulnerability, invulnerabilityBlinkCount, 0.08f);
         }
 
-        Debug.Log($"Player hit for {damage}. HP: {CurrentHealth}/{maxHealth}");
-        EventBus<PlayerDamagedEvent>.Raise(new PlayerDamagedEvent {Amount = damage, RemainingHP = CurrentHealth, HitPosition = transform.position, Source = "enemy"}); 
+        Debug.Log($"Player hit for {adjustedDamage}. HP: {CurrentHealth}/{playerStats.MaxHealth}");
+        EventBus<PlayerDamagedEvent>.Raise(new PlayerDamagedEvent {Amount = adjustedDamage, RemainingHP = CurrentHealth, HitPosition = transform.position, Source = context.SourceId ?? "enemy"}); 
         
         if (CurrentHealth <= 0f)
             Die();
@@ -129,8 +139,45 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (_dead) return;
         if (amount <= 0f) return;
         
-        CurrentHealth = Mathf.Min(maxHealth, CurrentHealth + amount);
+        CurrentHealth = Mathf.Min(playerStats.MaxHealth, CurrentHealth + amount);
         
         EventBus<PlayerHealedEvent>.Raise(new PlayerHealedEvent {Amount = amount, NewHP = CurrentHealth});
+    }
+
+    public void ApplyDirectDamage(float damage, string sourceId)
+    {
+        if (_dead || damage <= 0f)
+            return;
+
+        float adjustedDamage = ApplyDamageReduction(damage);
+        CurrentHealth = Mathf.Max(0f, CurrentHealth - adjustedDamage);
+        EventBus<PlayerDamagedEvent>.Raise(new PlayerDamagedEvent
+        {
+            Amount = adjustedDamage,
+            RemainingHP = CurrentHealth,
+            HitPosition = transform.position,
+            Source = sourceId
+        });
+
+        if (CurrentHealth <= 0f)
+            Die();
+    }
+
+    private float ApplyDamageReduction(float damage)
+    {
+        float multiplier = _upgradeRuntime != null ? _upgradeRuntime.GetIncomingDamageMultiplier() : 1f;
+        return Mathf.Max(0f, damage * multiplier);
+    }
+
+    private void OnStatChanged(PlayerStatType statType, float oldValue, float newValue)
+    {
+        if (statType != PlayerStatType.MaxHealth)
+            return;
+
+        float delta = newValue - oldValue;
+        if (delta > 0f)
+            CurrentHealth += delta;
+
+        CurrentHealth = Mathf.Clamp(CurrentHealth, 0f, newValue);
     }
 }

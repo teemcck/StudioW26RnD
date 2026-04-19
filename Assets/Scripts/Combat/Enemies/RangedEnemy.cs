@@ -118,9 +118,9 @@ public class RangedEnemy : EnemyBase
         }
 
         if (dist > desiredDistance + keepDistanceDeadZone)
-            Rb.AddForce(dir * moveSpeed, ForceMode2D.Force);
+            Rb.AddForce(dir * EffectiveMoveSpeed, ForceMode2D.Force);
         else if (dist < desiredDistance - keepDistanceDeadZone)
-            Rb.AddForce(-dir * moveSpeed * 0.8f, ForceMode2D.Force);
+            Rb.AddForce(-dir * EffectiveMoveSpeed * 0.8f, ForceMode2D.Force);
         else
             Rb.linearVelocity = Vector2.Lerp(Rb.linearVelocity, Vector2.zero, 0.2f);
 
@@ -134,7 +134,8 @@ public class RangedEnemy : EnemyBase
 
     private void BeginAttack()
     {
-        _nextShootTime = Time.time + (shootCooldown / Mathf.Max(0.2f, attackCadenceMultiplier));
+        float cadence = Mathf.Max(0.2f, attackCadenceMultiplier * EffectiveAttackSpeedMultiplier);
+        _nextShootTime = Time.time + (shootCooldown / cadence);
         _firedThisAttack = false;
         _isAttackLocked = true;
 
@@ -179,7 +180,7 @@ public class RangedEnemy : EnemyBase
         _firedThisAttack = true;
         Vector2 fire = firePoint ? (Vector2)firePoint.position : (Vector2)transform.position;
         var proj = Instantiate(projectilePrefab, fire, Quaternion.identity);
-        proj.Fire(_lockedShootDirection);
+        proj.Fire(_lockedShootDirection, 0f, 0f, new DamageContext(gameObject, gameObject, AttackKind.Ranged, "enemy_projectile"));
         SpawnMuzzleFlash(fire);
     }
 

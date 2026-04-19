@@ -1035,19 +1035,19 @@ public sealed class WormBossController : EnemyBase
         yield return new WaitForSeconds(scaled);
     }
 
-    public override void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce)
+    public override void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce, DamageContext context = default)
     {
         if (_invulnerable) return;
-        base.TakeHit(damage, knockbackDirection, knockbackForce);
+        base.TakeHit(damage, knockbackDirection, knockbackForce, context);
     }
 
-    protected override void Die()
+    protected override void Die(DamageContext context = default)
     {
         _state = BossState.Dead;
         if (healthBarUI)
             healthBarUI.HideBar();
         ClearTelegraphs();
-        base.Die();
+        base.Die(context);
     }
 
     private void BindHealthBar()

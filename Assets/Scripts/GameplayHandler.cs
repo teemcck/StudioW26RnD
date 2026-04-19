@@ -20,7 +20,7 @@ public class GameplayHandler : MonoBehaviour
     [SerializeField] private float avoidXPMultiplier = 0.5f;
     [SerializeField] private float timeBonusMax = 50f;
     [SerializeField] private float timeBonusWindow = 60f;
-    [SerializeField] private int xpPerFloor = 100;
+    [SerializeField] private int xpPerFloor = 1000;
 
     [Header("World Progression")]
     [SerializeField] private string bossSceneName = "BossGameplay";
@@ -47,6 +47,7 @@ public class GameplayHandler : MonoBehaviour
 
     public enum FloorState { Idle, Preview, Playing, FloorEnd, Reward }
     public FloorState CurrentState { get; private set; } = FloorState.Idle;
+    public int CurrentFloorIndex => _floorIndex;
 
     private void Awake()
     {
@@ -102,12 +103,15 @@ public class GameplayHandler : MonoBehaviour
         if (_playerObject == null)
         {
             _playerObject = Instantiate(playerPrefab);
+            EnsurePlayerHud();
+            EnablePlayerMovement(true);
             ChangeCameraTracking(_playerObject.transform);
         }
         else
         {
             // Re-enable player if it was disabled
             _playerObject.SetActive(true);
+            EnsurePlayerHud();
             EnablePlayerMovement(true);
         }
 
@@ -140,7 +144,8 @@ public class GameplayHandler : MonoBehaviour
 
         // Disable player movement but keep active for upgrades
         EnablePlayerMovement(false);
-        // Don't deactivate player yet - wait until after upgrades are selected
+        if (_playerObject != null)
+            _playerObject.SetActive(false);
 
         // Disable all enemies
         DisableAllEnemies();
@@ -160,6 +165,8 @@ public class GameplayHandler : MonoBehaviour
         float elapsed = Time.time - _floorStartTime;
         int floorXP = CalculateXP(_enemiesKilled, _totalEnemies, elapsed);
 
+        int previousTotalXP = RunStatsTracker.Instance.TotalXP;
+
         // Add XP to run total
         RunStatsTracker.Instance.AddXP(floorXP);
 
@@ -171,31 +178,45 @@ public class GameplayHandler : MonoBehaviour
         floorUI.ShowXPBarAnimation(RunStatsTracker.Instance.TotalXP - floorXP, floorXP, _enemiesKilled, _totalEnemies, elapsed);
         yield return new WaitUntil(() => floorUI.XPBarAnimationComplete);
 
-        // After XP bar completes, show upgrades (threshold always met for now)
-        CurrentState = FloorState.Reward;
         _floorIndex++;
 
-        // Reset the reward confirmation flag for the new upgrade selection
-        floorUI.ResetRewardConfirmed();
-
-        Debug.Log("[GameplayHandler] XP bar animation complete, opening upgrade selection...");
-
-        EventBus<UpgradeScreenOpenedEvent>.Raise(new UpgradeScreenOpenedEvent
+        int upgradeSelectionsEarned = CountUpgradeThresholdsCrossed(previousTotalXP, RunStatsTracker.Instance.TotalXP);
+        if (upgradeSelectionsEarned > 0)
         {
-            OfferedCount = 3
-        });
+            CurrentState = FloorState.Reward;
 
-        UpgradeManager.Instance.OpenUpgradeSelection(3);
-        Debug.Log("[GameplayHandler] Waiting for upgrade selection...");
-        yield return new WaitUntil(() => 
-        {
-            if (floorUI.RewardConfirmed)
+            if (_playerObject != null)
+                _playerObject.SetActive(true);
+
+            for (int i = 0; i < upgradeSelectionsEarned; i++)
             {
-                Debug.Log("[GameplayHandler] Upgrade selected!");
-                return true;
+                floorUI.ResetRewardConfirmed();
+
+                Debug.Log($"[GameplayHandler] XP bar filled {upgradeSelectionsEarned} time(s). Opening upgrade selection {i + 1}/{upgradeSelectionsEarned}...");
+
+                EventBus<UpgradeScreenOpenedEvent>.Raise(new UpgradeScreenOpenedEvent
+                {
+                    OfferedCount = 3
+                });
+
+                UpgradeManager.Instance.OpenUpgradeSelection(3);
+                Debug.Log("[GameplayHandler] Waiting for upgrade selection...");
+                yield return new WaitUntil(() =>
+                {
+                    if (floorUI.RewardConfirmed)
+                    {
+                        Debug.Log("[GameplayHandler] Upgrade selected!");
+                        return true;
+                    }
+                    return false;
+                });
             }
-            return false;
-        });
+        }
+        else
+        {
+            CurrentState = FloorState.Idle;
+            Debug.Log("[GameplayHandler] XP threshold not reached, skipping upgrade selection.");
+        }
 
         Debug.Log("[GameplayHandler] Rolling next floor and looping...");
         if (WorldProgression.IsBossFloor(_floorIndex))
@@ -233,6 +254,12 @@ public class GameplayHandler : MonoBehaviour
 
     public int XPPerFloor => xpPerFloor;
 
+    private int CountUpgradeThresholdsCrossed(int previousTotalXP, int currentTotalXP)
+    {
+        int threshold = Mathf.Max(1, xpPerFloor);
+        return Mathf.Max(0, (currentTotalXP / threshold) - (previousTotalXP / threshold));
+    }
+
     private IEnumerator ShowWorldIntroIfNeeded()
     {
         if (_floorIndex == 0 && !_hasShownWorldOneIntro)
@@ -261,6 +288,17 @@ public class GameplayHandler : MonoBehaviour
         camera.Follow = newTracking;
     }
 
+    private void EnsurePlayerHud()
+    {
+        if (_playerObject == null)
+            return;
+
+        if (!_playerObject.GetComponent<PlayerHudUI>())
+        {
+            Debug.LogWarning("[GameplayHandler] Player prefab is missing PlayerHudUI. Add it to the prefab and wire the HUD child references there.");
+        }
+    }
+
     private void EnablePlayerMovement(bool enable)
     {
         if (_playerObject != null)
@@ -278,6 +316,14 @@ public class GameplayHandler : MonoBehaviour
             {
                 rb.linearVelocity = Vector2.zero;
                 rb.simulated = enable;
+            }
+
+            var playerInput = _playerObject.GetComponent<UnityEngine.InputSystem.PlayerInput>();
+            if (playerInput != null)
+            {
+                playerInput.enabled = enable;
+                if (enable && !string.IsNullOrEmpty(playerInput.defaultActionMap))
+                    playerInput.SwitchCurrentActionMap(playerInput.defaultActionMap);
             }
         }
     }

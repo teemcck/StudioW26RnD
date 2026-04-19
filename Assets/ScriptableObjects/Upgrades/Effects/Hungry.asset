@@ -13,23 +13,25 @@ MonoBehaviour:
   m_Name: Hungry
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeEffectsSO
   upgradeID: Hungry
-  maxStacks: -1
+  maxStacks: 1
   scaleWithStacks: 0
+  traits: []
   effects:
-  - rid: 8721390272822116445
-  - rid: 8721390272822116446
+  - rid: 1007
+  - rid: 10070
   references:
     version: 2
     RefIds:
-    - rid: 8721390272822116445
+    - rid: 1007
+      type: {class: PlayerUpgradeModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        editorNote: 
+        modifier: 0
+        amount: 0.2
+    - rid: 10070
       type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
       data:
         editorNote: 
         stat: 10
         multiplier: 0
         flat: 20
-    - rid: 8721390272822116446
-      type: {class: LifestealEffect, ns: , asm: Assembly-CSharp}
-      data:
-        editorNote: 
-        lifestealPercent: 0.2

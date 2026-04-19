@@ -76,13 +76,16 @@ public class Stat
 /// </summary>
 public class PlayerStats : MonoBehaviour
 {
+    public delegate void StatChangedHandler(PlayerStatType statType, float oldValue, float newValue);
+    public event StatChangedHandler StatChanged;
+
     // Serialised base values, set these the inspector
 
     [Header("Movement")]
-    [SerializeField] private float baseMoveSpeed   = 5f;
+    [SerializeField] private float baseMoveSpeed   = 3f;
 
     [Header("Dash")]
-    [SerializeField] private float baseDashSpeed   = 15f;
+    [SerializeField] private float baseDashSpeed   = 10f;
     [SerializeField] private int   baseDashCount   = 1;
     [SerializeField] private float baseDashCooldown = 1f;
     [SerializeField] private float baseDashDistance = 3f;
@@ -134,7 +137,11 @@ public class PlayerStats : MonoBehaviour
     public void AddFlat(PlayerStatType type, float delta)
     {
         if (_stats.TryGetValue(type, out var stat))
+        {
+            float before = stat.Value;
             stat.AddFlat(delta);
+            StatChanged?.Invoke(type, before, stat.Value);
+        }
         else
             Debug.LogWarning($"[PlayerStats] Unknown stat type: {type}");
     }
@@ -142,7 +149,11 @@ public class PlayerStats : MonoBehaviour
     public void AddMultiplier(PlayerStatType type, float delta)
     {
         if (_stats.TryGetValue(type, out var stat))
+        {
+            float before = stat.Value;
             stat.AddMultiplier(delta);
+            StatChanged?.Invoke(type, before, stat.Value);
+        }
         else
             Debug.LogWarning($"[PlayerStats] Unknown stat type: {type}");
     }

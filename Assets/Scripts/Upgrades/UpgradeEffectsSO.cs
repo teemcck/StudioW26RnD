@@ -29,6 +29,9 @@ public class UpgradeEffectsSO : ScriptableObject
     [Tooltip("If true, numeric values in effects are scaled by stack count on Apply.")]
     public bool scaleWithStacks = false;
 
+    [Tooltip("Optional metadata used by conditional upgrades.")]
+    public UpgradeTrait[] traits;
+
     [Header("Effects")]
     [Tooltip("Open-ended list of effects.")]
     [SerializeReference]
