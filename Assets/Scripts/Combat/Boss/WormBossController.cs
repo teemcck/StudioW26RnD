@@ -2214,7 +2214,11 @@ public sealed class WormBossController : EnemyBase
         base.TakeHit(damage, knockbackDirection, knockbackForce);
     }
 
+<<<<<<< HEAD
     protected override void Die()
+=======
+    protected override void Die(DamageContext context = default)
+>>>>>>> 65583fce3e2d136eb3149ec4bd4eef5964c7a17d
     {
         _state = BossState.Dead;
         if (healthBarUI)
