@@ -56,11 +56,19 @@ public sealed class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip playerHitSfx;
     [SerializeField] private AudioClip playerDashSfx;
     [SerializeField] private AudioClip playerMeleeSfx;
+    [SerializeField] private AudioClip[] playerMeleeSfxVariants;
     [SerializeField] private AudioClip playerDeathSfx;
+    [SerializeField] private AudioClip playerStepSfx;
     [SerializeField] private AudioClip enemyHitSfx;
     [SerializeField] private AudioClip upgradeSelectedSfx;
     [SerializeField] private AudioClip uiButtonSfx;
     [SerializeField] private AudioClip teleporterEnteredSfx;
+    [SerializeField] private AudioClip menuHoverSfx;
+    [SerializeField] private AudioClip menuStartSfx;
+    [SerializeField] private AudioClip plagueAmbientSfx;
+    [SerializeField] private AudioClip plagueAttackSfx;
+    [SerializeField] private AudioClip[] plagueLaughSfxVariants;
+    [SerializeField] private AudioClip ufoAttackSfx;
 
     private readonly List<AudioSource> _sfxPool = new();
     private readonly List<LoopingStem> _activeStems = new();
@@ -138,8 +146,15 @@ public sealed class AudioManager : MonoBehaviour
     public void PlayUiButton() => PlaySfx(uiButtonSfx);
     public void PlayTeleporterEntered() => PlaySfx(teleporterEnteredSfx);
     public void PlayPlayerDash() => PlaySfx(playerDashSfx);
-    public void PlayPlayerMelee() => PlaySfx(playerMeleeSfx);
+    public void PlayPlayerMelee() => PlaySfx(GetRandomClip(playerMeleeSfxVariants, playerMeleeSfx));
     public void PlayPlayerDeath() => PlaySfx(playerDeathSfx);
+    public void PlayPlayerStep(float volumeScale = 0.8f) => PlaySfx(playerStepSfx, volumeScale);
+    public void PlayMenuHover() => PlaySfx(menuHoverSfx);
+    public void PlayMenuStart() => PlaySfx(menuStartSfx ? menuStartSfx : uiButtonSfx);
+    public void PlayPlagueAmbient(float volumeScale = 0.55f) => PlaySfx(plagueAmbientSfx, volumeScale);
+    public void PlayPlagueAttack(float volumeScale = 1f) => PlaySfx(plagueAttackSfx, volumeScale);
+    public void PlayPlagueLaugh(float volumeScale = 0.9f) => PlaySfx(GetRandomClip(plagueLaughSfxVariants, plagueAttackSfx), volumeScale);
+    public void PlayUfoAttack(float volumeScale = 0.95f) => PlaySfx(ufoAttackSfx, volumeScale);
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -502,6 +517,24 @@ public sealed class AudioManager : MonoBehaviour
         src.loop = false;
         src.volume = sfxVolume;
         return src;
+    }
+
+    private static AudioClip GetRandomClip(AudioClip[] variants, AudioClip fallback = null)
+    {
+        if (variants != null && variants.Length > 0)
+        {
+            var valid = new List<AudioClip>(variants.Length);
+            for (int i = 0; i < variants.Length; i++)
+            {
+                if (variants[i] != null)
+                    valid.Add(variants[i]);
+            }
+
+            if (valid.Count > 0)
+                return valid[Random.Range(0, valid.Count)];
+        }
+
+        return fallback;
     }
 
     private void EnsureRuntimeRoot()

@@ -53,6 +53,7 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
     private int _facingSign = 1;
     private int _lockedFacingSign = 1;
     private Coroutine _slashVfxCo;
+    private float _nextAmbientTime;
 
     protected override void Awake()
     {
@@ -82,6 +83,7 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
         _facingSign = 1;
         _lockedFacingSign = 1;
         _lastFlipTime = -999f;
+        _nextAmbientTime = Time.time + Random.Range(2.5f, 5.5f);
         PlayState(idleStateName, forceRestart: true);
     }
 
@@ -112,6 +114,7 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
         float distanceToPlayer = toPlayer.magnitude;
 
         UpdateFacing(toPlayer);
+        TryPlayAmbient(distanceToPlayer);
 
         if (_isAttackLocked)
         {
@@ -135,6 +138,7 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
     private void BeginAttack(Vector2 toPlayer)
     {
         _lockedFacingSign = ResolveFacingSign(toPlayer, Rb.linearVelocity, lockDuringAttack: false);
+        AudioManager.Instance?.PlayPlagueLaugh();
 
         if (_attackRoutine != null)
             StopCoroutine(_attackRoutine);
@@ -153,6 +157,7 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
         if (damageDelay > 0f)
             yield return WindupRoutine(damageDelay);
 
+        AudioManager.Instance?.PlayPlagueAttack();
         TryApplyDirectionalSwingDamage(attackDirection);
         ApplySwingImpactVisual();
         PlaySwingSlashVfx(attackDirection);
@@ -328,5 +333,17 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
         transform.localScale = _baseScale;
         if (spriteRenderer)
             spriteRenderer.color = _baseColor;
+    }
+
+    private void TryPlayAmbient(float distanceToPlayer)
+    {
+        if (Time.time < _nextAmbientTime)
+            return;
+
+        if (distanceToPlayer > 6.5f)
+            return;
+
+        _nextAmbientTime = Time.time + Random.Range(6f, 11f);
+        AudioManager.Instance?.PlayPlagueAmbient(Random.Range(0.35f, 0.6f));
     }
 }

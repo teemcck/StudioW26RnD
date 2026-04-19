@@ -181,6 +181,7 @@ public class RangedEnemy : EnemyBase
         Vector2 fire = firePoint ? (Vector2)firePoint.position : (Vector2)transform.position;
         var proj = Instantiate(projectilePrefab, fire, Quaternion.identity);
         proj.Fire(_lockedShootDirection, 0f, 0f, new DamageContext(gameObject, gameObject, AttackKind.Ranged, "enemy_projectile"));
+        AudioManager.Instance?.PlayUfoAttack();
         SpawnMuzzleFlash(fire);
     }
 

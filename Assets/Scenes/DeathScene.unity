@@ -813,14 +813,31 @@ MonoBehaviour:
   world2Sidebreak: {fileID: 8300000, guid: 60320145e3f028645bdf5697c05c5169, type: 3}
   world2Breakdown: {fileID: 8300000, guid: a1f87bec42efeec45a8d55f4f41f73dd, type: 3}
   world2Waah: {fileID: 8300000, guid: 93f51242e3cc9bb439f1df223e19228d, type: 3}
-  playerHitSfx: {fileID: 0}
-  playerDashSfx: {fileID: 0}
-  playerMeleeSfx: {fileID: 0}
+  playerHitSfx: {fileID: 8300000, guid: ddbfb8ad824d5fb43bed3ac6022bc5f3, type: 3}
+  playerDashSfx: {fileID: 8300000, guid: ee572c07e17862e4c9ddda89d2c8273d, type: 3}
+  playerMeleeSfx: {fileID: 8300000, guid: 9fd6e85adad394e4089191cc7a3d8a79, type: 3}
+  playerMeleeSfxVariants:
+  - {fileID: 8300000, guid: 9fd6e85adad394e4089191cc7a3d8a79, type: 3}
+  - {fileID: 8300000, guid: 189d0f7d315f4804f88a9d242f1fb26a, type: 3}
+  - {fileID: 8300000, guid: 3c12869f3c98e854694a8bc0c76bd2fe, type: 3}
+  - {fileID: 8300000, guid: 3c700c805a2ca2149883595272cb1189, type: 3}
   playerDeathSfx: {fileID: 0}
+  playerStepSfx: {fileID: 8300000, guid: 3d814225c4dbfbe4daf228f89bcc32c1, type: 3}
   enemyHitSfx: {fileID: 0}
-  upgradeSelectedSfx: {fileID: 0}
-  uiButtonSfx: {fileID: 0}
+  upgradeSelectedSfx: {fileID: 8300000, guid: f0007a77631ffca4f9b9be14fd6edfcb, type: 3}
+  uiButtonSfx: {fileID: 8300000, guid: f0007a77631ffca4f9b9be14fd6edfcb, type: 3}
   teleporterEnteredSfx: {fileID: 0}
+  menuHoverSfx: {fileID: 8300000, guid: 8be53114dab701a42acfeb25a711b554, type: 3}
+  menuStartSfx: {fileID: 8300000, guid: 7501bd3807578e84d8b4a3b71f2db982, type: 3}
+  plagueAmbientSfx: {fileID: 8300000, guid: 7db077cf8876f7a4eb99bfb933506593, type: 3}
+  plagueAttackSfx: {fileID: 8300000, guid: d5bb3486989d2604b99a9f09089bf825, type: 3}
+  plagueLaughSfxVariants:
+  - {fileID: 8300000, guid: 36682c6964c434e459b6053f9676984f, type: 3}
+  - {fileID: 8300000, guid: 2205f04f89297d34cac3e0f6832475b4, type: 3}
+  - {fileID: 8300000, guid: 4356b623c3a7fcc4c99cba38cd69144a, type: 3}
+  - {fileID: 8300000, guid: 675397825b49ccd469eec30db02ea6a9, type: 3}
+  - {fileID: 8300000, guid: ac337a557ab3b7549b066d2a81d3c27d, type: 3}
+  ufoAttackSfx: {fileID: 8300000, guid: 58ab3b097d9eb3747892c44cea5521f0, type: 3}
 --- !u!1 &842419521
 GameObject:
   m_ObjectHideFlags: 0

@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
     private bool _isDead;
     private float _controlLockUntil;
     private PlayerStats _playerStats;
+    private float _nextFootstepTime;
 
     public Vector2 LastMoveDirection { get; private set; } = Vector2.right;
     public bool IsControlLocked => _isDead || Time.time < _controlLockUntil;
@@ -128,6 +129,8 @@ public class PlayerController : MonoBehaviour
 
         if (_actionState == ActionState.Locomotion)
             ApplyLocomotion(next, LastMoveDirection, forceRestart: false);
+
+        HandleFootsteps(next);
     }
 
     private Vector2 InputToCameraRelativeDirection(Vector2 input)
@@ -299,5 +302,27 @@ public class PlayerController : MonoBehaviour
     {
         if (spriteRenderer)
             spriteRenderer.flipX = flipX;
+    }
+
+    private void HandleFootsteps(Vector2 velocity)
+    {
+        if (_actionState != ActionState.Locomotion)
+            return;
+
+        float speed = velocity.magnitude;
+        if (speed <= runThreshold)
+        {
+            _nextFootstepTime = Mathf.Min(_nextFootstepTime, Time.time + 0.05f);
+            return;
+        }
+
+        if (Time.time < _nextFootstepTime)
+            return;
+
+        float statMoveSpeed = _playerStats ? Mathf.Max(0.01f, _playerStats.MoveSpeed) : Mathf.Max(0.01f, moveSpeed);
+        float normalizedSpeed = Mathf.Clamp01(speed / statMoveSpeed);
+        float interval = Mathf.Lerp(0.42f, 0.22f, normalizedSpeed);
+        _nextFootstepTime = Time.time + interval;
+        AudioManager.Instance?.PlayPlayerStep(Mathf.Lerp(0.55f, 0.9f, normalizedSpeed));
     }
 }
