@@ -237,6 +237,8 @@ public sealed class WormBossController : EnemyBase
 
     public bool WaitForExternalCutscene => waitForExternalCutscene;
 
+    public override bool UsesWorldFloatingHealthBar => false;
+
     protected override void Awake()
     {
         base.Awake();
@@ -936,7 +938,9 @@ public sealed class WormBossController : EnemyBase
             Vector2 dir = Rotate(aim, offset);
             GameObject go = Instantiate(bossProjectilePrefab, firePos, Quaternion.identity);
             SimpleProjectile proj = go.GetComponent<SimpleProjectile>();
-            if (proj) proj.Fire(dir);
+            if (proj)
+                proj.Fire(dir, 0f, 0f,
+                    new DamageContext(gameObject, gameObject, AttackKind.Ranged, "boss_projectile"));
         }
     }
 
@@ -2202,20 +2206,30 @@ public sealed class WormBossController : EnemyBase
         return ind;
     }
 
-    private IEnumerator WaitWithPhaseSpeed(float seconds)
+    private BossAttackIndicator SpawnCircleIndicator(Vector2 center, float radius,
+        float duration, float imminentFraction, bool tracked = false)
     {
-        float scaled = seconds / Mathf.Max(0.01f, PhaseSpeedMultiplier());
-        yield return new WaitForSeconds(scaled);
+        if (indicatorBaseSprite == null) return null;
+        var ind = CreateIndicator();
+        ind.BeginCircle(indicatorBaseSprite, indicatorImminentSprite,
+            indicatorBaseColor, indicatorImminentColor,
+            center, radius,
+            duration, imminentFraction, 5.5f, indicatorSortingOrder, _sortingLayerId);
+        if (tracked) _trackedIndicator = ind;
+        return ind;
+    }
+
+    private BossAttackIndicator CreateIndicator()
+    {
+        var go = new GameObject("BossIndicator");
+        go.transform.position = new Vector3(0f, 0f, transform.position.z + 0.05f);
+        var ind = go.AddComponent<BossAttackIndicator>();
+        _activeIndicators.Add(ind);
+        return ind;
     }
 
     private void UpdateTrackedIndicatorCenter(Vector2 center)
     {
-        _state = BossState.Dead;
-        if(healthBarUI){
-            healthBarUI.HideBar();
-        }
-        ClearTelegraphs();
-        base.Die(context);
         if (!_trackedIndicator) return;
         _trackedIndicator.UpdateCenter(center);
     }

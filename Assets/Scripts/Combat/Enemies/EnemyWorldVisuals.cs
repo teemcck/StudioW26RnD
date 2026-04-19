@@ -33,6 +33,7 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
 
     private EnemyBase _enemy;
     private EnemyStatusEffectController _statusEffects;
+    private bool _worldHealthBarEnabled = true;
     private Transform _visualRoot;
     private Transform _barRoot;
     private SpriteRenderer _barFrameRenderer;
@@ -43,6 +44,7 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
     {
         _enemy = GetComponent<EnemyBase>();
         _statusEffects = GetComponent<EnemyStatusEffectController>();
+        _worldHealthBarEnabled = _enemy == null || _enemy.UsesWorldFloatingHealthBar;
         CacheTrackedRenderers();
         CreateVisuals();
     }
@@ -59,6 +61,9 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
     private void LateUpdate()
     {
         if (_enemy == null || _enemy.IsDead || _visualRoot == null)
+            return;
+
+        if (!_worldHealthBarEnabled || _barRoot == null)
             return;
 
         Bounds bounds = GetVisualBounds();
@@ -92,7 +97,8 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
         _visualRoot.SetParent(transform, false);
         _visualRoot.localPosition = Vector3.zero;
 
-        CreateHealthBar();
+        if (_worldHealthBarEnabled)
+            CreateHealthBar();
     }
 
     public void NotifyStatusApplied(string effectId)

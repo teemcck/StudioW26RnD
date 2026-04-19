@@ -41,6 +41,8 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
     public float MaxHealth => maxHealth;
     public float HealthNormalized => maxHealth <= 0.0001f ? 0f : Mathf.Clamp01(_health / maxHealth);
     public bool IsDead => _isDead;
+
+    public virtual bool UsesWorldFloatingHealthBar => true;
     public EnemyStatusEffectController StatusEffects => _statusEffects;
     protected bool IsInHitReaction => Time.time < _hitReactionUntil;
     protected float EffectiveMoveSpeed => moveSpeed * (_statusEffects ? _statusEffects.GetMoveSpeedMultiplier() : 1f);

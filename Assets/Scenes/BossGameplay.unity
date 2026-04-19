@@ -2518,6 +2518,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 157006395687664069, guid: 437290eb29e6e99468b91827e51d4b7e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1630580725546072067, guid: 437290eb29e6e99468b91827e51d4b7e, type: 3}
       propertyPath: damage
       value: 10
@@ -11365,7 +11369,6 @@ SceneRoots:
   - {fileID: 1906595600}
   - {fileID: 707944550}
   - {fileID: 1993178443}
-  - {fileID: 1510535756}
   - {fileID: 6385348555319532421}
   - {fileID: 992000017}
   - {fileID: 1550000002}
@@ -11376,3 +11379,4 @@ SceneRoots:
   - {fileID: 1974537658}
   - {fileID: 2110000002}
   - {fileID: 1582019080}
+  - {fileID: 1510535756}
