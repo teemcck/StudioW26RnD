@@ -183,6 +183,7 @@ public class LobbingEnemy : EnemyBase
         Vector2 fire = firePoint ? (Vector2)firePoint.position : (Vector2)transform.position;
         var proj = Instantiate(projectilePrefab, fire, Quaternion.identity);
         proj.FireBallistic(fire, _lockedTargetPoint, horizontalShotSpeed);
+        AudioManager.Instance?.PlayUfoAttack();
         SpawnMuzzleFlash(fire);
     }
 

@@ -22,7 +22,8 @@ public class MeleeEnemy : EnemyBase
         else
         {
             float cooldown = attackCooldown / Mathf.Max(0.1f, EffectiveAttackSpeedMultiplier);
-            TryDealContactDamage(Player, contactDamage, cooldown, 0f, true, toPlayer);
+            if (TryDealContactDamage(Player, contactDamage, cooldown, 0f, true, toPlayer))
+                AudioManager.Instance?.PlayUfoAttack(0.85f);
         }
     }
 
