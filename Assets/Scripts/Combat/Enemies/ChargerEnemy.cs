@@ -88,18 +88,21 @@ public class ChargerEnemy : EnemyBase
     {
         if (dist > attackRange) return;
         float cooldown = attackCooldown / Mathf.Max(0.1f, EffectiveAttackSpeedMultiplier);
-        TryDealContactDamage(Player, contactDamage, cooldown, 0f, true, dir);
+        if (TryDealContactDamage(Player, contactDamage, cooldown, 0f, true, dir))
+            AudioManager.Instance?.PlayUfoAttack(0.9f);
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
         float cooldown = attackCooldown / Mathf.Max(0.1f, EffectiveAttackSpeedMultiplier);
-        TryDealContactDamage(collision.collider, contactDamage, cooldown, 0f);
+        if (TryDealContactDamage(collision.collider, contactDamage, cooldown, 0f))
+            AudioManager.Instance?.PlayUfoAttack(0.9f);
     }
 
     private void OnTriggerStay2D(Collider2D other)
     {
         float cooldown = attackCooldown / Mathf.Max(0.1f, EffectiveAttackSpeedMultiplier);
-        TryDealContactDamage(other, contactDamage, cooldown, 0f);
+        if (TryDealContactDamage(other, contactDamage, cooldown, 0f))
+            AudioManager.Instance?.PlayUfoAttack(0.9f);
     }
 }

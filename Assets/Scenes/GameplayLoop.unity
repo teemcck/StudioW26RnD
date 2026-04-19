@@ -135,7 +135,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &40575552
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2349,12 +2349,12 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 189d0f7d315f4804f88a9d242f1fb26a, type: 3}
   - {fileID: 8300000, guid: 3c12869f3c98e854694a8bc0c76bd2fe, type: 3}
   - {fileID: 8300000, guid: 3c700c805a2ca2149883595272cb1189, type: 3}
-  playerDeathSfx: {fileID: 0}
+  playerDeathSfx: {fileID: 8300000, guid: 36682c6964c434e459b6053f9676984f, type: 3}
   playerStepSfx: {fileID: 8300000, guid: 3d814225c4dbfbe4daf228f89bcc32c1, type: 3}
-  enemyHitSfx: {fileID: 0}
+  enemyHitSfx: {fileID: 8300000, guid: 58ab3b097d9eb3747892c44cea5521f0, type: 3}
   upgradeSelectedSfx: {fileID: 8300000, guid: f0007a77631ffca4f9b9be14fd6edfcb, type: 3}
   uiButtonSfx: {fileID: 8300000, guid: f0007a77631ffca4f9b9be14fd6edfcb, type: 3}
-  teleporterEnteredSfx: {fileID: 0}
+  teleporterEnteredSfx: {fileID: 8300000, guid: f0007a77631ffca4f9b9be14fd6edfcb, type: 3}
   menuHoverSfx: {fileID: 8300000, guid: 8be53114dab701a42acfeb25a711b554, type: 3}
   menuStartSfx: {fileID: 8300000, guid: 7501bd3807578e84d8b4a3b71f2db982, type: 3}
   plagueAmbientSfx: {fileID: 8300000, guid: 7db077cf8876f7a4eb99bfb933506593, type: 3}
