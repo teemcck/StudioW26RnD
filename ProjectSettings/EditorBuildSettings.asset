@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DeathScene.unity
     guid: 38f1cb6fa80121849816cda2dd503b83
+  - enabled: 1
+    path: Assets/Scenes/BossGameplay.unity
+    guid: f005de3ae71a549b9a345c54ef2f9865
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: b8da25f30a39c4a35b44b3d15b06d8b5, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
