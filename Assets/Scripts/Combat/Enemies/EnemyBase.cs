@@ -57,7 +57,15 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         maxHealth = Mathf.Max(0.01f, maxHealth * healthMultiplier);
         _health = maxHealth;
         if (sizeMultiplier > 0f && !Mathf.Approximately(sizeMultiplier, 1f))
+        {
             transform.localScale *= sizeMultiplier;
+            // Rigidbody2D + transform scale: sync so colliders register this frame (fixes split spawns).
+            if (Rb != null)
+            {
+                Rb.WakeUp();
+                Physics2D.SyncTransforms();
+            }
+        }
     }
 
     protected virtual void Awake()
@@ -126,7 +134,7 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         Destroy(gameObject);
     }
 
-    public void ApplyStatusDamage(float damage, DamageContext context)
+    public virtual void ApplyStatusDamage(float damage, DamageContext context)
     {
         if (_isDead || damage <= 0f)
             return;
@@ -145,7 +153,7 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
             Die(context);
     }
 
-    public void ExecuteFrailty(DamageContext context = default)
+    public virtual void ExecuteFrailty(DamageContext context = default)
     {
         if (_isDead)
             return;

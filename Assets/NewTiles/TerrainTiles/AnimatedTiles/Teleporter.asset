@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: Teleporter
   m_EditorClassIdentifier: Unity.2D.Tilemap.Extras::UnityEngine.Tilemaps.AnimatedTile
   m_AnimatedSprites:
-  - {fileID: -981245166, guid: 859f6f2eb3dda774f82163017700917d, type: 3}
-  - {fileID: -981245166, guid: 859f6f2eb3dda774f82163017700917d, type: 3}
-  - {fileID: -1374868726, guid: 859f6f2eb3dda774f82163017700917d, type: 3}
-  - {fileID: 358154032, guid: 859f6f2eb3dda774f82163017700917d, type: 3}
-  - {fileID: -906163606, guid: 859f6f2eb3dda774f82163017700917d, type: 3}
+  - {fileID: 8409234884740282508, guid: 95882f241baa344d8b268f317a0c085b, type: 3}
+  - {fileID: 1020895010, guid: 95882f241baa344d8b268f317a0c085b, type: 3}
+  - {fileID: 1131855982, guid: 95882f241baa344d8b268f317a0c085b, type: 3}
+  - {fileID: -888460973, guid: 95882f241baa344d8b268f317a0c085b, type: 3}
   m_MinSpeed: 4
   m_MaxSpeed: 4
   m_AnimationStartTime: 0

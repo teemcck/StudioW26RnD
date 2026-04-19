@@ -1471,6 +1471,42 @@ public sealed class WormBossController : EnemyBase
     }
 
 
+    // Shield eats up to current shield per hit; overflow never spills to HP until shield is already 0.
+    private bool AbsorbDamageIntoShield(float damage, Vector2 shieldBreakKnockbackHint)
+    {
+        if (damage <= 0f || _currentShield <= 0f)
+            return false;
+
+        float maxS = GetMaxShieldForCurrentPhase();
+        float absorbed = Mathf.Min(_currentShield, damage);
+        _currentShield -= absorbed;
+        ResolveBossAudio()?.PlayShieldDamageSfx();
+        if (maxS > 0f && _currentShield < maxS)
+            _lastShieldDamageTime = Time.time;
+        UpdateShieldUI();
+        PlayShieldPingFlash();
+        if (_currentShield <= 0f)
+        {
+            _currentShield = 0f;
+            _shieldBroken = true;
+            if (healthBarUI) healthBarUI.NotifyShieldBroken();
+            PriorityCancelOngoingMoves();
+            _isStunned = true;
+            _state = InternalState.Stunned;
+            if (_rb)
+                _rb.linearVelocity = Vector2.zero;
+            CrossFadeAnimState(StateDamage, 0.1f);
+            if (_shieldBreakFeedbackRoutine != null)
+                StopCoroutine(_shieldBreakFeedbackRoutine);
+            Vector2 kb = shieldBreakKnockbackHint.sqrMagnitude > 0.0001f
+                ? shieldBreakKnockbackHint.normalized
+                : -AimDirectionToPlayer();
+            _shieldBreakFeedbackRoutine = StartCoroutine(ShieldBreakFeedbackRoutine(kb));
+        }
+
+        return true;
+    }
+
     public override void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce, DamageContext context = default)
     {
         if (IsDead || _state == InternalState.Dead) return;
@@ -1483,35 +1519,8 @@ public sealed class WormBossController : EnemyBase
 
         float maxS = GetMaxShieldForCurrentPhase();
 
-        if (_currentShield > 0f)
-        {
-            float absorbed = Mathf.Min(_currentShield, damage);
-            _currentShield -= absorbed;
-            ResolveBossAudio()?.PlayShieldDamageSfx();
-            if (maxS > 0f && _currentShield < maxS)
-                _lastShieldDamageTime = Time.time;
-            UpdateShieldUI();
-            PlayShieldPingFlash();
-            if (_currentShield <= 0f)
-            {
-                _currentShield = 0f;
-                _shieldBroken = true;
-                if (healthBarUI) healthBarUI.NotifyShieldBroken();
-                PriorityCancelOngoingMoves();
-                _isStunned = true;
-                _state = InternalState.Stunned;
-                if (_rb)
-                    _rb.linearVelocity = Vector2.zero;
-                CrossFadeAnimState(StateDamage, 0.1f);
-                if (_shieldBreakFeedbackRoutine != null)
-                    StopCoroutine(_shieldBreakFeedbackRoutine);
-                Vector2 kb = knockbackDirection.sqrMagnitude > 0.0001f
-                    ? knockbackDirection.normalized
-                    : -AimDirectionToPlayer();
-                _shieldBreakFeedbackRoutine = StartCoroutine(ShieldBreakFeedbackRoutine(kb));
-            }
+        if (AbsorbDamageIntoShield(damage, knockbackDirection))
             return;
-        }
 
         if (maxS > 0f && _currentShield < maxS)
             _lastShieldDamageTime = Time.time;
@@ -1527,6 +1536,20 @@ public sealed class WormBossController : EnemyBase
 
         if (!_attackActive)
             StartDamageReaction();
+    }
+
+    public override void ApplyStatusDamage(float damage, DamageContext context)
+    {
+        if (IsDead || _state == InternalState.Dead) return;
+        if (_introActive) return;
+        if (_phaseTransitionActive) return;
+        if (damage <= 0f) return;
+        if (_immuneDuringDigMove || _digInvulnerable) return;
+
+        if (AbsorbDamageIntoShield(damage, -AimDirectionToPlayer()))
+            return;
+
+        base.ApplyStatusDamage(damage, context);
     }
 
     private void StartDamageReaction()

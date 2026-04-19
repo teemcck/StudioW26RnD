@@ -1,0 +1,551 @@
+fileFormatVersion: 2
+guid: 8f5345ca673a74f519be423ba9e08c69
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1161174726230873726
+    second: slime_splitter_sprite_sheet_final_0
+  - first:
+      213: 6645399067551635913
+    second: slime_splitter_sprite_sheet_final_1
+  - first:
+      213: -251594222030552338
+    second: slime_splitter_sprite_sheet_final_2
+  - first:
+      213: -5906652031550269307
+    second: slime_splitter_sprite_sheet_final_3
+  - first:
+      213: -115066132253068538
+    second: slime_splitter_sprite_sheet_final_4
+  - first:
+      213: -221540068408477749
+    second: slime_splitter_sprite_sheet_final_5
+  - first:
+      213: 5903354728767042387
+    second: slime_splitter_sprite_sheet_final_6
+  - first:
+      213: 188980118240737505
+    second: slime_splitter_sprite_sheet_final_7
+  - first:
+      213: 5777934404106022493
+    second: slime_splitter_sprite_sheet_final_8
+  - first:
+      213: 7199160188130303908
+    second: slime_splitter_sprite_sheet_final_9
+  - first:
+      213: 8437400169590242446
+    second: slime_splitter_sprite_sheet_final_10
+  - first:
+      213: -3059063382818648330
+    second: slime_splitter_sprite_sheet_final_11
+  - first:
+      213: -217611175501159683
+    second: slime_splitter_sprite_sheet_final_12
+  - first:
+      213: 7690612346666969827
+    second: slime_splitter_sprite_sheet_final_13
+  - first:
+      213: 3489933151688889484
+    second: slime_splitter_sprite_sheet_final_14
+  - first:
+      213: -2896834842280578599
+    second: slime_splitter_sprite_sheet_final_15
+  - first:
+      213: -2217996098813068220
+    second: slime_splitter_sprite_sheet_final_16
+  - first:
+      213: -6574992677916487498
+    second: slime_splitter_sprite_sheet_final_17
+  - first:
+      213: -85161094336998322
+    second: slime_splitter_sprite_sheet_final_18
+  - first:
+      213: 3126946684254639299
+    second: slime_splitter_sprite_sheet_final_19
+  - first:
+      213: 6166650170476864667
+    second: slime_splitter_sprite_sheet_final_20
+  - first:
+      213: -4001260546571738370
+    second: slime_splitter_sprite_sheet_final_21
+  - first:
+      213: -8271398810526860531
+    second: slime_splitter_sprite_sheet_final_22
+  - first:
+      213: 43666990707329751
+    second: slime_splitter_sprite_sheet_final_23
+  - first:
+      213: -4448868665740131289
+    second: slime_splitter_sprite_sheet_final_24
+  - first:
+      213: 8244772166355557333
+    second: slime_splitter_sprite_sheet_final_25
+  - first:
+      213: -7211106231271177537
+    second: slime_splitter_sprite_sheet_final_26
+  - first:
+      213: 7699456046306439595
+    second: slime_splitter_sprite_sheet_final_27
+  - first:
+      213: 4761584233642442490
+    second: slime_splitter_sprite_sheet_final_28
+  - first:
+      213: -375237558908454027
+    second: slime_splitter_sprite_sheet_final_29
+  - first:
+      213: 8002367971271656668
+    second: slime_splitter_sprite_sheet_final_30
+  - first:
+      213: 1185796765521940266
+    second: slime_splitter_sprite_sheet_final_31
+  - first:
+      213: -3028027969084087749
+    second: slime_splitter_sprite_sheet_final_32
+  - first:
+      213: -61507485568973406
+    second: slime_splitter_sprite_sheet_final_33
+  - first:
+      213: 883951217574294869
+    second: slime_splitter_sprite_sheet_final_34
+  - first:
+      213: -4972664029395757381
+    second: slime_splitter_sprite_sheet_final_35
+  - first:
+      213: 3075251109394743536
+    second: slime_splitter_sprite_sheet_final_36
+  - first:
+      213: -347896900079034448
+    second: slime_splitter_sprite_sheet_final_37
+  - first:
+      213: 3116341654249885413
+    second: slime_splitter_sprite_sheet_final_38
+  - first:
+      213: 6183678776240814856
+    second: slime_splitter_sprite_sheet_final_39
+  - first:
+      213: -4017491920784510787
+    second: slime_splitter_sprite_sheet_final_40
+  - first:
+      213: -4021645424401751188
+    second: slime_splitter_sprite_sheet_final_41
+  - first:
+      213: -7140772274654368002
+    second: slime_splitter_sprite_sheet_final_42
+  - first:
+      213: 1054335212956201210
+    second: slime_splitter_sprite_sheet_final_43
+  - first:
+      213: 7185640045832868978
+    second: slime_splitter_sprite_sheet_final_44
+  - first:
+      213: 7746765521249769997
+    second: slime_splitter_sprite_sheet_final_45
+  - first:
+      213: 3379581029189264945
+    second: slime_splitter_sprite_sheet_final_46
+  - first:
+      213: -7414461030939512244
+    second: slime_splitter_sprite_sheet_final_47
+  - first:
+      213: 3222494774256782294
+    second: slime_splitter_sprite_sheet_final_48
+  - first:
+      213: -6189067621254917877
+    second: slime_splitter_sprite_sheet_final_49
+  - first:
+      213: 2373701807723286027
+    second: slime_splitter_sprite_sheet_final_50
+  - first:
+      213: -7972819656225168762
+    second: slime_splitter_sprite_sheet_final_51
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: slime_splitter_sprite_sheet_final_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e761727e2425d1010800000000000000
+      internalID: 1161174726230873726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime_splitter_sprite_sheet_final_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c9902c3e33393c50800000000000000
+      internalID: 6645399067551635913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime_splitter_sprite_sheet_final_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee204585368228cf0800000000000000
+      internalID: -251594222030552338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime_splitter_sprite_sheet_final_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5885b97a54b570ea0800000000000000
+      internalID: -5906652031550269307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime_splitter_sprite_sheet_final_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 603b06d56f3376ef0800000000000000
+      internalID: -115066132253068538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime_splitter_sprite_sheet_final_5
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc73ff64b7eececf0800000000000000
+      internalID: -221540068408477749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime_splitter_sprite_sheet_final_6
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 353384739ddece150800000000000000
+      internalID: 5903354728767042387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime_splitter_sprite_sheet_final_7
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e8b9519a646f9200800000000000000
+      internalID: 188980118240737505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime_splitter_sprite_sheet_final_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5e6f3c4ab85f2050800000000000000
+      internalID: 5777934404106022493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime_splitter_sprite_sheet_final_9
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4af14ae5c0e88e360800000000000000
+      internalID: 7199160188130303908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime_splitter_sprite_sheet_final_10
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8c3f3040caa71570800000000000000
+      internalID: 8437400169590242446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime_splitter_sprite_sheet_final_11
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6fe80b99f060c85d0800000000000000
+      internalID: -3059063382818648330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 3178172afaef2421f994ec1e1c890bc2
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":4.0,"y":3.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      slime_splitter_sprite_sheet_final_0: 1161174726230873726
+      slime_splitter_sprite_sheet_final_1: 6645399067551635913
+      slime_splitter_sprite_sheet_final_10: 8437400169590242446
+      slime_splitter_sprite_sheet_final_11: -3059063382818648330
+      slime_splitter_sprite_sheet_final_2: -251594222030552338
+      slime_splitter_sprite_sheet_final_3: -5906652031550269307
+      slime_splitter_sprite_sheet_final_4: -115066132253068538
+      slime_splitter_sprite_sheet_final_5: -221540068408477749
+      slime_splitter_sprite_sheet_final_6: 5903354728767042387
+      slime_splitter_sprite_sheet_final_7: 188980118240737505
+      slime_splitter_sprite_sheet_final_8: 5777934404106022493
+      slime_splitter_sprite_sheet_final_9: 7199160188130303908
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
