@@ -19,10 +19,12 @@ public class Teleporter : MonoBehaviour
         // denoting the end of a level but good enough for now.
         if (destination != null)
         {
+            AudioManager.Instance?.PlayTeleporterEntered();
             other.transform.position = destination.position;
         }
         else
         {
+            AudioManager.Instance?.PlayTeleporterEntered();
             EventBus<PlayerReachedEndpointEvent>.Raise(new PlayerReachedEndpointEvent());
         }
     }

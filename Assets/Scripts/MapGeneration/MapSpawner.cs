@@ -17,7 +17,8 @@ public class MapSpawner : MonoBehaviour
     [SerializeField] private float chunkSpacing = 5f;
 
     [Header("Enemy spawn (tile layer)")]
-    [SerializeField] private List<WeightedEnemyPrefab> enemyPool = new List<WeightedEnemyPrefab>();
+    [SerializeField] private List<WeightedEnemyPrefab> worldOneEnemyPool = new List<WeightedEnemyPrefab>();
+    [SerializeField] private List<WeightedEnemyPrefab> worldTwoEnemyPool = new List<WeightedEnemyPrefab>();
 
     [Header("References")]
     [SerializeField] private ChunkGen chunkGen;
@@ -51,6 +52,10 @@ public class MapSpawner : MonoBehaviour
             Debug.LogError("ChunkGen reference is missing in MapSpawner.");
         if (chunkContainer == null)
             Debug.LogError("ChunkContainer reference is missing in MapSpawner.");
+        if (worldOneEnemyPool == null || worldOneEnemyPool.Count == 0)
+            Debug.LogError("World 1 enemy pool is empty in MapSpawner.");
+        if (worldTwoEnemyPool == null || worldTwoEnemyPool.Count == 0)
+            Debug.LogError("World 2 enemy pool is empty in MapSpawner.");
     }
 
     private void OnDestroy()
@@ -59,19 +64,18 @@ public class MapSpawner : MonoBehaviour
             Instance = null;
     }
     
-    public List<GameObject> GenerateRandomSequence(int difficulty)
+    public List<GameObject> GenerateRandomSequence(int difficulty, int numChunks, WorldBand band)
     {
         ResetMap();
         LastSpawnedEnemyCount = 0;
 
-        int numChunks = Random.Range(GameConstants.MinChunkCount, GameConstants.MaxChunkCount + 1);
         float fillFraction = DifficultyToFillFraction(difficulty);
-        var weightedPool = BuildWeightedPool();
+        var weightedPool = BuildWeightedPool(band);
         Debug.Log($"Generating {numChunks} chunks; difficulty {difficulty} → fill {fillFraction:P0}.");
 
         for (int i = 0; i < numChunks; i++)
         {
-            GameObject prefab = chunkGen.GetRandomMapChunk();
+            GameObject prefab = chunkGen.GetRandomMapChunk(band);
             if (prefab == null)
             {
                 Debug.LogError($"Chunk {i} prefab is null, skipping.");
@@ -96,7 +100,8 @@ public class MapSpawner : MonoBehaviour
         }
 
         // Initial spawn position determined by TeleportEntry of initial chunk.
-        SpawnPosition = _chunks[0].GetComponentInChildren<TeleportEntry>().transform.position;
+        if (_chunks.Count > 0)
+            SpawnPosition = _chunks[0].GetComponentInChildren<TeleportEntry>().transform.position;
 
         LinkTeleporters();
         return _chunks;
@@ -109,19 +114,30 @@ public class MapSpawner : MonoBehaviour
         return Mathf.Clamp01(percent / 100f);
     }
 
-    List<(GameObject prefab, float weight)> BuildWeightedPool()
+    List<(GameObject prefab, float weight)> BuildWeightedPool(WorldBand band)
     {
         var list = new List<(GameObject, float)>();
-        if (enemyPool == null)
+        var sourcePool = GetEnemyPoolForBand(band);
+        if (sourcePool == null)
             return list;
 
-        foreach (var entry in enemyPool)
+        foreach (var entry in sourcePool)
         {
             if (entry != null && entry.prefab != null && entry.weight > 0f)
                 list.Add((entry.prefab, entry.weight));
         }
 
         return list;
+    }
+
+    private List<WeightedEnemyPrefab> GetEnemyPoolForBand(WorldBand band)
+    {
+        return band switch
+        {
+            WorldBand.WorldOne when worldOneEnemyPool != null && worldOneEnemyPool.Count > 0 => worldOneEnemyPool,
+            WorldBand.WorldTwo when worldTwoEnemyPool != null && worldTwoEnemyPool.Count > 0 => worldTwoEnemyPool,
+            _ => null
+        };
     }
 
     private void LinkTeleporters()
@@ -185,6 +201,29 @@ public class MapSpawner : MonoBehaviour
                 index = i;
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    public bool TryGetChunkWorldBoundsAtWorldPosition(Vector2 worldPos, out Bounds bounds)
+    {
+        bounds = default;
+        for (int i = 0; i < _chunks.Count; i++)
+        {
+            GameObject chunk = _chunks[i];
+            if (!chunk) continue;
+
+            Tilemap tm = chunk.GetComponentInChildren<Tilemap>();
+            if (!tm) continue;
+
+            Bounds worldBounds = GetTilemapWorldBounds(tm);
+            Vector3 p = new Vector3(worldPos.x, worldPos.y, worldBounds.center.z);
+            if (!worldBounds.Contains(p))
+                continue;
+
+            bounds = worldBounds;
+            return true;
         }
 
         return false;

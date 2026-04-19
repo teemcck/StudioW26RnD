@@ -48,7 +48,7 @@ public class ChargerEnemy : EnemyBase
                 break;
 
             case Phase.Windup:
-                Rb.AddForce(dir * moveSpeed * 0.25f, ForceMode2D.Force);
+                Rb.AddForce(dir * EffectiveMoveSpeed * 0.25f, ForceMode2D.Force);
                 if (Time.time >= _phaseEndTime)
                 {
                     _phase = Phase.Charging;
@@ -69,7 +69,7 @@ public class ChargerEnemy : EnemyBase
                 break;
 
             case Phase.Cooldown:
-                Rb.AddForce(dir * moveSpeed * 0.6f, ForceMode2D.Force);
+                Rb.AddForce(dir * EffectiveMoveSpeed * 0.6f, ForceMode2D.Force);
                 if (Time.time >= _phaseEndTime)
                     _phase = Phase.Chase;
                 TryMelee(dist, dir);
@@ -80,23 +80,26 @@ public class ChargerEnemy : EnemyBase
     private void ChaseAndMelee(float dist, Vector2 dir)
     {
         if (dist > attackRange)
-            Rb.AddForce(dir * moveSpeed, ForceMode2D.Force);
+            Rb.AddForce(dir * EffectiveMoveSpeed, ForceMode2D.Force);
         TryMelee(dist, dir);
     }
 
     private void TryMelee(float dist, Vector2 dir)
     {
         if (dist > attackRange) return;
-        TryDealContactDamage(Player, contactDamage, attackCooldown, 0f, true, dir);
+        float cooldown = attackCooldown / Mathf.Max(0.1f, EffectiveAttackSpeedMultiplier);
+        TryDealContactDamage(Player, contactDamage, cooldown, 0f, true, dir);
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        TryDealContactDamage(collision.collider, contactDamage, attackCooldown, 0f);
+        float cooldown = attackCooldown / Mathf.Max(0.1f, EffectiveAttackSpeedMultiplier);
+        TryDealContactDamage(collision.collider, contactDamage, cooldown, 0f);
     }
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        TryDealContactDamage(other, contactDamage, attackCooldown, 0f);
+        float cooldown = attackCooldown / Mathf.Max(0.1f, EffectiveAttackSpeedMultiplier);
+        TryDealContactDamage(other, contactDamage, cooldown, 0f);
     }
 }

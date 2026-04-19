@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeDisplaySO
   upgradeID: Assassin
   upgradeName: Assassin
-  upgradeDescription: 
-  cardImage: {fileID: 7863553717130063180, guid: 32705ae8f68adf34493483f8f0aecdfe, type: 3}
-  rarity: 0
+  upgradeDescription: Deal 35% more damage for 2 seconds after dashing.
+  cardImage: {fileID: -5099292496197868168, guid: ba652ac210d5dda46879552786393b9a, type: 3}
+  rarity: 1
   category: 1

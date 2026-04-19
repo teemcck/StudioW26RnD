@@ -62,6 +62,8 @@ public class UpgradeUIHandler : MonoBehaviour
             ? UpgradeManager.Instance.GetStack(selected.upgradeID)
             : 0;
 
+        AudioManager.Instance?.PlayUpgradeSelected();
+
         EventBus<UpgradeSelectedEvent>.Raise(new UpgradeSelectedEvent
         {
             UpgradeID     = selected.upgradeID,

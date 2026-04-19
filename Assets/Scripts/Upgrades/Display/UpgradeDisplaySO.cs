@@ -29,5 +29,5 @@ public class UpgradeDisplaySO : ScriptableObject
     public UpgradeCategory category;
 }
 
-public enum UpgradeRarity   { Common, Uncommon, Rare, Legendary }
+public enum UpgradeRarity   { Common, Uncommon, Rare, Epic, Legendary }
 public enum UpgradeCategory { Movement, Combat, Defence, Utility, Special }

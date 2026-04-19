@@ -2202,26 +2202,25 @@ public sealed class WormBossController : EnemyBase
         return ind;
     }
 
-    private BossAttackIndicator SpawnCircleIndicator(Vector2 center, float radius,
-        float duration, float imminentFraction, bool tracked = false)
+    private IEnumerator WaitWithPhaseSpeed(float seconds)
     {
-        if (indicatorBaseSprite == null) return null;
-        var ind = CreateIndicator();
-        ind.BeginCircle(indicatorBaseSprite, indicatorImminentSprite,
-            indicatorBaseColor, indicatorImminentColor,
-            center, radius,
-            duration, imminentFraction, 5.5f, indicatorSortingOrder, _sortingLayerId);
-        if (tracked) _trackedIndicator = ind;
-        return ind;
+        float scaled = seconds / Mathf.Max(0.01f, PhaseSpeedMultiplier());
+        yield return new WaitForSeconds(scaled);
     }
 
-    private BossAttackIndicator CreateIndicator()
+    public override void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce)
     {
-        var go = new GameObject("BossIndicator");
-        go.transform.position = new Vector3(0f, 0f, transform.position.z + 0.05f);
-        var ind = go.AddComponent<BossAttackIndicator>();
-        _activeIndicators.Add(ind);
-        return ind;
+        if (_invulnerable) return;
+        base.TakeHit(damage, knockbackDirection, knockbackForce);
+    }
+
+    protected override void Die()
+    {
+        _state = BossState.Dead;
+        if (healthBarUI)
+            healthBarUI.HideBar();
+        ClearTelegraphs();
+        base.Die();
     }
 
     private void UpdateTrackedIndicatorCenter(Vector2 center)

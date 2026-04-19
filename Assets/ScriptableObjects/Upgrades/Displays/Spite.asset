@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80d2b54fefacae94d9e920bfe3f41ae3, type: 3}
+  m_Name: Spite
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeDisplaySO
+  upgradeID: Spite
+  upgradeName: Spite
+  upgradeDescription: Taking damage increases your next attack's damage by 50% (stacks
+    up to 3x).
+  cardImage: {fileID: 4349915267927364619, guid: 8e2657b215ddba046854b5a4b3d91aed, type: 3}
+  rarity: 2
+  category: 1

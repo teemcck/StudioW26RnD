@@ -32,6 +32,7 @@ public class PlayerController : MonoBehaviour
     private float _actionTimer;
     private bool _isDead;
     private float _controlLockUntil;
+    private PlayerStats _playerStats;
 
     public Vector2 LastMoveDirection { get; private set; } = Vector2.right;
     public bool IsControlLocked => _isDead || Time.time < _controlLockUntil;
@@ -68,6 +69,7 @@ public class PlayerController : MonoBehaviour
             }
         }
         if (!spriteRenderer) spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _playerStats = GetComponent<PlayerStats>();
         rb.freezeRotation = true;
 
         if (!viewCamera) viewCamera = Camera.main;
@@ -116,7 +118,8 @@ public class PlayerController : MonoBehaviour
         if (camMoveDir.sqrMagnitude > 0.0001f)
             LastMoveDirection = camMoveDir;
 
-        Vector2 desiredVelocity = camMoveDir * moveSpeed;
+        float effectiveMoveSpeed = _playerStats ? _playerStats.MoveSpeed : moveSpeed;
+        Vector2 desiredVelocity = camMoveDir * effectiveMoveSpeed;
 
         Vector2 current = rb.linearVelocity;
         Vector2 next = Vector2.MoveTowards(current, desiredVelocity, acceleration * Time.fixedDeltaTime);

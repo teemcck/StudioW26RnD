@@ -11,28 +11,19 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 344ede7d009696a4c83b4c4a6972eaad, type: 3}
   m_Name: Berserker
-  m_EditorClassIdentifier: Assembly-CSharp::UpgradeEffectSO
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeEffectsSO
   upgradeID: Berserker
-  maxStacks: -1
-  scaleWithStacks: 1
+  maxStacks: 1
+  scaleWithStacks: 0
+  traits: []
   effects:
-  - rid: 4994377774330282221
+  - rid: 1003
   references:
     version: 2
     RefIds:
-    - rid: 4994377774330282221
-      type: {class: ConditionalEffect, ns: , asm: Assembly-CSharp}
+    - rid: 1003
+      type: {class: PlayerUpgradeModifierEffect, ns: , asm: Assembly-CSharp}
       data:
-        editorNote: Beserk Condition
-        condition: 0
-        threshold: 0.5
-        whenTrue:
-        - rid: 4994377774330282223
-        whenFalse: []
-    - rid: 4994377774330282223
-      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
-      data:
-        editorNote: + Damage%
-        stat: 5
-        multplier: 0
-        flat: 0
+        editorNote: 
+        modifier: 4
+        amount: 1

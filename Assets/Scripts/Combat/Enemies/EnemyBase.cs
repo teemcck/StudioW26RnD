@@ -35,12 +35,16 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
     private readonly Dictionary<int, float> _contactDamageCooldownByTarget = new();
     private float _hitReactionUntil;
     private static Sprite _whiteSprite;
+    private EnemyStatusEffectController _statusEffects;
 
     public float CurrentHealth => _health;
     public float MaxHealth => maxHealth;
     public float HealthNormalized => maxHealth <= 0.0001f ? 0f : Mathf.Clamp01(_health / maxHealth);
     public bool IsDead => _isDead;
+    public EnemyStatusEffectController StatusEffects => _statusEffects;
     protected bool IsInHitReaction => Time.time < _hitReactionUntil;
+    protected float EffectiveMoveSpeed => moveSpeed * (_statusEffects ? _statusEffects.GetMoveSpeedMultiplier() : 1f);
+    protected float EffectiveAttackSpeedMultiplier => _statusEffects ? _statusEffects.GetAttackSpeedMultiplier() : 1f;
 
     /// <summary>
     /// Scales max health and current health, and optionally local scale (e.g. split-spawn clones).
@@ -60,12 +64,14 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         _health = maxHealth;
 
         if (!damageFlash) damageFlash = GetComponent<DamageFlash>();
+        _statusEffects = GetComponent<EnemyStatusEffectController>() ?? gameObject.AddComponent<EnemyStatusEffectController>();
+        _ = GetComponent<EnemyWorldVisuals>() ?? gameObject.AddComponent<EnemyWorldVisuals>();
 
         var playerGo = GameObject.FindGameObjectWithTag("Player");
         Player = playerGo ? playerGo.transform : null;
     }
 
-    public virtual void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce)
+    public virtual void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce, DamageContext context = default)
     {
         if (_isDead) return;
         if (damage <= 0f) return;
@@ -89,18 +95,61 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
 
         OnTookHit(damage, dir, knockbackForce);
 
+        EventBus<EnemyDamagedEvent>.Raise(new EnemyDamagedEvent
+        {
+            Enemy = this,
+            DamageDealt = damage,
+            RemainingHealth = _health,
+            Position = transform.position,
+            Context = context
+        });
+
         if (_health <= 0f)
-            Die();
+            Die(context);
     }
 
     protected virtual void OnTookHit(float damage, Vector2 direction, float knockbackForce) { }
 
-    protected virtual void Die()
+    protected virtual void Die(DamageContext context = default)
     {
         if (_isDead) return;
         _isDead = true;
-        EventBus<EnemyKilledEvent>.Raise(new EnemyKilledEvent { EnemyType = GetType().Name });
+        EventBus<EnemyKilledEvent>.Raise(new EnemyKilledEvent
+        {
+            Enemy = this,
+            EnemyType = GetType().Name,
+            Position = transform.position,
+            Context = context
+        });
         Destroy(gameObject);
+    }
+
+    public void ApplyStatusDamage(float damage, DamageContext context)
+    {
+        if (_isDead || damage <= 0f)
+            return;
+
+        _health -= damage;
+        EventBus<EnemyDamagedEvent>.Raise(new EnemyDamagedEvent
+        {
+            Enemy = this,
+            DamageDealt = damage,
+            RemainingHealth = _health,
+            Position = transform.position,
+            Context = context
+        });
+
+        if (_health <= 0f)
+            Die(context);
+    }
+
+    public void ExecuteFrailty(DamageContext context = default)
+    {
+        if (_isDead)
+            return;
+
+        _health = 0f;
+        Die(context);
     }
 
     protected bool TryDealContactDamage(Component hitComponent, float damage, float intervalSeconds, float knockbackForce)
@@ -138,7 +187,7 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         else
             knockbackDirection = Vector2.up;
 
-        damageable.TakeHit(damage, knockbackDirection, knockbackForce);
+        damageable.TakeHit(damage, knockbackDirection, knockbackForce, new DamageContext(gameObject, gameObject, AttackKind.Contact, "enemy_contact"));
         _contactDamageCooldownByTarget[targetId] = Time.time + Mathf.Max(0.05f, intervalSeconds);
         return true;
     }
