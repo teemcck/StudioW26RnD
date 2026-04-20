@@ -52,6 +52,9 @@ public sealed class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip world2Breakdown;
     [SerializeField] private AudioClip world2Waah;
 
+    [Header("Death Music")]
+    [SerializeField] private AudioClip deathMusic;
+    
     [Header("Sound Effects")]
     [SerializeField] private AudioClip playerHitSfx;
     [SerializeField] private AudioClip playerDashSfx;
@@ -69,6 +72,11 @@ public sealed class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip plagueAttackSfx;
     [SerializeField] private AudioClip[] plagueLaughSfxVariants;
     [SerializeField] private AudioClip ufoAttackSfx;
+
+    [Header("XP Summary UI")]
+    [SerializeField] private AudioClip xpSummaryBlockLandSfx;
+    [SerializeField] private AudioClip xpSummaryCountTickSfx;
+    [SerializeField] private AudioClip xpSummaryTotalCompleteSfx;
 
     private readonly List<AudioSource> _sfxPool = new();
     private readonly List<LoopingStem> _activeStems = new();
@@ -155,6 +163,12 @@ public sealed class AudioManager : MonoBehaviour
     public void PlayPlagueAttack(float volumeScale = 1f) => PlaySfx(plagueAttackSfx, volumeScale);
     public void PlayPlagueLaugh(float volumeScale = 0.9f) => PlaySfx(GetRandomClip(plagueLaughSfxVariants, plagueAttackSfx), volumeScale);
     public void PlayUfoAttack(float volumeScale = 0.95f) => PlaySfx(ufoAttackSfx, volumeScale);
+
+    public void PlayXpSummaryBlockLand(float volumeScale = 1f) => PlaySfx(xpSummaryBlockLandSfx, volumeScale);
+
+    public void PlayXpSummaryCountTick(float volumeScale = 0.35f) => PlaySfx(xpSummaryCountTickSfx, volumeScale);
+
+    public void PlayXpSummaryTotalComplete(float volumeScale = 1f) => PlaySfx(xpSummaryTotalCompleteSfx, volumeScale);
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -257,9 +271,10 @@ public sealed class AudioManager : MonoBehaviour
     private MusicState DetermineDesiredMusicState()
     {
         string sceneName = SceneManager.GetActiveScene().name;
-        if (sceneName == "MenuScene" || sceneName == "Menu" || sceneName == "DeathScene")
+        if (sceneName == "MenuScene" || sceneName == "Menu")
             return MusicState.Menu;
-
+        if (sceneName == "DeathScene")
+            return MusicState.Death;
         if (sceneName == "GameplayLoop" || sceneName == "BossGameplay")
         {
             if (ShouldHoldForWorldTwoStart())
@@ -353,6 +368,11 @@ public sealed class AudioManager : MonoBehaviour
         {
             case MusicState.Menu:
                 CreateStem(menuMusic, "Menu", startDsp, MenuLoopPointSeconds);
+                SetStemVolume("Menu", musicVolume);
+                break;
+
+            case MusicState.Death:
+                PlayIntro(deathMusic, startDsp);
                 break;
 
             case MusicState.Gameplay:
@@ -582,6 +602,7 @@ public sealed class AudioManager : MonoBehaviour
     {
         None,
         Menu,
+        Death,
         Gameplay
     }
 

@@ -60,11 +60,24 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (_enemy == null || _enemy.IsDead || _visualRoot == null)
+        if (_enemy == null || _visualRoot == null)
+            return;
+
+        if (_enemy.IsDead)
             return;
 
         if (!_worldHealthBarEnabled || _barRoot == null)
             return;
+
+        if (_enemy.CurrentHealth <= 0f)
+        {
+            if (_barRoot.gameObject.activeSelf)
+                _barRoot.gameObject.SetActive(false);
+            return;
+        }
+
+        if (!_barRoot.gameObject.activeSelf)
+            _barRoot.gameObject.SetActive(true);
 
         Bounds bounds = GetVisualBounds();
         UpdateHealthBar(bounds);

@@ -12,6 +12,6 @@ public class DeathSceneController : MonoBehaviour
     public void GoToMainMenu()
     {
         AudioManager.Instance?.PlayUiButton();
-        SceneManager.LoadScene("Menu");
+        SceneManager.LoadScene("MenuScene");
     }
 }

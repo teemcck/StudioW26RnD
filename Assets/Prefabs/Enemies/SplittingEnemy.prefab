@@ -198,7 +198,7 @@ MonoBehaviour:
   weight: 1
   moveSpeed: 2.2
   damageFlash: {fileID: 880030007}
-  attackRange: 0.8
+  attackRange: 0.72
   attackCooldown: 1
   contactDamage: 2
   splitEnemyPrefab: {fileID: 880030001, guid: e7f3a2b1c4d5846e9a0f1b2c3d4e5f73, type: 3}

@@ -9,11 +9,11 @@ EditorBuildSettings:
     path: Assets/Scenes/Gameplay.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/Scenes/GameplayLoop.unity
-    guid: 86aeed25458fb4737b7f1d9cd737096e
-  - enabled: 1
     path: Assets/Scenes/MenuScene.unity
     guid: a2728d056b091da41af9ac964815509f
+  - enabled: 1
+    path: Assets/Scenes/GameplayLoop.unity
+    guid: 86aeed25458fb4737b7f1d9cd737096e
   - enabled: 1
     path: Assets/Scenes/DeathScene.unity
     guid: 38f1cb6fa80121849816cda2dd503b83

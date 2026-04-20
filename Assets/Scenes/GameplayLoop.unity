@@ -1722,6 +1722,7 @@ RectTransform:
   m_Children:
   - {fileID: 89926953}
   - {fileID: 1344989031}
+  - {fileID: 1788311114}
   - {fileID: 1704151035}
   - {fileID: 1486762430}
   m_Father: {fileID: 1985775242}
@@ -1751,6 +1752,7 @@ GameObject:
   - component: {fileID: 864491474}
   - component: {fileID: 864491473}
   - component: {fileID: 864491476}
+  - component: {fileID: 864491477}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1864,6 +1866,50 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
+--- !u!114 &864491477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 864491472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1 &877199736
 GameObject:
   m_ObjectHideFlags: 0
@@ -2341,6 +2387,7 @@ MonoBehaviour:
   world2Sidebreak: {fileID: 8300000, guid: 60320145e3f028645bdf5697c05c5169, type: 3}
   world2Breakdown: {fileID: 8300000, guid: a1f87bec42efeec45a8d55f4f41f73dd, type: 3}
   world2Waah: {fileID: 8300000, guid: 93f51242e3cc9bb439f1df223e19228d, type: 3}
+  deathMusic: {fileID: 8300000, guid: f06c2f6283b34494ab0787fdebc40051, type: 3}
   playerHitSfx: {fileID: 8300000, guid: ddbfb8ad824d5fb43bed3ac6022bc5f3, type: 3}
   playerDashSfx: {fileID: 8300000, guid: ee572c07e17862e4c9ddda89d2c8273d, type: 3}
   playerMeleeSfx: {fileID: 8300000, guid: 9fd6e85adad394e4089191cc7a3d8a79, type: 3}
@@ -2351,7 +2398,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 3c700c805a2ca2149883595272cb1189, type: 3}
   playerDeathSfx: {fileID: 8300000, guid: 36682c6964c434e459b6053f9676984f, type: 3}
   playerStepSfx: {fileID: 8300000, guid: 3d814225c4dbfbe4daf228f89bcc32c1, type: 3}
-  enemyHitSfx: {fileID: 8300000, guid: 58ab3b097d9eb3747892c44cea5521f0, type: 3}
+  enemyHitSfx: {fileID: 0}
   upgradeSelectedSfx: {fileID: 8300000, guid: f0007a77631ffca4f9b9be14fd6edfcb, type: 3}
   uiButtonSfx: {fileID: 8300000, guid: f0007a77631ffca4f9b9be14fd6edfcb, type: 3}
   teleporterEnteredSfx: {fileID: 8300000, guid: f0007a77631ffca4f9b9be14fd6edfcb, type: 3}
@@ -2366,6 +2413,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 675397825b49ccd469eec30db02ea6a9, type: 3}
   - {fileID: 8300000, guid: ac337a557ab3b7549b066d2a81d3c27d, type: 3}
   ufoAttackSfx: {fileID: 8300000, guid: 58ab3b097d9eb3747892c44cea5521f0, type: 3}
+  xpSummaryBlockLandSfx: {fileID: 8300000, guid: 4ed6a5972d3d1451a832c1dbbc2212e0, type: 3}
+  xpSummaryCountTickSfx: {fileID: 8300000, guid: 052ab4f65373443b7b164dadab0268ce, type: 3}
+  xpSummaryTotalCompleteSfx: {fileID: 0}
 --- !u!1 &1043535295
 GameObject:
   m_ObjectHideFlags: 0
@@ -2496,9 +2546,14 @@ MonoBehaviour:
   baseXP: 100
   killXPMultiplier: 1.5
   avoidXPMultiplier: 0.5
-  timeBonusMax: 50
-  timeBonusWindow: 60
   xpPerFloor: 1000
+  parSecondsPerChunk: 28
+  parStretchAtMaxDifficulty: 0.22
+  maxTimeBonusAsCombatFraction: 0.24
+  timeBonusFlatVsBase: 0.55
+  timeBonusChunkLengthExponent: 0.5
+  timeBonusPerFloorIndex: 0.08
+  timeQualityDecayExponent: 1.1
   bossSceneName: BossGameplay
   deathSceneName: DeathScene
 --- !u!1 &1227851110
@@ -2580,16 +2635,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineImpulseSource
   ImpulseDefinition:
     ImpulseChannel: 1
-    ImpulseShape: 2
+    ImpulseShape: 4
     CustomImpulseShape:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    ImpulseDuration: 0.2
-    ImpulseType: 0
-    DissipationRate: 0.25
+    ImpulseDuration: 0.83
+    ImpulseType: 1
+    DissipationRate: 0.366
     RawSignal: {fileID: 0}
     AmplitudeGain: 1
     FrequencyGain: 1
@@ -2618,7 +2673,7 @@ MonoBehaviour:
     DissipationMode: 2
     DissipationDistance: 100
     PropagationSpeed: 343
-  DefaultVelocity: {x: 0, y: -1, z: 0}
+  DefaultVelocity: {x: 0.33, y: -0.16, z: 0}
 --- !u!4 &1270838600
 Transform:
   m_ObjectHideFlags: 0
@@ -3726,7 +3781,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 631.5156, y: -403.59668}
+  m_AnchoredPosition: {x: 630, y: -453.59998}
   m_SizeDelta: {x: 454.0665, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1704151036
@@ -3828,6 +3883,143 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1704151034}
+  m_CullTransparentMesh: 1
+--- !u!1 &1788311113
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1788311114}
+  - component: {fileID: 1788311116}
+  - component: {fileID: 1788311115}
+  m_Layer: 5
+  m_Name: TimeText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1788311114
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1788311113}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 744945640}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 630, y: -403.6}
+  m_SizeDelta: {x: 454.0665, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1788311115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1788311113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: 'Time Spent: 0:00'
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 2d44652318336cb4fa62518fa572129b, type: 2}
+  m_sharedMaterial: {fileID: -7184333604693843919, guid: 2d44652318336cb4fa62518fa572129b, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 48
+  m_fontSizeBase: 48
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 1
+  m_VerticalAlignment: 256
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_characterHorizontalScale: 1
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: -590.1211, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!222 &1788311116
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1788311113}
   m_CullTransparentMesh: 1
 --- !u!1 &1796365240
 GameObject:
@@ -4403,8 +4595,22 @@ MonoBehaviour:
   summaryPanel: {fileID: 744945639}
   summaryKillsText: {fileID: 89926954}
   summaryAvoidedText: {fileID: 1344989032}
+  summaryTimeText: {fileID: 1788311115}
   summaryXPText: {fileID: 1704151036}
   summaryContinueButton: {fileID: 1486762431}
+  summarySlamDuration: 0.38
+  summarySlamOffscreenX: 1400
+  summarySectionVerticalGap: 22
+  summaryShakePixels: 3
+  summaryShakeDuration: 0.11
+  summaryInterBlockPause: 0.06
+  summaryCountKillDur: 0.28
+  summaryCountAvoidDur: 0.52
+  summaryCountTimeDur: 0.55
+  summaryCountTotalDur: 0.58
+  summaryScalePunchAmount: 0.06
+  summaryScalePunchDuration: 0.14
+  summaryCountTickInterval: 0.09
   xpBarPanel: {fileID: 681053790}
   xpBarFill: {fileID: 951292839}
   xpBarText: {fileID: 1803339650}

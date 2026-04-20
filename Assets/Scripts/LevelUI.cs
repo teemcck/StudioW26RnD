@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -28,8 +29,24 @@ public class LevelUI : MonoBehaviour
     [SerializeField] private GameObject summaryPanel;
     [SerializeField] private TextMeshProUGUI summaryKillsText;
     [SerializeField] private TextMeshProUGUI summaryAvoidedText;
+    [SerializeField] private TextMeshProUGUI summaryTimeText;
     [SerializeField] private TextMeshProUGUI summaryXPText;
     [SerializeField] private Button summaryContinueButton;
+
+    [Header("XP Summary feel")]
+    [SerializeField] private float summarySlamDuration = 0.38f;
+    [SerializeField] private float summarySlamOffscreenX = 1400f;
+    [SerializeField] private float summarySectionVerticalGap = 22f;
+    [SerializeField] private float summaryShakePixels = 3f;
+    [SerializeField] private float summaryShakeDuration = 0.11f;
+    [SerializeField] private float summaryInterBlockPause = 0.06f;
+    [SerializeField] private float summaryCountKillDur = 0.28f;
+    [SerializeField] private float summaryCountAvoidDur = 0.52f;
+    [SerializeField] private float summaryCountTimeDur = 0.55f;
+    [SerializeField] private float summaryCountTotalDur = 0.58f;
+    [SerializeField] private float summaryScalePunchAmount = 0.06f;
+    [SerializeField] private float summaryScalePunchDuration = 0.14f;
+    [SerializeField] private float summaryCountTickInterval = 0.09f;
 
     [Header("XP Bar Animation Panel")]
     [SerializeField] private GameObject xpBarPanel;
@@ -48,9 +65,19 @@ public class LevelUI : MonoBehaviour
 
     private IEventBinding<UpgradeSelectedEvent> _upgradeSelectedBinding;
     private Coroutine _difficultyRollCoroutine;
+    private Coroutine _summaryBreakdownCoroutine;
     private RectTransform _xpBarFillRect;
     private float _xpBarBaseWidth;
     private bool _cachedXpBarWidth;
+    private bool _summaryLayoutCached;
+    private Vector2 _killsAnchoredRest;
+    private Vector2 _timeAnchoredRest;
+    private Vector2 _xpAnchoredRest;
+    private Vector2 _summaryPanelAnchoredRest;
+    private Vector3 _killsScaleRest = Vector3.one;
+    private Vector3 _timeScaleRest = Vector3.one;
+    private Vector3 _xpScaleRest = Vector3.one;
+    private float _nextSummaryCountTickUnscaled = -999f;
 
     private void Awake()
     {
@@ -69,6 +96,37 @@ public class LevelUI : MonoBehaviour
     private void OnDisable()
     {
         EventBus<UpgradeSelectedEvent>.Unsubscribe(_upgradeSelectedBinding);
+        if (_summaryBreakdownCoroutine != null)
+        {
+            StopCoroutine(_summaryBreakdownCoroutine);
+            _summaryBreakdownCoroutine = null;
+            RestoreSummaryPresentationTransforms();
+        }
+    }
+
+    private void RestoreSummaryPresentationTransforms()
+    {
+        if (summaryContinueButton != null)
+            summaryContinueButton.interactable = true;
+        if (summaryPanel != null && summaryPanel.TryGetComponent<RectTransform>(out var panelRt))
+            panelRt.anchoredPosition = _summaryPanelAnchoredRest;
+        if (!_summaryLayoutCached)
+            return;
+        if (summaryKillsText != null)
+        {
+            summaryKillsText.rectTransform.anchoredPosition = _killsAnchoredRest;
+            summaryKillsText.rectTransform.localScale = _killsScaleRest;
+        }
+        if (summaryTimeText != null)
+        {
+            summaryTimeText.rectTransform.anchoredPosition = _timeAnchoredRest;
+            summaryTimeText.rectTransform.localScale = _timeScaleRest;
+        }
+        if (summaryXPText != null)
+        {
+            summaryXPText.rectTransform.anchoredPosition = _xpAnchoredRest;
+            summaryXPText.rectTransform.localScale = _xpScaleRest;
+        }
     }
 
     // Called by GameplayHandler.cs
@@ -115,23 +173,300 @@ public class LevelUI : MonoBehaviour
         worldTransitionUI.Show(title, body, buttonLabel);
     }
 
-    public void ShowXPSummary(int killed, int total, int xp)
+    public void ShowXPSummary(int killed, int total, float elapsedFloorSeconds, GameplayHandler.FloorXPBreakdown xp)
     {
         SummaryConfirmed = false;
         summaryPanel.SetActive(true);
 
-        int avoided = total - killed;
-        summaryKillsText.text   = $"Enemies Killed: {killed}";
-        summaryAvoidedText.text = $"Enemies Avoided: {avoided}";
-        summaryXPText.text      = $"XP Gained: {xp}";
+        if (_summaryBreakdownCoroutine != null)
+        {
+            StopCoroutine(_summaryBreakdownCoroutine);
+            _summaryBreakdownCoroutine = null;
+        }
 
+        int avoided = Mathf.Max(0, total - killed);
+        string floorTime = FormatElapsedHms(elapsedFloorSeconds);
+
+        if (summaryAvoidedText != null)
+            summaryAvoidedText.gameObject.SetActive(false);
+
+        if (summaryContinueButton != null)
+            summaryContinueButton.interactable = false;
+
+        _summaryBreakdownCoroutine = StartCoroutine(PlaySummaryPresentation(killed, avoided, floorTime, xp));
         summaryContinueButton.onClick.RemoveAllListeners();
         summaryContinueButton.onClick.AddListener(() =>
         {
             AudioManager.Instance?.PlayUiButton();
             summaryPanel.SetActive(false);
+            if (summaryAvoidedText != null)
+                summaryAvoidedText.gameObject.SetActive(true);
             SummaryConfirmed = true;
         });
+    }
+
+    private void CacheSummaryLayout()
+    {
+        if (_summaryLayoutCached)
+            return;
+
+        if (summaryKillsText != null)
+        {
+            RectTransform krt = summaryKillsText.rectTransform;
+            _killsAnchoredRest = krt.anchoredPosition;
+            _killsScaleRest = krt.localScale;
+        }
+        if (summaryTimeText != null)
+        {
+            RectTransform trt = summaryTimeText.rectTransform;
+            _timeAnchoredRest = trt.anchoredPosition;
+            _timeAnchoredRest += new Vector2(0f, -summarySectionVerticalGap);
+            _timeScaleRest = trt.localScale;
+        }
+        if (summaryXPText != null)
+        {
+            RectTransform xrt = summaryXPText.rectTransform;
+            _xpAnchoredRest = xrt.anchoredPosition;
+            _xpAnchoredRest += new Vector2(0f, -summarySectionVerticalGap * 2f);
+            _xpScaleRest = xrt.localScale;
+        }
+
+        RectTransform panelRt = summaryPanel != null ? summaryPanel.GetComponent<RectTransform>() : null;
+        if (panelRt != null)
+            _summaryPanelAnchoredRest = panelRt.anchoredPosition;
+
+        _summaryLayoutCached = true;
+    }
+
+    private IEnumerator PlaySummaryPresentation(int killed, int avoided, string floorTimeHms, GameplayHandler.FloorXPBreakdown xp)
+    {
+        CacheSummaryLayout();
+        Vector2 off = new Vector2(-Mathf.Abs(summarySlamOffscreenX), 0f);
+
+        RectTransform killsRt = summaryKillsText != null ? summaryKillsText.rectTransform : null;
+        RectTransform timeRt = summaryTimeText != null ? summaryTimeText.rectTransform : null;
+        RectTransform xpRt = summaryXPText != null ? summaryXPText.rectTransform : null;
+        RectTransform panelRt = summaryPanel != null ? summaryPanel.GetComponent<RectTransform>() : null;
+
+        if (timeRt != null)
+        {
+            summaryTimeText.text = string.Empty;
+            timeRt.anchoredPosition = _timeAnchoredRest + off;
+        }
+        if (xpRt != null)
+        {
+            summaryXPText.text = string.Empty;
+            xpRt.anchoredPosition = _xpAnchoredRest + off;
+        }
+        if (killsRt != null)
+        {
+            summaryKillsText.text = FormatEnemyXpBlock(killed, avoided, 0, 0);
+            killsRt.anchoredPosition = _killsAnchoredRest + off;
+            killsRt.localScale = _killsScaleRest;
+        }
+        if (timeRt != null)
+            timeRt.localScale = _timeScaleRest;
+        if (xpRt != null)
+            xpRt.localScale = _xpScaleRest;
+
+        _nextSummaryCountTickUnscaled = -999f;
+        yield return null;
+
+        if (killsRt != null)
+        {
+            yield return SlamRect(killsRt, _killsAnchoredRest + off, _killsAnchoredRest, summarySlamDuration);
+            AudioManager.Instance?.PlayXpSummaryBlockLand();
+            yield return ScalePunchRect(killsRt, _killsScaleRest);
+            yield return ShakeSummaryPanel(panelRt);
+            yield return CountEnemyXp(killed, avoided, xp);
+            if (summaryInterBlockPause > 0f)
+                yield return new WaitForSecondsRealtime(summaryInterBlockPause);
+        }
+
+        if (timeRt != null)
+        {
+            summaryTimeText.text = FormatTimeBonusBlock(floorTimeHms, 0);
+            yield return SlamRect(timeRt, _timeAnchoredRest + off, _timeAnchoredRest, summarySlamDuration);
+            AudioManager.Instance?.PlayXpSummaryBlockLand();
+            yield return ScalePunchRect(timeRt, _timeScaleRest);
+            yield return ShakeSummaryPanel(panelRt);
+            yield return CountTimeXp(floorTimeHms, xp);
+            if (summaryInterBlockPause > 0f)
+                yield return new WaitForSecondsRealtime(summaryInterBlockPause);
+        }
+
+        if (xpRt != null)
+        {
+            summaryXPText.text = FormatTotalXpBlock(0);
+            yield return SlamRect(xpRt, _xpAnchoredRest + off, _xpAnchoredRest, summarySlamDuration);
+            AudioManager.Instance?.PlayXpSummaryBlockLand();
+            yield return ScalePunchRect(xpRt, _xpScaleRest);
+            yield return ShakeSummaryPanel(panelRt);
+            yield return CountTotalXp(xp);
+        }
+
+        if (summaryContinueButton != null)
+            summaryContinueButton.interactable = true;
+
+        _summaryBreakdownCoroutine = null;
+    }
+
+    private IEnumerator SlamRect(RectTransform rt, Vector2 start, Vector2 end, float duration)
+    {
+        duration = Mathf.Max(0.01f, duration);
+        float t = 0f;
+        while (t < duration)
+        {
+            t += Time.unscaledDeltaTime;
+            float u = Mathf.Clamp01(t / duration);
+            float eased = EaseOutQuart(u);
+            rt.anchoredPosition = Vector2.LerpUnclamped(start, end, eased);
+            yield return null;
+        }
+        rt.anchoredPosition = end;
+    }
+
+    private IEnumerator ScalePunchRect(RectTransform rt, Vector3 restLocalScale)
+    {
+        if (rt == null)
+            yield break;
+
+        float dur = Mathf.Max(0.01f, summaryScalePunchDuration);
+        float mag = Mathf.Max(0f, summaryScalePunchAmount);
+        float t = 0f;
+        while (t < dur)
+        {
+            t += Time.unscaledDeltaTime;
+            float u = Mathf.Clamp01(t / dur);
+            float bell = Mathf.Sin(u * Mathf.PI);
+            float punch = bell * mag;
+            rt.localScale = restLocalScale * (1f + punch);
+            yield return null;
+        }
+        rt.localScale = restLocalScale;
+    }
+
+    private static float EaseOutQuart(float x) => 1f - Mathf.Pow(1f - x, 4f);
+
+    private static float EaseOutCubic(float x) => 1f - Mathf.Pow(1f - x, 3f);
+
+    private void TryPlaySummaryCountTick()
+    {
+        float interval = Mathf.Max(0.02f, summaryCountTickInterval);
+        if (Time.unscaledTime - _nextSummaryCountTickUnscaled < interval)
+            return;
+        _nextSummaryCountTickUnscaled = Time.unscaledTime;
+        AudioManager.Instance?.PlayXpSummaryCountTick();
+    }
+
+    private IEnumerator ShakeSummaryPanel(RectTransform panelRt)
+    {
+        if (panelRt == null)
+            yield break;
+
+        float mag = Mathf.Max(0f, summaryShakePixels);
+        float dur = Mathf.Max(0.01f, summaryShakeDuration);
+        float t = 0f;
+        while (t < dur)
+        {
+            t += Time.unscaledDeltaTime;
+            float decay = 1f - Mathf.Clamp01(t / dur);
+            float w = mag * decay * decay;
+            panelRt.anchoredPosition = _summaryPanelAnchoredRest + (Vector2)Random.insideUnitCircle * w;
+            yield return null;
+        }
+        panelRt.anchoredPosition = _summaryPanelAnchoredRest;
+    }
+
+    private IEnumerator CountEnemyXp(int killed, int avoided, GameplayHandler.FloorXPBreakdown xp)
+    {
+        float start = Time.unscaledTime;
+        float killDur = Mathf.Max(0.01f, summaryCountKillDur);
+        float avoidDur = Mathf.Max(0.01f, summaryCountAvoidDur);
+        float endT = Mathf.Max(killDur, avoidDur);
+        while (Time.unscaledTime - start < endT)
+        {
+            float now = Time.unscaledTime - start;
+            float killT = EaseOutCubic(Mathf.Clamp01(now / killDur));
+            float avoidT = EaseOutCubic(Mathf.Clamp01(now / avoidDur));
+            int killShown = Mathf.RoundToInt(Mathf.Lerp(0f, xp.KillXP, killT));
+            int avoidShown = Mathf.RoundToInt(Mathf.Lerp(0f, xp.AvoidXP, avoidT));
+            if (summaryKillsText != null)
+                summaryKillsText.text = FormatEnemyXpBlock(killed, avoided, killShown, avoidShown);
+            if (killShown > 0 || avoidShown > 0)
+                TryPlaySummaryCountTick();
+            yield return null;
+        }
+        if (summaryKillsText != null)
+            summaryKillsText.text = FormatEnemyXpBlock(killed, avoided, xp.KillXP, xp.AvoidXP);
+    }
+
+    private IEnumerator CountTimeXp(string floorTimeHms, GameplayHandler.FloorXPBreakdown xp)
+    {
+        float start = Time.unscaledTime;
+        float dur = Mathf.Max(0.01f, summaryCountTimeDur);
+        while (Time.unscaledTime - start < dur)
+        {
+            float now = Time.unscaledTime - start;
+            float te = EaseOutCubic(Mathf.Clamp01(now / dur));
+            int timeShown = Mathf.RoundToInt(Mathf.Lerp(0f, xp.TimeXP, te));
+            if (summaryTimeText != null)
+                summaryTimeText.text = FormatTimeBonusBlock(floorTimeHms, timeShown);
+            if (timeShown > 0)
+                TryPlaySummaryCountTick();
+            yield return null;
+        }
+        if (summaryTimeText != null)
+            summaryTimeText.text = FormatTimeBonusBlock(floorTimeHms, xp.TimeXP);
+    }
+
+    private IEnumerator CountTotalXp(GameplayHandler.FloorXPBreakdown xp)
+    {
+        float start = Time.unscaledTime;
+        float dur = Mathf.Max(0.01f, summaryCountTotalDur);
+        while (Time.unscaledTime - start < dur)
+        {
+            float now = Time.unscaledTime - start;
+            float u = EaseOutCubic(Mathf.Clamp01(now / dur));
+            int shown = Mathf.RoundToInt(Mathf.Lerp(0f, xp.TotalXP, u));
+            if (summaryXPText != null)
+                summaryXPText.text = FormatTotalXpBlock(shown);
+            if (shown > 0)
+                TryPlaySummaryCountTick();
+            yield return null;
+        }
+        if (summaryXPText != null)
+            summaryXPText.text = FormatTotalXpBlock(xp.TotalXP);
+        AudioManager.Instance?.PlayXpSummaryTotalComplete();
+    }
+
+    private static string FormatEnemyXpBlock(int killed, int avoided, int killXp, int avoidXp)
+    {
+        return
+            "<b>Enemy XP</b>\n" +
+            $"    Kills · {killed} · ({killXp} xp)\n" +
+            $"    Avoided · {avoided} · ({avoidXp} xp)";
+    }
+
+    private static string FormatTimeBonusBlock(string floorTimeHms, int timeXp)
+    {
+        return
+            "<b>Time bonus</b>\n" +
+            $"    {floorTimeHms} · ({timeXp} xp)";
+    }
+
+    private static string FormatTotalXpBlock(int totalXp)
+    {
+        return $"<b>Total XP</b>\n{totalXp} xp";
+    }
+
+    private static string FormatElapsedHms(float elapsedSeconds)
+    {
+        int es = Mathf.Max(0, Mathf.FloorToInt(elapsedSeconds));
+        int h = es / 3600;
+        int m = (es % 3600) / 60;
+        int s = es % 60;
+        return $"{h:00}:{m:00}:{s:00}";
     }
 
     public void ShowXPBarAnimation(int previousXP, int floorXP, int killed, int total, float elapsed)

@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 2368776046972292794}
   - component: {fileID: 4344393513909202767}
   - component: {fileID: 2764491529489874927}
+  - component: {fileID: 7612849362051847295}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -46,6 +47,7 @@ Transform:
   - {fileID: 4338746011185178289}
   - {fileID: 310921696390865935}
   - {fileID: 3126517566539754589}
+  - {fileID: 6612849362051847291}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7126398141146133394
@@ -386,6 +388,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a020c4fca3c1e1b41a3865fc54d61a2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerUpgradeRuntime
+--- !u!114 &7612849362051847295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 157006395687664069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 369af05911f084179bb3452ff810e874, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCombatAnchor
+  hitAnchorLocalFromFeet: {x: 0.06, y: 0.24}
+  combatHitVolume: {fileID: 6612849362051847292}
 --- !u!1 &1240368542618820286
 GameObject:
   m_ObjectHideFlags: 0
@@ -430,14 +446,15 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7b489f9ea4fb2409b91feb8b8c43f461, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MeleeWeaponSwing
+  m_EditorClassIdentifier: Assembly-CSharp::MeleeSwingWeapon
   damage: 10
   knockbackForce: 6
   range: 0.85
   hitRadius: 0.85
-  hitOriginRangeFactor: 0.7
-  swingVfxRangeFactor: 0.95
+  hitOriginRangeFactor: 0.556
+  pointBlankConeBypassDistance: 0.47
   coneAngle: 80
+  swingVfxRangeFactor: 0.95
   swingVfxRenderer: {fileID: 2760868408693861232}
   swingVfxAnimator: {fileID: 1973844969767649745}
   swingVfxStatePrefix: SwingVFX
@@ -1085,7 +1102,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 838984925
-  m_SortingLayer: 4
+  m_SortingLayer: 3
   m_SortingOrder: 10
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
@@ -1120,6 +1137,75 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!1 &6612849362051847290
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6612849362051847291}
+  - component: {fileID: 6612849362051847292}
+  m_Layer: 3
+  m_Name: CombatHitVolume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6612849362051847291
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6612849362051847290}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.06, y: 0.24, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3274129640293433026}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!70 &6612849362051847292
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6612849362051847290}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 0.5, y: 0.55}
+  m_Direction: 0
 --- !u!1 &7699610431202276580
 GameObject:
   m_ObjectHideFlags: 0

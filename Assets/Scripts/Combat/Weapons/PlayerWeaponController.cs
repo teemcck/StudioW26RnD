@@ -25,12 +25,21 @@ public class PlayerWeaponController : MonoBehaviour
     private float _nextAttackTime;
     private PlayerStats _playerStats;
     private PlayerUpgradeRuntime _upgradeRuntime;
+    private PlayerCombatAnchor _combatAnchor;
 
     private void Awake()
     {
         if (!playerController) playerController = GetComponent<PlayerController>();
         _playerStats = GetComponent<PlayerStats>();
         _upgradeRuntime = GetComponent<PlayerUpgradeRuntime>();
+        _combatAnchor = GetComponent<PlayerCombatAnchor>() ?? GetComponentInChildren<PlayerCombatAnchor>();
+    }
+
+    private Vector2 GetAttackSearchOrigin()
+    {
+        if (_combatAnchor != null)
+            return _combatAnchor.WorldHitAnchor;
+        return transform.position;
     }
 
     private void Update()
@@ -42,7 +51,7 @@ public class PlayerWeaponController : MonoBehaviour
         Transform target = FindClosestEnemy();
         if (!target) return;
 
-        Vector2 dir = (target.position - transform.position);
+        Vector2 dir = (Vector2)target.position - GetAttackSearchOrigin();
         if (dir.sqrMagnitude < 0.0001f)
             dir = playerController ? playerController.LastMoveDirection : Vector2.right;
 
@@ -58,7 +67,8 @@ public class PlayerWeaponController : MonoBehaviour
 
     private Transform FindClosestEnemy()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, primaryWeapon.GetRange(), enemyLayer);
+        Vector2 origin = GetAttackSearchOrigin();
+        Collider2D[] hits = Physics2D.OverlapCircleAll(origin, primaryWeapon.GetRange(), enemyLayer);
 
         float best = float.PositiveInfinity;
         Transform bestT = null;
@@ -66,7 +76,7 @@ public class PlayerWeaponController : MonoBehaviour
         foreach (var h in hits)
         {
             if (!h) continue;
-            float d = (h.transform.position - transform.position).sqrMagnitude;
+            float d = ((Vector2)h.transform.position - origin).sqrMagnitude;
             if (d < best)
             {
                 best = d;
@@ -79,8 +89,11 @@ public class PlayerWeaponController : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
+        if (!primaryWeapon) return;
+        _combatAnchor ??= GetComponent<PlayerCombatAnchor>() ?? GetComponentInChildren<PlayerCombatAnchor>();
+        Vector2 o = _combatAnchor != null ? _combatAnchor.WorldHitAnchor : (Vector2)transform.position;
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, primaryWeapon.GetRange());
+        Gizmos.DrawWireSphere(o, primaryWeapon.GetRange());
     }
 
     public void FireEnergyBoltsAtRandomEnemies(int boltCount)
@@ -142,14 +155,14 @@ public class PlayerWeaponController : MonoBehaviour
 
         var enemies = FindObjectsByType<EnemyBase>(FindObjectsSortMode.None);
         var nearby = new List<EnemyBase>();
-        Vector3 origin = transform.position;
+        Vector2 origin = GetAttackSearchOrigin();
 
         foreach (var enemy in enemies)
         {
             if (enemy == null || enemy.IsDead)
                 continue;
 
-            if ((enemy.transform.position - origin).sqrMagnitude > radiusSq)
+            if (((Vector2)enemy.transform.position - origin).sqrMagnitude > radiusSq)
                 continue;
 
             nearby.Add(enemy);
@@ -157,8 +170,8 @@ public class PlayerWeaponController : MonoBehaviour
 
         nearby.Sort((a, b) =>
         {
-            float da = (a.transform.position - origin).sqrMagnitude;
-            float db = (b.transform.position - origin).sqrMagnitude;
+            float da = ((Vector2)a.transform.position - origin).sqrMagnitude;
+            float db = ((Vector2)b.transform.position - origin).sqrMagnitude;
             return da.CompareTo(db);
         });
 

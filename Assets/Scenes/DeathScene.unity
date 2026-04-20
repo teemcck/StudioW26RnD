@@ -813,6 +813,7 @@ MonoBehaviour:
   world2Sidebreak: {fileID: 8300000, guid: 60320145e3f028645bdf5697c05c5169, type: 3}
   world2Breakdown: {fileID: 8300000, guid: a1f87bec42efeec45a8d55f4f41f73dd, type: 3}
   world2Waah: {fileID: 8300000, guid: 93f51242e3cc9bb439f1df223e19228d, type: 3}
+  deathMusic: {fileID: 8300000, guid: f06c2f6283b34494ab0787fdebc40051, type: 3}
   playerHitSfx: {fileID: 8300000, guid: ddbfb8ad824d5fb43bed3ac6022bc5f3, type: 3}
   playerDashSfx: {fileID: 8300000, guid: ee572c07e17862e4c9ddda89d2c8273d, type: 3}
   playerMeleeSfx: {fileID: 8300000, guid: 9fd6e85adad394e4089191cc7a3d8a79, type: 3}

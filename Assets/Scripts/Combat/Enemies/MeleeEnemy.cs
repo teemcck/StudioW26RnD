@@ -14,11 +14,23 @@ public class MeleeEnemy : EnemyBase
     protected float MeleeAttackCooldown => attackCooldown;
     protected float MeleeContactDamage => contactDamage;
 
+    protected void ApplySplitMeleeTuning(float attackRangeMultiplier, float moveSpeedMultiplier)
+    {
+        attackRange = Mathf.Max(0.05f, attackRange * attackRangeMultiplier);
+        moveSpeed *= moveSpeedMultiplier;
+    }
+
+    protected void MultiplyMeleeContactDamage(float factor)
+    {
+        contactDamage = Mathf.Max(0.01f, contactDamage * factor);
+    }
+
     protected virtual void FixedUpdate()
     {
         if (!Player) return;
 
-        Vector2 toPlayer = (Player.position - transform.position);
+        Vector2 playerWorld = GetPlayerCombatWorldPoint();
+        Vector2 toPlayer = playerWorld - (Vector2)transform.position;
         float dist = toPlayer.magnitude;
 
         if (dist > attackRange)

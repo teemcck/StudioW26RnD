@@ -31,7 +31,7 @@ public class ChargerEnemy : EnemyBase
     {
         if (!Player) return;
 
-        Vector2 toPlayer = (Vector2)(Player.position - transform.position);
+        Vector2 toPlayer = GetPlayerCombatWorldPoint() - (Vector2)transform.position;
         float dist = toPlayer.magnitude;
         Vector2 dir = toPlayer.sqrMagnitude > 0.0001f ? toPlayer.normalized : Vector2.zero;
 

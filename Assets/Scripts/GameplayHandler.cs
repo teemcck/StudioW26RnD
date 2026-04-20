@@ -18,9 +18,23 @@ public class GameplayHandler : MonoBehaviour
     [SerializeField] private int baseXP = 100;
     [SerializeField] private float killXPMultiplier = 1.5f;
     [SerializeField] private float avoidXPMultiplier = 0.5f;
-    [SerializeField] private float timeBonusMax = 50f;
-    [SerializeField] private float timeBonusWindow = 60f;
     [SerializeField] private int xpPerFloor = 1000;
+
+    [Header("XP — time bonus (speed)")]
+    [Tooltip("Seconds per chunk toward par time.")]
+    [SerializeField] private float parSecondsPerChunk = 28f;
+    [Tooltip("Extra par time at max difficulty.")]
+    [SerializeField] private float parStretchAtMaxDifficulty = 0.22f;
+    [Tooltip("Cap: time XP vs this floor kill+avoid when fast.")]
+    [SerializeField] private float maxTimeBonusAsCombatFraction = 0.24f;
+    [Tooltip("Baseline time XP from baseXP.")]
+    [SerializeField] private float timeBonusFlatVsBase = 0.55f;
+    [Tooltip("Chunk count exponent for flat part.")]
+    [SerializeField] private float timeBonusChunkLengthExponent = 0.5f;
+    [Tooltip("Flat part multiplier per floor index.")]
+    [SerializeField] private float timeBonusPerFloorIndex = 0.08f;
+    [Tooltip("Time decay exponent; higher = softer when slow.")]
+    [SerializeField] private float timeQualityDecayExponent = 1.1f;
 
     [Header("World Progression")]
     [SerializeField] private string bossSceneName = "BossGameplay";
@@ -37,7 +51,6 @@ public class GameplayHandler : MonoBehaviour
     private bool _hasShownWorldOneIntro;
     private bool _hasShownWorldTwoIntro;
 
-    // Pre-rolled values for the upcoming floor, shown on the preview screen.
     private int _nextDifficulty;
     private int _nextChunkCount;
 
@@ -53,10 +66,6 @@ public class GameplayHandler : MonoBehaviour
     {
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
-
-        // Don't instantiate player here - wait for floor start
-        // _playerObject = Instantiate(playerPrefab);
-        // ChangeCameraTracking(_playerObject.transform);
     }
 
     private void OnEnable()
@@ -81,16 +90,12 @@ public class GameplayHandler : MonoBehaviour
         StartCoroutine(FloorSequence());
     }
 
-    // Core loop.
-
     private IEnumerator FloorSequence()
     {
         yield return ShowWorldIntroIfNeeded();
 
-        // Preview: show rolled difficulty and length before generating.
         CurrentState = FloorState.Preview;
 
-        // Ensure player is not visible during preview
         if (_playerObject != null)
         {
             _playerObject.SetActive(false);
@@ -99,7 +104,6 @@ public class GameplayHandler : MonoBehaviour
         floorUI.ShowFloorPreview(_nextDifficulty, _floorIndex);
         yield return new WaitUntil(() => floorUI.PlayerConfirmedStart);
 
-        // Instantiate player when floor starts
         if (_playerObject == null)
         {
             _playerObject = Instantiate(playerPrefab);
@@ -109,17 +113,14 @@ public class GameplayHandler : MonoBehaviour
         }
         else
         {
-            // Re-enable player if it was disabled
             _playerObject.SetActive(true);
             EnsurePlayerHud();
             EnablePlayerMovement(true);
         }
 
-        // Commit the pre-rolled values.
         _currentDifficulty = _nextDifficulty;
         _currentChunkCount = _nextChunkCount;
 
-        // Generate and load floor.
         _currentChunks = mapSpawner.GenerateRandomSequence(
             _currentDifficulty,
             _currentChunkCount,
@@ -132,25 +133,20 @@ public class GameplayHandler : MonoBehaviour
             IsFirstFloor = _floorIndex == 0
         });
 
-        // Playing.
         CurrentState = FloorState.Playing;
         _enemiesKilled = 0;
         _floorStartTime = Time.time;
 
-        // Move player to the start of the floor.
         _playerObject.transform.position = mapSpawner.SpawnPosition;
 
         yield return new WaitUntil(() => CurrentState == FloorState.FloorEnd);
 
-        // Disable player movement but keep active for upgrades
         EnablePlayerMovement(false);
         if (_playerObject != null)
             _playerObject.SetActive(false);
 
-        // Disable all enemies
         DisableAllEnemies();
 
-        // Deinitialize chunks after floor end (moved from before next floor)
         if (_currentChunks != null)
         {
             foreach (GameObject chunk in _currentChunks)
@@ -161,20 +157,17 @@ public class GameplayHandler : MonoBehaviour
             _currentChunks.Clear();
         }
 
-        // XP Summary with animated XP bar
         float elapsed = Time.time - _floorStartTime;
-        int floorXP = CalculateXP(_enemiesKilled, _totalEnemies, elapsed);
+        FloorXPBreakdown xpBreakdown = GetFloorXPBreakdown(_enemiesKilled, _totalEnemies, elapsed);
+        int floorXP = xpBreakdown.TotalXP;
 
         int previousTotalXP = RunStatsTracker.Instance.TotalXP;
 
-        // Add XP to run total
         RunStatsTracker.Instance.AddXP(floorXP);
 
-        // Show old XP summary first
-        floorUI.ShowXPSummary(_enemiesKilled, _totalEnemies, floorXP);
+        floorUI.ShowXPSummary(_enemiesKilled, _totalEnemies, elapsed, xpBreakdown);
         yield return new WaitUntil(() => floorUI.SummaryConfirmed);
 
-        // Then show XP bar animation
         floorUI.ShowXPBarAnimation(RunStatsTracker.Instance.TotalXP - floorXP, floorXP, _enemiesKilled, _totalEnemies, elapsed);
         yield return new WaitUntil(() => floorUI.XPBarAnimationComplete);
 
@@ -229,27 +222,62 @@ public class GameplayHandler : MonoBehaviour
         StartCoroutine(FloorSequence());
     }
 
-    // Helpers.
-
-    /// <summary>
-    /// Rolls difficulty and chunk count for the upcoming floor.
-    /// Done before the preview screen so the player sees real values.
-    /// </summary>
     private void RollNextFloor()
     {
         _nextDifficulty  = Random.Range(GameConstants.MinDifficulty, GameConstants.MaxDifficulty + 1);
         _nextChunkCount  = Random.Range(GameConstants.MinChunkCount, GameConstants.MaxChunkCount + 1);
     }
 
-    private int CalculateXP(int killed, int total, float elapsed)
+    public readonly struct FloorXPBreakdown
     {
-        float killXP    = killed * baseXP * killXPMultiplier;
-        float avoidXP   = (total - killed) * baseXP * avoidXPMultiplier;
-        float timeBonus = Mathf.Lerp(timeBonusMax, 0f, elapsed / timeBonusWindow);
+        public readonly int KillXP;
+        public readonly int AvoidXP;
+        public readonly int TimeXP;
+        public readonly int TotalXP;
 
+        public FloorXPBreakdown(int killXP, int avoidXP, int timeXP, int totalXP)
+        {
+            KillXP = killXP;
+            AvoidXP = avoidXP;
+            TimeXP = timeXP;
+            TotalXP = totalXP;
+        }
+    }
+
+    private FloorXPBreakdown GetFloorXPBreakdown(int killed, int total, float elapsed)
+    {
+        int avoided = Mathf.Max(0, total - killed);
+        float killXP  = killed * baseXP * killXPMultiplier;
+        float avoidXP = avoided * baseXP * avoidXPMultiplier;
+        float combatSub = killXP + avoidXP;
+
+        int chunks = Mathf.Max(1, _currentChunkCount);
+        float diffNorm = Mathf.InverseLerp(GameConstants.MinDifficulty, GameConstants.MaxDifficulty, _currentDifficulty);
+        float parSeconds = parSecondsPerChunk * chunks * Mathf.Lerp(1f, 1f + parStretchAtMaxDifficulty, diffNorm);
+        parSeconds = Mathf.Max(8f, parSeconds);
+
+        float pace = Mathf.Clamp01(elapsed / parSeconds);
+        float quality = Mathf.Pow(Mathf.Max(0f, 1f - pace), Mathf.Max(0.01f, timeQualityDecayExponent));
+
+        float sharePool = combatSub * Mathf.Max(0f, maxTimeBonusAsCombatFraction) * quality;
+
+        float lenFactor = Mathf.Pow(chunks, timeBonusChunkLengthExponent);
+        float depthMul = 1f + _floorIndex * Mathf.Max(0f, timeBonusPerFloorIndex);
+        float flatPool = baseXP * Mathf.Max(0f, timeBonusFlatVsBase) * lenFactor * depthMul * quality;
+
+        float timeBonus = sharePool + flatPool;
+
+        int rk = Mathf.RoundToInt(killXP);
+        int ra = Mathf.RoundToInt(avoidXP);
+        int rt = Mathf.RoundToInt(timeBonus);
         int totalXP = Mathf.RoundToInt(killXP + avoidXP + timeBonus);
-        Debug.Log($"XP - Kills: {killXP}, Avoided: {avoidXP}, Time bonus: {timeBonus}, Total: {totalXP}");
-        return totalXP;
+
+        int drift = totalXP - (rk + ra + rt);
+        if (drift != 0)
+            rt += drift;
+
+        Debug.Log($"XP - Kills: {killXP}, Avoided: {avoidXP}, Time bonus: {timeBonus} (par {parSeconds:F0}s, quality {quality:F2}), Total: {totalXP}");
+        return new FloorXPBreakdown(rk, ra, rt, totalXP);
     }
 
     public int XPPerFloor => xpPerFloor;
@@ -303,14 +331,12 @@ public class GameplayHandler : MonoBehaviour
     {
         if (_playerObject != null)
         {
-            // Disable/enable player controller
             var playerController = _playerObject.GetComponent<PlayerController>();
             if (playerController != null)
             {
                 playerController.enabled = enable;
             }
 
-            // Disable/enable rigidbody
             var rb = _playerObject.GetComponent<Rigidbody2D>();
             if (rb != null)
             {
@@ -330,15 +356,12 @@ public class GameplayHandler : MonoBehaviour
 
     private void DisableAllEnemies()
     {
-        // Find all enemy objects and disable them
         var enemies = FindObjectsByType<EnemyBase>(FindObjectsSortMode.None);
         foreach (var enemy in enemies)
         {
             enemy.gameObject.SetActive(false);
         }
     }
-
-    // Event handlers.
 
     private void OnEnemyKilled(EnemyKilledEvent evt)
     {

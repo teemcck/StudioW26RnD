@@ -29,6 +29,7 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
 
     protected Rigidbody2D Rb { get; private set; }
     protected Transform Player { get; private set; }
+    private PlayerCombatAnchor _playerCombatAnchor;
 
     private float _health;
     private bool _isDead;
@@ -48,10 +49,6 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
     protected float EffectiveMoveSpeed => moveSpeed * (_statusEffects ? _statusEffects.GetMoveSpeedMultiplier() : 1f);
     protected float EffectiveAttackSpeedMultiplier => _statusEffects ? _statusEffects.GetAttackSpeedMultiplier() : 1f;
 
-    /// <summary>
-    /// Scales max health and current health, and optionally local scale (e.g. split-spawn clones).
-    /// Call right after Instantiate; runs after Awake on the new instance.
-    /// </summary>
     public virtual void ApplyRuntimeScaling(float healthMultiplier, float sizeMultiplier = 1f)
     {
         maxHealth = Mathf.Max(0.01f, maxHealth * healthMultiplier);
@@ -59,7 +56,6 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         if (sizeMultiplier > 0f && !Mathf.Approximately(sizeMultiplier, 1f))
         {
             transform.localScale *= sizeMultiplier;
-            // Rigidbody2D + transform scale: sync so colliders register this frame (fixes split spawns).
             if (Rb != null)
             {
                 Rb.WakeUp();
@@ -79,6 +75,27 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
 
         var playerGo = GameObject.FindGameObjectWithTag("Player");
         Player = playerGo ? playerGo.transform : null;
+        if (playerGo != null)
+            _playerCombatAnchor = playerGo.GetComponent<PlayerCombatAnchor>() ?? playerGo.GetComponentInChildren<PlayerCombatAnchor>();
+    }
+
+    protected Vector2 GetPlayerCombatWorldPoint()
+    {
+        if (_playerCombatAnchor != null)
+            return _playerCombatAnchor.WorldHitAnchor;
+        return Player ? (Vector2)Player.position : Vector2.zero;
+    }
+
+    protected Vector2 GetPlayerClosestCombatPoint(Vector2 fromWorld)
+    {
+        if (_playerCombatAnchor != null)
+            return _playerCombatAnchor.ClosestCombatPoint(fromWorld);
+        if (Player == null)
+            return fromWorld;
+        var col = Player.GetComponent<Collider2D>() ?? Player.GetComponentInChildren<Collider2D>();
+        if (col != null)
+            return col.ClosestPoint(fromWorld);
+        return (Vector2)Player.position;
     }
 
     public virtual void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce, DamageContext context = default)
@@ -131,6 +148,13 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
             Position = transform.position,
             Context = context
         });
+        Destroy(gameObject);
+    }
+
+    protected void DestroyWithoutKillEvent(DamageContext context = default)
+    {
+        if (_isDead) return;
+        _isDead = true;
         Destroy(gameObject);
     }
 

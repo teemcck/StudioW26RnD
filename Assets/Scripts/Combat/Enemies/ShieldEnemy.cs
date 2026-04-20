@@ -72,7 +72,7 @@ public class ShieldEnemy : MeleeEnemy
     private void AimShieldTowardPlayer()
     {
         if (!Player || !shieldPivot) return;
-        Vector2 to = (Vector2)(Player.position - transform.position);
+        Vector2 to = GetPlayerCombatWorldPoint() - (Vector2)transform.position;
         if (to.sqrMagnitude < 0.0001f) return;
 
         float targetZ = Mathf.Atan2(to.y, to.x) * Mathf.Rad2Deg;
@@ -99,7 +99,7 @@ public class ShieldEnemy : MeleeEnemy
             return;
         }
 
-        Vector2 towardPlayer = (Vector2)(Player.position - transform.position);
+        Vector2 towardPlayer = GetPlayerCombatWorldPoint() - (Vector2)transform.position;
         if (towardPlayer.sqrMagnitude < 0.0001f)
         {
             base.TakeHit(damage, knockbackDirection, knockbackForce, context);
@@ -109,7 +109,7 @@ public class ShieldEnemy : MeleeEnemy
 
         Vector2 incoming = knockbackDirection.sqrMagnitude > 0.0001f
             ? knockbackDirection.normalized
-            : ((Vector2)transform.position - (Vector2)Player.position).normalized;
+            : ((Vector2)transform.position - GetPlayerCombatWorldPoint()).normalized;
 
         Vector2 shieldForward = GetShieldFacing();
         float cosHalf = Mathf.Cos((shieldBlockHalfAngle * 0.5f) * Mathf.Deg2Rad);

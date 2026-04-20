@@ -1,17 +1,19 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MeleeSwingWeapon : WeaponBase
 {
-    [Header("Swing Shape")]
-    [SerializeField] private float hitRadius = 0.85f;
-    [SerializeField] private float hitOriginRangeFactor = 0.7f;
-    [SerializeField] private float swingVfxRangeFactor = 0.95f;
+    private const float ReachBuffer = 0.08f;
+    private static readonly Vector2 FallbackAnchorLocal = new Vector2(0f, 0.24f);
 
-    [Tooltip("Angle of the swing cone in degrees (centered on attack direction).")]
-    [Range(10f, 180f)]
-    [SerializeField] private float coneAngle = 80f;
+    [Header("Melee")]
+    [SerializeField] private float hitRadius = 0.85f;
+    [SerializeField] [Range(0.2f, 1f)] private float hitOriginRangeFactor = 0.7f;
+    [SerializeField] private float pointBlankConeBypassDistance = 0.45f;
+    [Range(10f, 180f)] [SerializeField] private float coneAngle = 80f;
 
     [Header("VFX")]
+    [SerializeField] private float swingVfxRangeFactor = 0.95f;
     [SerializeField] private SpriteRenderer swingVfxRenderer;
     [SerializeField] private Animator swingVfxAnimator;
     [SerializeField] private string swingVfxStatePrefix = "SwingVFX";
@@ -24,49 +26,52 @@ public class MeleeSwingWeapon : WeaponBase
 
         float effectiveRange = Mathf.Max(0.1f, GetRange());
         float overlapRadius = Mathf.Clamp(hitRadius, 0.1f, effectiveRange);
-        Vector2 swingCenter = (Vector2)transform.position + direction * (effectiveRange * hitOriginRangeFactor);
+        Transform pivotRoot = GetPivotRoot();
+        Vector2 hitAnchor = GetHitAnchorWorld(pivotRoot);
+        Vector2 swingCenter = hitAnchor + direction * (effectiveRange * hitOriginRangeFactor);
+        float queryRadius = Mathf.Max(pointBlankConeBypassDistance + 0.1f, effectiveRange + overlapRadius + ReachBuffer);
 
         PlaySwingVfx(direction, effectiveRange);
-
-        Collider2D[] hits = Physics2D.OverlapCircleAll(swingCenter, overlapRadius, enemyLayer);
+        Collider2D[] candidates = Physics2D.OverlapCircleAll(hitAnchor, queryRadius, enemyLayer);
 
         float cosThreshold = Mathf.Cos((coneAngle * 0.5f) * Mathf.Deg2Rad);
-        int enemiesInRange = 0;
-        foreach (var h in hits)
+        var landed = new Dictionary<int, Component>(8);
+        foreach (var h in candidates)
         {
-            if (!h) continue;
-            Vector2 toEnemy = (Vector2)h.bounds.center - swingCenter;
-            Vector2 toEnemyDir = toEnemy.sqrMagnitude > 0.0001f ? toEnemy.normalized : Vector2.zero;
-            if (Vector2.Dot(direction, toEnemyDir) >= cosThreshold)
-                enemiesInRange++;
+            if (!h)
+                continue;
+            var rootDamageable = h.GetComponentInParent<IDamageable>();
+            if (rootDamageable is not Component comp)
+                continue;
+            int id = comp.GetInstanceID();
+            if (landed.ContainsKey(id))
+                continue;
+            if (!IsTargetHit(h, direction, swingCenter, hitAnchor, overlapRadius, cosThreshold))
+                continue;
+            landed[id] = comp;
         }
 
         var runtime = GetComponentInParent<PlayerUpgradeRuntime>();
         EnemyBase primaryTarget = target ? target.GetComponentInParent<EnemyBase>() : null;
         var snapshot = runtime != null
-            ? runtime.BuildAttackSnapshot(AttackKind.Melee, transform.position, primaryTarget, enemiesInRange)
+            ? runtime.BuildAttackSnapshot(AttackKind.Melee, hitAnchor, primaryTarget, landed.Count)
             : default;
 
         float dmg = snapshot.ApplyTo(GetDamage());
         float kb = GetKnockback();
         int hitCount = 0;
 
-        foreach (var h in hits)
+        foreach (var comp in landed.Values)
         {
-            if (!h) continue;
-
-            Vector2 toEnemy = (Vector2)h.bounds.center - swingCenter;
-            Vector2 toEnemyDir = toEnemy.sqrMagnitude > 0.0001f ? toEnemy.normalized : Vector2.zero;
-
-            if (Vector2.Dot(direction.normalized, toEnemyDir) < cosThreshold)
+            if (comp is not IDamageable damageable)
                 continue;
-
-            var damageable = h.GetComponentInParent<IDamageable>();
-            if (damageable != null)
-            {
-                damageable.TakeHit(dmg, direction, kb, new DamageContext(gameObject, transform.root.gameObject, AttackKind.Melee, "melee_attack", triggersOnHitEffects: true));
-                hitCount++;
-            }
+            Vector2 kbDir = (Vector2)comp.transform.position - hitAnchor;
+            if (kbDir.sqrMagnitude < 0.0001f)
+                kbDir = direction;
+            else
+                kbDir.Normalize();
+            damageable.TakeHit(dmg, kbDir, kb, new DamageContext(gameObject, transform.root.gameObject, AttackKind.Melee, "melee_attack", triggersOnHitEffects: true));
+            hitCount++;
         }
 
         runtime?.NotifyAttackPerformed(AttackKind.Melee, snapshot);
@@ -77,8 +82,25 @@ public class MeleeSwingWeapon : WeaponBase
             Direction = direction,
             Damage = dmg,
             EnemiesHit = hitCount,
-            EnemiesInRange = enemiesInRange
+            EnemiesInRange = landed.Count
         });
+    }
+
+    private bool IsTargetHit(Collider2D h, Vector2 direction, Vector2 swingCenter, Vector2 hitAnchor, float overlapRadius, float cosThreshold)
+    {
+        Vector2 enemyPointFromPlayer = h.ClosestPoint(hitAnchor);
+        float dPlayer = Vector2.Distance(hitAnchor, enemyPointFromPlayer);
+        if (dPlayer <= pointBlankConeBypassDistance)
+            return true;
+
+        Vector2 enemyPointFromSwing = h.ClosestPoint(swingCenter);
+        float dSwing = Vector2.Distance(swingCenter, enemyPointFromSwing);
+        if (dSwing > overlapRadius + ReachBuffer)
+            return false;
+
+        Vector2 toEnemy = enemyPointFromSwing - swingCenter;
+        Vector2 toEnemyDir = toEnemy.sqrMagnitude > 0.0001f ? toEnemy.normalized : Vector2.zero;
+        return Vector2.Dot(direction, toEnemyDir) >= cosThreshold;
     }
 
     private void PlaySwingVfx(Vector2 direction, float effectiveRange)
@@ -121,12 +143,36 @@ public class MeleeSwingWeapon : WeaponBase
         return "D";
     }
 
+    private Transform GetPivotRoot()
+    {
+        Transform t = transform;
+        var rb = GetComponentInParent<Rigidbody2D>();
+        if (rb != null)
+            return rb.transform;
+        return t.root;
+    }
+
+    private Vector2 GetHitAnchorWorld(Transform pivotRoot)
+    {
+        var anchor = pivotRoot.GetComponent<PlayerCombatAnchor>() ?? pivotRoot.GetComponentInChildren<PlayerCombatAnchor>();
+        if (anchor != null)
+            return anchor.WorldHitAnchor;
+        Vector3 w = pivotRoot.TransformPoint(new Vector3(FallbackAnchorLocal.x, FallbackAnchorLocal.y, 0f));
+        return new Vector2(w.x, w.y);
+    }
+
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = new Color(1f, 0.3f, 0.3f, 0.8f);
         float effectiveRange = Mathf.Max(0.1f, GetRange());
         float overlapRadius = Mathf.Clamp(hitRadius, 0.1f, effectiveRange);
-        Vector2 swingCenter = (Vector2)transform.position + Vector2.right * (effectiveRange * hitOriginRangeFactor);
+        Transform pivot = GetPivotRoot();
+        Vector2 anchor = GetHitAnchorWorld(pivot);
+        Vector2 swingCenter = anchor + Vector2.right * (effectiveRange * hitOriginRangeFactor);
+        Gizmos.color = new Color(1f, 0.3f, 0.3f, 0.8f);
         Gizmos.DrawWireSphere(swingCenter, overlapRadius);
+        Gizmos.color = new Color(1f, 0.8f, 0.2f, 0.65f);
+        Gizmos.DrawWireSphere(anchor, pointBlankConeBypassDistance);
+        Gizmos.color = new Color(0.4f, 0.9f, 0.4f, 0.5f);
+        Gizmos.DrawWireSphere(pivot.position, 0.04f);
     }
 }
