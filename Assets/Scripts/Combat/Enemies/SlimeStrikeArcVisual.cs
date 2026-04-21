@@ -65,7 +65,22 @@ public sealed class SlimeStrikeArcVisual : MonoBehaviour
         view._baseWidth = 0.055f;
         view._rgb0 = rgb0;
         view._rgb1 = rgb1;
+        view._maxLifetime = Mathf.Max(0.8f, strikeDelaySeconds * 1.6f + 0.4f);
         view.StartCoroutine(view.Run(strikeDelaySeconds));
+    }
+
+    private float _maxLifetime;
+    private float _spawnUnscaledTime;
+
+    private void Awake()
+    {
+        _spawnUnscaledTime = Time.unscaledTime;
+    }
+
+    private void Update()
+    {
+        if (_maxLifetime > 0f && Time.unscaledTime - _spawnUnscaledTime > _maxLifetime)
+            Destroy(gameObject);
     }
 
     private IEnumerator Run(float strikeDelaySeconds)

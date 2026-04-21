@@ -45,3 +45,9 @@ public struct PlayerReachedEndpointEvent
 {
     Vector2 position;
 }
+
+/// <summary>Player negated an incoming hit via dash invulnerability frames.</summary>
+public struct PerfectDodgeEvent
+{
+    public Vector2 Position;
+}

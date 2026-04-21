@@ -30,6 +30,10 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
     [SerializeField] private float minFlipInterval = 0.12f;
     [SerializeField] private bool spriteFacesRightByDefault = false;
 
+    [Header("Lunge")]
+    [SerializeField] private float lungeDistance = 0.9f;
+    [SerializeField] private float lungeDuration = 0.22f;
+
     [Header("Swing Slash VFX")]
     [SerializeField] private bool enableSwingSlashVfx = true;
     [SerializeField] private Transform slashVfxTransform;
@@ -154,15 +158,46 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
         PlayState(attackStateName, forceRestart: true);
 
         float damageDelay = Mathf.Clamp(damageMomentSeconds, 0f, attackAnimationDuration);
-        if (damageDelay > 0f)
-            yield return WindupRoutine(damageDelay);
+        float lungeStartAt = Mathf.Max(0f, damageDelay - lungeDuration * 0.75f);
 
-        AudioManager.Instance?.PlayPlagueAttack();
-        TryApplyDirectionalSwingDamage(attackDirection);
-        ApplySwingImpactVisual();
-        PlaySwingSlashVfx(attackDirection);
+        if (lungeStartAt > 0f)
+            yield return WindupRoutine(lungeStartAt);
 
-        float remaining = Mathf.Max(0.01f, attackAnimationDuration - damageDelay);
+        Vector2 lungeDir = attackDirection.sqrMagnitude > 0.0001f ? attackDirection.normalized : _lastFacingDirection;
+        Vector2 lungeStart = Rb.position;
+        Vector2 lungeEnd = lungeStart + lungeDir * Mathf.Max(0f, lungeDistance);
+        float strikeMoment = Mathf.Clamp01((damageDelay - lungeStartAt) / Mathf.Max(0.0001f, lungeDuration));
+        bool struck = false;
+
+        float lt = 0f;
+        while (lt < lungeDuration)
+        {
+            lt += Time.deltaTime;
+            float u = Mathf.Clamp01(lt / lungeDuration);
+            float eased = 1f - Mathf.Pow(1f - u, 3f);
+            Rb.MovePosition(Vector2.Lerp(lungeStart, lungeEnd, eased));
+
+            if (!struck && u >= strikeMoment)
+            {
+                struck = true;
+                AudioManager.Instance?.PlayPlagueAttack();
+                TryApplyDirectionalSwingDamage(attackDirection);
+                ApplySwingImpactVisual();
+                PlaySwingSlashVfx(attackDirection);
+            }
+
+            yield return null;
+        }
+
+        if (!struck)
+        {
+            AudioManager.Instance?.PlayPlagueAttack();
+            TryApplyDirectionalSwingDamage(attackDirection);
+            ApplySwingImpactVisual();
+            PlaySwingSlashVfx(attackDirection);
+        }
+
+        float remaining = Mathf.Max(0.01f, attackAnimationDuration - (lungeStartAt + lungeDuration));
         yield return new WaitForSeconds(remaining);
 
         _isVulnerable = true;

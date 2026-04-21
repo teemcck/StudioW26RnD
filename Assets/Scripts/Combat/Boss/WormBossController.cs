@@ -1613,7 +1613,7 @@ public sealed class WormBossController : EnemyBase
     {
         CameraController camCtrl = phaseTransitionCamera ? phaseTransitionCamera : FindFirstObjectByType<CameraController>();
         if (camCtrl)
-            camCtrl.Shake(shieldBreakCameraShake);
+            camCtrl.ShakeMedium();
 
         ResolveBossAudio()?.PlayShieldBreakSfx();
 
@@ -2034,8 +2034,9 @@ public sealed class WormBossController : EnemyBase
         FaceDirection(aim);
 
         CameraController cam = phaseTransitionCamera ? phaseTransitionCamera : FindFirstObjectByType<CameraController>();
-        float enterShake = newPhase >= 3 ? phaseTransitionShakeEnterPhase3 : phaseTransitionShakeEnterPhase2;
-        if (cam) cam.Shake(enterShake);
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.DuckMusic(0.08f, 0f);
+        if (cam) cam.ShakeFatality();
         if (cam) cam.PhaseTransitionZoomIn(transform);
 
         if (newPhase == 2) ResolveBossAudio()?.PlayPhaseTransitionToPhase2Sfx();
@@ -2091,7 +2092,7 @@ public sealed class WormBossController : EnemyBase
 
         if (cam) cam.PhaseTransitionZoomRestore();
         if (cam && phaseTransitionShakeResume > 0.0001f)
-            cam.Shake(phaseTransitionShakeResume);
+            cam.ShakeMedium();
 
         var bossAudio = ResolveBossAudio();
         if (bossAudio)

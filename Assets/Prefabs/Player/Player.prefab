@@ -24,6 +24,9 @@ GameObject:
   - component: {fileID: 4344393513909202767}
   - component: {fileID: 2764491529489874927}
   - component: {fileID: 7612849362051847295}
+  - component: {fileID: 5458744357695969264}
+  - component: {fileID: 4979576639942348445}
+  - component: {fileID: 8232608945522593496}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -326,8 +329,8 @@ MonoBehaviour:
   baseAttackDamage: 2
   baseAttackSpeed: 1
   baseAttackRange: 1.5
-  baseCritChance: 0
-  baseCritMultiplier: 2
+  baseCritChance: 0.08
+  baseCritMultiplier: 2.25
   baseMaxHealth: 10
   baseDamageReduction: 0
   baseDodgeChance: 0
@@ -346,6 +349,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDashController
   rb: {fileID: 8197730577921135951}
   playerController: {fileID: 6214499311367985394}
+  dashInvulnWindow: 0.18
 --- !u!114 &2368776046972292794
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -402,6 +406,58 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombatAnchor
   hitAnchorLocalFromFeet: {x: 0.06, y: 0.24}
   combatHitVolume: {fileID: 6612849362051847292}
+--- !u!114 &5458744357695969264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 157006395687664069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0f314aea045c4b3bab99d654ff95c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DashReadyPulse
+  target: {fileID: 0}
+  pulseAmplitude: 0.06
+  pulseHz: 1.1
+  readyTint: {r: 0, g: 0, b: 0, a: 0}
+--- !u!114 &4979576639942348445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 157006395687664069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93d59fe41dd5f4030a71d28f0625d689, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDustPuffer
+  dustPuffPrefab: {fileID: 8812141319345301389, guid: 38f45edec2a444c6aba0043603007397, type: 3}
+  dashSkidPuffPrefab: {fileID: 8109475032185826193, guid: d376a8956e9a54190a4a3e783e13f130, type: 3}
+  runThreshold: 0.75
+  footstepInterval: 0.28
+  dustColor: {r: 0.85, g: 0.78, b: 0.62, a: 0.55}
+  skidDuration: 0.35
+--- !u!114 &8232608945522593496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 157006395687664069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1119ccdec79f048fc9b8dbfad3f9d19e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDashTrail
+  source: {fileID: 0}
+  ghostCount: 4
+  ghostInterval: 0.03
+  ghostLifetime: 0.28
+  startAlpha: 0.55
+  tint: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &1240368542618820286
 GameObject:
   m_ObjectHideFlags: 0

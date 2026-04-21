@@ -33,6 +33,7 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
 
     private EnemyBase _enemy;
     private EnemyStatusEffectController _statusEffects;
+    private EliteModifier _elite;
     private bool _worldHealthBarEnabled = true;
     private Transform _visualRoot;
     private Transform _barRoot;
@@ -44,6 +45,7 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
     {
         _enemy = GetComponent<EnemyBase>();
         _statusEffects = GetComponent<EnemyStatusEffectController>();
+        _elite = GetComponent<EliteModifier>();
         _worldHealthBarEnabled = _enemy == null || _enemy.UsesWorldFloatingHealthBar;
         CacheTrackedRenderers();
         CreateVisuals();
@@ -161,11 +163,21 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
         float barHeight = BarHeight * HealthBarScale;
         float framePadding = FramePadding * HealthBarScale;
 
+        bool eliteWithShield = _elite != null && _elite.HasShield;
+        if (eliteWithShield)
+            framePadding *= 2.2f;
+
         _barRoot.position = new Vector3(bounds.center.x, y, bounds.center.z);
         _barFrameRenderer.transform.localScale = new Vector3(barWidth + framePadding, barHeight + framePadding, 1f);
         _barBackgroundRenderer.transform.localScale = new Vector3(barWidth, barHeight, 1f);
         _barFillRenderer.transform.localScale = new Vector3(fillWidth, barHeight * 0.82f, 1f);
         _barFillRenderer.color = GetHealthBarColor();
+
+        if (_elite != null)
+        {
+            Color frameTarget = eliteWithShield ? GameColors.EliteAccent : new Color(0.04f, 0.04f, 0.04f, 0.95f);
+            _barFrameRenderer.color = Color.Lerp(_barFrameRenderer.color, frameTarget, Time.deltaTime * 8f);
+        }
 
         float leftEdge = -barWidth * 0.5f;
         _barFillRenderer.transform.localPosition = new Vector3(leftEdge + fillWidth * 0.5f, 0f, 0f);

@@ -31,17 +31,29 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
     protected Transform Player { get; private set; }
     private PlayerCombatAnchor _playerCombatAnchor;
 
+    [Header("Spawn Safety")]
+    [Tooltip("Seconds after spawn during which this enemy will not deal contact damage. Gives the player a moment to orient.")]
+    [SerializeField] private float postSpawnGracePeriod = 0.6f;
+
     private float _health;
     private bool _isDead;
     private readonly Dictionary<int, float> _contactDamageCooldownByTarget = new();
     private float _hitReactionUntil;
+    private float _spawnTime;
     private static Sprite _whiteSprite;
     private EnemyStatusEffectController _statusEffects;
 
     public float CurrentHealth => _health;
     public float MaxHealth => maxHealth;
+    public bool IsInPostSpawnGrace => Time.time - _spawnTime < postSpawnGracePeriod;
     public float HealthNormalized => maxHealth <= 0.0001f ? 0f : Mathf.Clamp01(_health / maxHealth);
     public bool IsDead => _isDead;
+    /// <summary>
+    /// Compounding multiplier applied to outgoing damage. Starts at 1 and is scaled by
+    /// <see cref="ApplyRuntimeScaling(float,float,float)"/> (floor scaling, elite, etc).
+    /// Read by enemy subclasses when computing final damage.
+    /// </summary>
+    public float DamageMultiplier { get; private set; } = 1f;
 
     public virtual bool UsesWorldFloatingHealthBar => true;
     public EnemyStatusEffectController StatusEffects => _statusEffects;
@@ -49,7 +61,7 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
     protected float EffectiveMoveSpeed => moveSpeed * (_statusEffects ? _statusEffects.GetMoveSpeedMultiplier() : 1f);
     protected float EffectiveAttackSpeedMultiplier => _statusEffects ? _statusEffects.GetAttackSpeedMultiplier() : 1f;
 
-    public virtual void ApplyRuntimeScaling(float healthMultiplier, float sizeMultiplier = 1f)
+    public virtual void ApplyRuntimeScaling(float healthMultiplier, float sizeMultiplier = 1f, float damageMultiplier = 1f)
     {
         maxHealth = Mathf.Max(0.01f, maxHealth * healthMultiplier);
         _health = maxHealth;
@@ -62,12 +74,15 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
                 Physics2D.SyncTransforms();
             }
         }
+        if (damageMultiplier > 0f && !Mathf.Approximately(damageMultiplier, 1f))
+            DamageMultiplier *= damageMultiplier;
     }
 
     protected virtual void Awake()
     {
         Rb = GetComponent<Rigidbody2D>();
         _health = maxHealth;
+        _spawnTime = Time.time;
 
         if (!damageFlash) damageFlash = GetComponent<DamageFlash>();
         _statusEffects = GetComponent<EnemyStatusEffectController>() ?? gameObject.AddComponent<EnemyStatusEffectController>();
@@ -102,6 +117,18 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
     {
         if (_isDead) return;
         if (damage <= 0f) return;
+
+        var elite = GetComponent<EliteModifier>();
+        if (elite != null && elite.HasShield)
+        {
+            damage = elite.AbsorbDamage(damage);
+            if (damage <= 0f)
+            {
+                if (HitSparkSpawner.Instance != null)
+                    HitSparkSpawner.Instance.Spawn(transform.position, GameColors.HitShield, emphasized: true);
+                return;
+            }
+        }
 
         _health -= damage;
 
@@ -141,6 +168,23 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
     {
         if (_isDead) return;
         _isDead = true;
+
+        bool isElite = GetComponent<EliteModifier>() != null;
+        bool isBoss = GetType().Name.Contains("Boss");
+
+        if (context.WasCausedByPlayer && Hitstop.Instance != null)
+        {
+            float freeze = isBoss ? 0.14f : (isElite ? 0.11f : 0.08f);
+            Hitstop.Instance.Freeze(freeze, priority: isBoss ? 6 : (isElite ? 4 : 2));
+        }
+
+        if (isElite)
+        {
+            var cam = Object.FindFirstObjectByType<CameraController>();
+            if (cam != null)
+                cam.ShakeMedium();
+        }
+
         EventBus<EnemyKilledEvent>.Raise(new EnemyKilledEvent
         {
             Enemy = this,
@@ -196,6 +240,7 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         if (_isDead) return false;
         if (hitComponent == null) return false;
         if (damage <= 0f) return false;
+        if (Time.time - _spawnTime < postSpawnGracePeriod) return false;
 
         IDamageable damageable = hitComponent.GetComponentInParent<IDamageable>();
         Component damageableComponent = damageable as Component;
@@ -221,7 +266,8 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         else
             knockbackDirection = Vector2.up;
 
-        damageable.TakeHit(damage, knockbackDirection, knockbackForce, new DamageContext(gameObject, gameObject, AttackKind.Contact, "enemy_contact"));
+        float finalDamage = damage * DamageMultiplier;
+        damageable.TakeHit(finalDamage, knockbackDirection, knockbackForce, new DamageContext(gameObject, gameObject, AttackKind.Contact, "enemy_contact"));
         _contactDamageCooldownByTarget[targetId] = Time.time + Mathf.Max(0.05f, intervalSeconds);
         return true;
     }

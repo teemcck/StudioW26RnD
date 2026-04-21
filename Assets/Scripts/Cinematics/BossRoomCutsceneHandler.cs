@@ -127,6 +127,10 @@ public sealed class BossRoomCutsceneHandler : MonoBehaviour
         if (healthBar)
             healthBar.HideForIntroFade();
 
+        if (CinematicBars.Instance != null)
+            CinematicBars.Instance.Show(0.3f);
+        SetPlayerHudVisible(false);
+
         boss.Cutscene_PrepareBuriedFacingPlayer();
 
         if (!playerTf)
@@ -142,6 +146,9 @@ public sealed class BossRoomCutsceneHandler : MonoBehaviour
             boss.BindHealthBarForFightStart();
             if (healthBar)
                 yield return healthBar.FadeInFromIntro(healthBarFadeSeconds);
+            if (CinematicBars.Instance != null)
+                CinematicBars.Instance.Hide(0.25f);
+            SetPlayerHudVisible(true);
             yield return WaitBossIdleThenStartCombat();
             _routine = null;
             yield break;
@@ -206,8 +213,31 @@ public sealed class BossRoomCutsceneHandler : MonoBehaviour
         if (healthBar)
             yield return healthBar.FadeInFromIntro(healthBarFadeSeconds);
 
+        if (CinematicBars.Instance != null)
+            CinematicBars.Instance.Hide(0.25f);
+        SetPlayerHudVisible(true);
+
         yield return WaitBossIdleThenStartCombat();
         _routine = null;
+    }
+
+    private void SetPlayerHudVisible(bool visible)
+    {
+        var hud = FindFirstObjectByType<PlayerHudUI>(FindObjectsInactive.Include);
+        if (hud != null)
+        {
+            var cg = hud.GetComponent<CanvasGroup>() ?? hud.gameObject.AddComponent<CanvasGroup>();
+            cg.alpha = visible ? 1f : 0f;
+            cg.blocksRaycasts = visible;
+        }
+
+        var strip = FindFirstObjectByType<AppliedUpgradeStripUI>(FindObjectsInactive.Include);
+        if (strip != null)
+        {
+            var cg = strip.GetComponent<CanvasGroup>() ?? strip.gameObject.AddComponent<CanvasGroup>();
+            cg.alpha = visible ? 1f : 0f;
+            cg.blocksRaycasts = visible;
+        }
     }
 
     private IEnumerator WaitBossIdleThenStartCombat()

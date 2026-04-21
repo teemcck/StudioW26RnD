@@ -11,6 +11,7 @@ public class LobbingProjectile : AOEProjectile
     [Header("Landing telegraph")]
     [SerializeField] private bool showLandingTelegraph = true;
     [SerializeField] private Sprite landingTelegraphSprite;
+    [SerializeField] private GameObject groundShadowPrefab;
     [SerializeField] private Color landingTelegraphColor = new Color(1f, 0.4f, 0.12f, 0.38f);
     [SerializeField] private int landingTelegraphSortingOrder = 42;
     [SerializeField] private int landingTelegraphSortingLayerId;
@@ -103,7 +104,28 @@ public class LobbingProjectile : AOEProjectile
         if (_hitCollider)
             _hitCollider.enabled = true;
         DestroyLandingTelegraph();
+        DestroyGroundShadow();
         SpawnImpactBurst(center);
+    }
+
+    private GameObject _groundShadowGo;
+
+    private void SpawnGroundShadow(Vector2 landingWorld)
+    {
+        DestroyGroundShadow();
+        if (groundShadowPrefab == null)
+            return;
+
+        _groundShadowGo = Instantiate(groundShadowPrefab, new Vector3(landingWorld.x, landingWorld.y, 0f), Quaternion.identity);
+    }
+
+    private void DestroyGroundShadow()
+    {
+        if (_groundShadowGo != null)
+        {
+            Destroy(_groundShadowGo);
+            _groundShadowGo = null;
+        }
     }
 
     public void FireBallistic(Vector2 start, Vector2 targetWorld, float groundLobSpeed)
@@ -115,6 +137,8 @@ public class LobbingProjectile : AOEProjectile
         _arcStart = start;
         _landingPlanar = targetWorld;
         transform.position = start;
+
+        SpawnGroundShadow(targetWorld);
 
         Vector2 delta = targetWorld - start;
         float planarDist = delta.magnitude;

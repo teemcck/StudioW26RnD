@@ -10,65 +10,85 @@ public class SpawnEnemies : MonoBehaviour
     [Tooltip("Tilemap whose painted cells are valid enemy spawn positions (dedicated layer recommended).")]
     [SerializeField] private Tilemap enemySpawnTilemap;
 
+    [Header("Player Safety")]
+    [Tooltip("Tiles within this world-space radius of the chunk's TeleportEntry will be excluded from enemy spawning so the player has a brief safe zone after teleporting in.")]
+    [SerializeField] private float playerEntrySafeRadius = 3.5f;
+
     /// <summary>
     /// Places enemies on a random subset of cells from <see cref="enemySpawnTilemap"/>.
     /// <paramref name="fillFraction"/> is the fraction of painted cells that receive an enemy (0–1).
+    /// Tiles within <see cref="playerEntrySafeRadius"/> of this chunk's <c>TeleportEntry</c>
+    /// are excluded so the player has breathing room when entering.
     /// </summary>
-    /// <returns>Number of enemies spawned.</returns>
-    public int SpawnEnemiesFromTileLayer(List<(GameObject prefab, float weight)> enemyPool, float fillFraction)
+    /// <returns>List of spawned enemy GameObjects.</returns>
+    public List<GameObject> SpawnEnemiesFromTileLayer(List<(GameObject prefab, float weight)> enemyPool, float fillFraction)
     {
+        var spawned = new List<GameObject>();
         if (enemySpawnTilemap == null)
         {
             Debug.LogWarning($"{nameof(SpawnEnemies)} on {name}: assign {nameof(enemySpawnTilemap)}.", this);
-            return 0;
+            return spawned;
         }
 
         if (enemyPool == null || enemyPool.Count == 0)
-            return 0;
+            return spawned;
 
         fillFraction = Mathf.Clamp01(fillFraction);
 
-        // Get all tiles that have something painted on them
+        Vector3? safePoint = null;
+        var entry = GetComponentInParent<TeleportEntry>() ?? GetComponentInChildren<TeleportEntry>();
+        if (entry == null)
+        {
+            var parent = transform.parent;
+            if (parent != null)
+                entry = parent.GetComponentInChildren<TeleportEntry>();
+        }
+        if (entry != null)
+            safePoint = entry.transform.position;
+
+        float safeRadiusSqr = playerEntrySafeRadius * playerEntrySafeRadius;
+
         var availableTiles = new List<Vector3Int>();
         BoundsInt bounds = enemySpawnTilemap.cellBounds;
 
         foreach (Vector3Int pos in bounds.allPositionsWithin)
         {
-            if (enemySpawnTilemap.HasTile(pos))
+            if (!enemySpawnTilemap.HasTile(pos))
+                continue;
+
+            if (safePoint.HasValue)
             {
-                availableTiles.Add(pos);
+                Vector3 worldPos = enemySpawnTilemap.GetCellCenterWorld(pos);
+                Vector2 delta = (Vector2)worldPos - (Vector2)safePoint.Value;
+                if (delta.sqrMagnitude < safeRadiusSqr)
+                    continue;
             }
+
+            availableTiles.Add(pos);
         }
 
         if (availableTiles.Count == 0)
         {
-            Debug.LogWarning($"No spawn tiles found in chunk {name}");
-            return 0;
+            Debug.LogWarning($"No spawn tiles found in chunk {name} (after safe-radius filter)");
+            return spawned;
         }
 
-        // Determine how many enemies to spawn
         int targetCount = Mathf.Clamp(Mathf.RoundToInt(availableTiles.Count * fillFraction), 1, availableTiles.Count);
 
-        // Shuffle the available tiles to randomize which ones get enemies
         Shuffle(availableTiles);
 
-        // Spawn enemies at the center of randomly selected tiles
-        Transform parent = transform.parent ?? transform; // Spawn as children of chunk root
-        int spawned = 0;
+        Transform parentTransform = transform.parent ?? transform;
 
         for (int i = 0; i < targetCount && i < availableTiles.Count; i++)
         {
             Vector3Int tilePos = availableTiles[i];
 
-            // Get the world position of the tile center
             Vector3 spawnPos = enemySpawnTilemap.GetCellCenterWorld(tilePos);
 
-            // Select random enemy type
             GameObject prefab = GetRandomEnemyType(enemyPool);
 
-            // Spawn the enemy
-            Instantiate(prefab, spawnPos, Quaternion.identity, parent);
-            spawned++;
+            var go = Instantiate(prefab, spawnPos, Quaternion.identity, parentTransform);
+            spawned.Add(go);
         }
 
         return spawned;

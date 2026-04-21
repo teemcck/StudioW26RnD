@@ -7,8 +7,16 @@ public class PlayerDashController : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private PlayerController playerController;
 
+    [Header("Dodge")]
+    [Tooltip("How long after a dash starts the player is invulnerable (perfect-dodge window).")]
+    [SerializeField] private float dashInvulnWindow = 0.18f;
+
     private PlayerStats _playerStats;
     private float _nextDashTime;
+    private float _dodgeEnds = -999f;
+
+    public bool IsDodgeInvulnerable => Time.time < _dodgeEnds;
+    public float NextDashTime => _nextDashTime;
 
     private void Awake()
     {
@@ -45,6 +53,11 @@ public class PlayerDashController : MonoBehaviour
             playerController.PlayDashAnimation(dashDirection, dashDuration);
 
         _nextDashTime = Time.time + dashCooldown;
+        _dodgeEnds = Time.time + Mathf.Max(0f, dashInvulnWindow);
+
+        var cam = Object.FindFirstObjectByType<CameraController>();
+        if (cam != null)
+            cam.BreathIn();
 
         EventBus<PlayerDashedEvent>.Raise(new PlayerDashedEvent
         {

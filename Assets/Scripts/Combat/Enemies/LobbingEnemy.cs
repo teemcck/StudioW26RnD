@@ -131,6 +131,7 @@ public class LobbingEnemy : EnemyBase
 
         if (Time.time < _nextShootTime || !projectilePrefab) return;
         if (dist > maxShootDistance) return;
+        if (IsInPostSpawnGrace) return;
 
         BeginAttack(dir);
     }
@@ -182,6 +183,7 @@ public class LobbingEnemy : EnemyBase
 
         Vector2 fire = firePoint ? (Vector2)firePoint.position : (Vector2)transform.position;
         var proj = Instantiate(projectilePrefab, fire, Quaternion.identity);
+        proj.ScaleDamage(DamageMultiplier);
         proj.FireBallistic(fire, _lockedTargetPoint, horizontalShotSpeed);
         AudioManager.Instance?.PlayUfoAttack();
         SpawnMuzzleFlash(fire);

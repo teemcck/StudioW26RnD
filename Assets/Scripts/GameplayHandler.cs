@@ -224,8 +224,38 @@ public class GameplayHandler : MonoBehaviour
 
     private void RollNextFloor()
     {
-        _nextDifficulty  = Random.Range(GameConstants.MinDifficulty, GameConstants.MaxDifficulty + 1);
-        _nextChunkCount  = Random.Range(GameConstants.MinChunkCount, GameConstants.MaxChunkCount + 1);
+        int nextFloor = _floorIndex + 1;
+        bool preBoss = WorldProgression.IsBossFloor(nextFloor);
+        bool preWorldTwo = WorldProgression.IsWorldTwoTransition(nextFloor);
+        int bias = (preBoss || preWorldTwo) ? 1 : 0;
+
+        _nextDifficulty = TriangularRoll(GameConstants.MinDifficulty, GameConstants.MaxDifficulty, mode: 3) + bias;
+        _nextDifficulty = Mathf.Clamp(_nextDifficulty, GameConstants.MinDifficulty, GameConstants.MaxDifficulty);
+
+        _nextChunkCount = TriangularRoll(GameConstants.MinChunkCount, GameConstants.MaxChunkCount, mode: (GameConstants.MinChunkCount + GameConstants.MaxChunkCount) / 2);
+    }
+
+    /// <summary>
+    /// Samples an integer from a triangular distribution over [min, max] centered at mode.
+    /// The two U[0,1] samples follow a standard Irwin–Hall construction that reproduces
+    /// a triangular PDF without needing the more expensive continuous-distribution math.
+    /// </summary>
+    private static int TriangularRoll(int min, int max, int mode)
+    {
+        int clampedMode = Mathf.Clamp(mode, min, max);
+        float u = (Random.value + Random.value) * 0.5f;
+        float range = max - min;
+        if (range <= 0f)
+            return min;
+
+        float modeT = (clampedMode - min) / range;
+        float sample;
+        if (u < modeT)
+            sample = min + Mathf.Sqrt(u * modeT) * range;
+        else
+            sample = max - Mathf.Sqrt((1f - u) * (1f - modeT)) * range;
+
+        return Mathf.Clamp(Mathf.RoundToInt(sample), min, max);
     }
 
     public readonly struct FloorXPBreakdown
@@ -313,6 +343,15 @@ public class GameplayHandler : MonoBehaviour
 
     private void ChangeCameraTracking(Transform newTracking)
     {
+        if (newTracking != null)
+        {
+            var lookahead = newTracking.GetComponent<CameraLookaheadTarget>();
+            if (lookahead == null)
+                lookahead = newTracking.gameObject.AddComponent<CameraLookaheadTarget>();
+            if (lookahead.Anchor != null)
+                newTracking = lookahead.Anchor;
+        }
+
         camera.Follow = newTracking;
     }
 

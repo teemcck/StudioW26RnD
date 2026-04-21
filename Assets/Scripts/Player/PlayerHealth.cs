@@ -24,12 +24,22 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     private float _spawnTime;
     private bool _dead;
     private PlayerController _playerController;
-    private Coroutine _hitStopCo;
-    private bool _isHitStopActive;
-    private float _savedTimeScale = 1f;
+    private PlayerDashController _dashController;
     private PlayerUpgradeRuntime _upgradeRuntime;
 
     public float CurrentHealth { get; private set; }
+
+    /// <summary>CurrentHealth / MaxHealth, clamped to [0, 1]. Drives low-HP music/vignette.</summary>
+    public float HealthNormalized
+    {
+        get
+        {
+            float max = playerStats != null ? playerStats.MaxHealth : 0f;
+            if (max <= 0f)
+                return 0f;
+            return Mathf.Clamp01(CurrentHealth / max);
+        }
+    }
 
     private float _invulnerableUntil;
 
@@ -38,6 +48,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         _spawnTime = Time.time;
         playerStats = GetComponent<PlayerStats>();
         _playerController = GetComponent<PlayerController>();
+        _dashController = GetComponent<PlayerDashController>();
         _upgradeRuntime = GetComponent<PlayerUpgradeRuntime>();
         playerStats.StatChanged += OnStatChanged;
         float maxHealth = playerStats.Get(PlayerStatType.MaxHealth);
@@ -57,6 +68,12 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (damage <= 0f) return;
         if (Time.time < _invulnerableUntil) return;
 
+        if (_dashController != null && _dashController.IsDodgeInvulnerable)
+        {
+            HandlePerfectDodge();
+            return;
+        }
+
         float adjustedDamage = ApplyDamageReduction(damage);
 
         float totalInvulnerability = Mathf.Max(invulnerableTime, damageStunDuration);
@@ -69,17 +86,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             _playerController.PlayDamageAnimation(knockbackDirection, damageAnimationDuration);
             _playerController.ApplyDamageStun(knockbackDirection, stunDuration, damageVisualKnockbackSpeed);
         }
-        if (_hitStopCo != null)
-        {
-            StopCoroutine(_hitStopCo);
-            _hitStopCo = null;
-            if (_isHitStopActive)
-            {
-                Time.timeScale = _savedTimeScale;
-                _isHitStopActive = false;
-            }
-        }
-        _hitStopCo = StartCoroutine(HitStopRoutine(hitStopDuration));
+        if (Hitstop.Instance != null)
+            Hitstop.Instance.Freeze(hitStopDuration, priority: 5);
 
         if (cameraController) cameraController.Shake(hitShakeIntensity);
 
@@ -119,20 +127,25 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         Destroy(gameObject, deathAnimationDuration);
     }
 
-    private System.Collections.IEnumerator HitStopRoutine(float duration)
+    private void HandlePerfectDodge()
     {
-        if (duration <= 0f) yield break;
+        EventBus<PerfectDodgeEvent>.Raise(new PerfectDodgeEvent { Position = transform.position });
 
-        _savedTimeScale = Time.timeScale;
-        _isHitStopActive = true;
-        Time.timeScale = 0f;
-        yield return new WaitForSecondsRealtime(duration);
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayPerfectDodge();
 
-        // Restore to what the game had before hit-stop.
-        Time.timeScale = _savedTimeScale;
-        _isHitStopActive = false;
-        _hitStopCo = null;
+        if (Hitstop.Instance != null)
+            Hitstop.Instance.Freeze(0.08f, priority: 3);
+
+        if (damageFlash != null)
+            damageFlash.Play(GameColors.PerfectDodge);
+
+        if (cameraController != null)
+            cameraController.ShakeTap();
+
+        PerfectDodgeSpeedBuff.ApplyTo(gameObject);
     }
+
 
     public void Heal(float amount)
     {
@@ -179,5 +192,23 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             CurrentHealth += delta;
 
         CurrentHealth = Mathf.Clamp(CurrentHealth, 0f, newValue);
+    }
+
+    private void Update()
+    {
+        if (AudioManager.Instance == null)
+            return;
+
+        const float threshold = 0.25f;
+        float norm = HealthNormalized;
+        if (norm < threshold)
+        {
+            float t = 1f - Mathf.Clamp01(norm / threshold);
+            AudioManager.Instance.SetLowHpFilter(true, t);
+        }
+        else
+        {
+            AudioManager.Instance.SetLowHpFilter(false, 0f);
+        }
     }
 }

@@ -12,7 +12,7 @@ public enum AttackKind
 
 public readonly struct DamageContext
 {
-    public static readonly DamageContext Empty = new(null, null, AttackKind.Unknown, null, false, false);
+    public static readonly DamageContext Empty = new(null, null, AttackKind.Unknown, null, false, false, false);
 
     public readonly GameObject Source;
     public readonly GameObject Instigator;
@@ -20,6 +20,7 @@ public readonly struct DamageContext
     public readonly string SourceId;
     public readonly bool IsStatusEffect;
     public readonly bool TriggersOnHitEffects;
+    public readonly bool IsCrit;
 
     public DamageContext(
         GameObject source,
@@ -27,7 +28,8 @@ public readonly struct DamageContext
         AttackKind attackKind,
         string sourceId = null,
         bool isStatusEffect = false,
-        bool triggersOnHitEffects = false)
+        bool triggersOnHitEffects = false,
+        bool isCrit = false)
     {
         Source = source;
         Instigator = instigator;
@@ -35,7 +37,11 @@ public readonly struct DamageContext
         SourceId = sourceId;
         IsStatusEffect = isStatusEffect;
         TriggersOnHitEffects = triggersOnHitEffects;
+        IsCrit = isCrit;
     }
+
+    public DamageContext WithCrit(bool isCrit) =>
+        new(Source, Instigator, AttackKind, SourceId, IsStatusEffect, TriggersOnHitEffects, isCrit);
 
     public bool WasCausedByPlayer =>
         Instigator != null && Instigator.GetComponent<PlayerController>() != null;

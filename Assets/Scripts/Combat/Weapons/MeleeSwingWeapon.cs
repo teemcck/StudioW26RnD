@@ -57,7 +57,10 @@ public class MeleeSwingWeapon : WeaponBase
             ? runtime.BuildAttackSnapshot(AttackKind.Melee, hitAnchor, primaryTarget, landed.Count)
             : default;
 
-        float dmg = snapshot.ApplyTo(GetDamage());
+        var playerStats = GetComponentInParent<PlayerStats>();
+        bool isCrit = CombatRoll.TryRollCrit(playerStats, out float critMult);
+
+        float dmg = snapshot.ApplyTo(GetDamage()) * critMult;
         float kb = GetKnockback();
         int hitCount = 0;
 
@@ -70,8 +73,16 @@ public class MeleeSwingWeapon : WeaponBase
                 kbDir = direction;
             else
                 kbDir.Normalize();
-            damageable.TakeHit(dmg, kbDir, kb, new DamageContext(gameObject, transform.root.gameObject, AttackKind.Melee, "melee_attack", triggersOnHitEffects: true));
+            damageable.TakeHit(dmg, kbDir, kb,
+                new DamageContext(gameObject, transform.root.gameObject, AttackKind.Melee, "melee_attack",
+                    isStatusEffect: false, triggersOnHitEffects: true, isCrit: isCrit));
             hitCount++;
+        }
+
+        if (hitCount > 0 && Hitstop.Instance != null)
+        {
+            float freeze = isCrit ? 0.065f : 0.05f;
+            Hitstop.Instance.Freeze(freeze, priority: 1);
         }
 
         runtime?.NotifyAttackPerformed(AttackKind.Melee, snapshot);

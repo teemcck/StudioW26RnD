@@ -20,15 +20,20 @@ public class DamageFlash : MonoBehaviour
 
     public void Play()
     {
+        Play(flashColor);
+    }
+
+    public void Play(Color overrideColor)
+    {
         if (!spriteRenderer || !gameObject.activeInHierarchy) return;
 
         if (_flashCo != null) StopCoroutine(_flashCo);
-        _flashCo = StartCoroutine(FlashRoutine());
+        _flashCo = StartCoroutine(FlashRoutine(overrideColor));
     }
 
-    private IEnumerator FlashRoutine()
+    private IEnumerator FlashRoutine(Color color)
     {
-        spriteRenderer.color = flashColor;
+        spriteRenderer.color = color;
         yield return new WaitForSecondsRealtime(flashDuration);
         if (!_isBlinking)
             spriteRenderer.color = _originalColor;

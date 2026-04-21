@@ -125,6 +125,9 @@ public class ShieldEnemy : MeleeEnemy
         _shieldHp -= damage;
         PlayShieldFlash();
 
+        if (HitSparkSpawner.Instance != null)
+            HitSparkSpawner.Instance.Spawn(transform.position, GameColors.HitShield);
+
         if (_shieldHp <= 0f)
         {
             _shieldHp = 0f;

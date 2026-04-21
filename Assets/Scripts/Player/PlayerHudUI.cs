@@ -108,16 +108,38 @@ public sealed class PlayerHudUI : MonoBehaviour
         float xpNormalized = (float)displayXp / xpThreshold;
         _displayedXpNormalized = Mathf.Lerp(_displayedXpNormalized, xpNormalized, Time.deltaTime * fillLerpSpeed);
 
-        // Update bar width
         if (xpFillRect)
         {
             SetFillWidth(xpFillRect, _xpFillBaseSize, _xpFillAnchoredX, _displayedXpNormalized);
+            ApplyAlmostLevelPulse(xpNormalized);
         }
 
-        // Update text display
         if (xpValueText)
         {
             xpValueText.text = $"XP {displayXp} / {xpThreshold}";
+        }
+    }
+
+    private void ApplyAlmostLevelPulse(float xpNormalized)
+    {
+        if (xpFillRect == null)
+            return;
+
+        var img = xpFillRect.GetComponent<UnityEngine.UI.Image>();
+        if (img == null)
+            return;
+
+        bool almost = xpNormalized >= 0.85f;
+        if (almost)
+        {
+            float pulse = 0.5f + 0.5f * Mathf.Sin(Time.time * 2f * Mathf.PI * 2f);
+            xpFillRect.localScale = new Vector3(1f, Mathf.Lerp(0.95f, 1.05f, pulse), 1f);
+            img.color = Color.Lerp(Color.white, GameColors.Reward, 0.45f + 0.35f * pulse);
+        }
+        else
+        {
+            xpFillRect.localScale = Vector3.one;
+            img.color = Color.white;
         }
     }
 

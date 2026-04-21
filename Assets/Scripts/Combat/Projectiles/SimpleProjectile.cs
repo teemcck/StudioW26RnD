@@ -15,6 +15,8 @@ public class SimpleProjectile : MonoBehaviour
     [SerializeField] private float knockbackForce = 4f;
     [SerializeField] private LayerMask hitMask;
 
+    public float BaseDamage => damage;
+
     private Rigidbody2D _rb;
     private Animator _animator;
     private Vector2 _dir;
@@ -41,7 +43,22 @@ public class SimpleProjectile : MonoBehaviour
         _animTimer = 0f;
         _animFrame = 0;
         ApplyAnimationFrame(_animFrame);
+        TintTrailForSource(context);
+
         Destroy(gameObject, lifetime);
+    }
+
+    private void TintTrailForSource(DamageContext context)
+    {
+        var trail = GetComponent<TrailRenderer>();
+        if (trail == null)
+            return;
+
+        Color color = context.WasCausedByPlayer ? GameColors.SafeDash : new Color(1f, 0.38f, 0.95f, 1f);
+        trail.startColor = color;
+        Color end = color;
+        end.a = 0f;
+        trail.endColor = end;
     }
 
     private void FixedUpdate()

@@ -1,10 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Handles upgrade menu UI elements.
-/// When the player clicks a card, raises UpgradeSelectedEvent and hides the menu.
-/// </summary>
 public class UpgradeUIHandler : MonoBehaviour
 {
     public static UpgradeUIHandler Instance { get; private set; }
@@ -12,8 +8,13 @@ public class UpgradeUIHandler : MonoBehaviour
     [SerializeField] private GameObject upgradeContainer;
     [SerializeField] private GameObject upgradeDisplayPrefab;
     [SerializeField] private GameObject upgradeCanvas;
+    [SerializeField] private bool pauseWhileShown = true;
+    [SerializeField] private float cardStaggerSeconds = 0.08f;
+    [SerializeField] private float cardFadeSeconds = 0.22f;
 
     private List<GameObject> _upgradeDisplays = new List<GameObject>();
+    private float _savedTimeScale = 1f;
+    private bool _timeScalePaused;
 
     private void Awake()
     {
@@ -22,38 +23,84 @@ public class UpgradeUIHandler : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    /// <summary>
-    /// Shows the upgrade canvas and populates it with the given options.
-    /// </summary>
     public void DisplayUpgrades(List<UpgradeDisplaySO> upgradeOptions)
     {
         if (!upgradeCanvas.activeSelf) upgradeCanvas.SetActive(true);
-        PopulateUpgradeOptions(upgradeOptions);
+
+        if (pauseWhileShown && !_timeScalePaused)
+        {
+            _savedTimeScale = Time.timeScale;
+            Time.timeScale = 0f;
+            _timeScalePaused = true;
+        }
+
+        try
+        {
+            PopulateUpgradeOptions(upgradeOptions);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogException(e);
+            HideUpgrades();
+        }
     }
 
-    /// <summary>
-    /// Destroys all displayed upgrade cards and hides the canvas.
-    /// </summary>
     public void HideUpgrades()
     {
         ClearUpgradeOptions();
         if (upgradeCanvas.activeSelf) upgradeCanvas.SetActive(false);
+
+        if (_timeScalePaused)
+        {
+            Time.timeScale = _savedTimeScale > 0f ? _savedTimeScale : 1f;
+            _timeScalePaused = false;
+        }
     }
 
     private void PopulateUpgradeOptions(List<UpgradeDisplaySO> upgradeOptions)
     {
-        foreach (var option in upgradeOptions)
+        for (int i = 0; i < upgradeOptions.Count; i++)
         {
+            UpgradeDisplaySO option = upgradeOptions[i];
             GameObject displayGO = Instantiate(upgradeDisplayPrefab, upgradeContainer.transform);
             UpgradeDisplay display = displayGO.GetComponent<UpgradeDisplay>();
             display.UpdateDisplay(option);
 
-            // Capture for the lambda.
             UpgradeDisplaySO captured = option;
             display.OnClicked = () => OnUpgradeCardClicked(captured);
 
+            var cg = displayGO.GetComponent<CanvasGroup>();
+            if (cg == null) cg = displayGO.AddComponent<CanvasGroup>();
+            cg.alpha = 0f;
+            StartCoroutine(FadeInCard(cg, i * cardStaggerSeconds));
+
             _upgradeDisplays.Add(displayGO);
         }
+    }
+
+    private System.Collections.IEnumerator FadeInCard(CanvasGroup cg, float delaySeconds)
+    {
+        if (cg == null) yield break;
+
+        float t = 0f;
+        while (t < delaySeconds)
+        {
+            if (cg == null) yield break;
+            t += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        float dur = Mathf.Max(0.02f, cardFadeSeconds);
+        float u = 0f;
+        while (u < 1f)
+        {
+            if (cg == null) yield break;
+            u += Time.unscaledDeltaTime / dur;
+            cg.alpha = Mathf.Clamp01(u);
+            yield return null;
+        }
+
+        if (cg != null) cg.alpha = 1f;
     }
 
     private void OnUpgradeCardClicked(UpgradeDisplaySO selected)
@@ -66,8 +113,8 @@ public class UpgradeUIHandler : MonoBehaviour
 
         EventBus<UpgradeSelectedEvent>.Raise(new UpgradeSelectedEvent
         {
-            UpgradeID     = selected.upgradeID,
-            UpgradeName   = selected.upgradeName,
+            UpgradeID = selected.upgradeID,
+            UpgradeName = selected.upgradeName,
             NewStackCount = newStack
         });
 
@@ -77,8 +124,7 @@ public class UpgradeUIHandler : MonoBehaviour
     private void ClearUpgradeOptions()
     {
         foreach (var display in _upgradeDisplays)
-            Destroy(display);
-
+            if (display != null) Destroy(display);
         _upgradeDisplays.Clear();
     }
 }

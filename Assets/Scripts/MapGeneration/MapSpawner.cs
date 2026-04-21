@@ -73,6 +73,12 @@ public class MapSpawner : MonoBehaviour
         var weightedPool = BuildWeightedPool(band);
         Debug.Log($"Generating {numChunks} chunks; difficulty {difficulty} → fill {fillFraction:P0}.");
 
+        int floorIndex = GameplayHandler.Instance != null ? GameplayHandler.Instance.CurrentFloorIndex : 0;
+        float healthMult = FloorScalingCurve.GetHealthMult(floorIndex);
+        float damageMult = FloorScalingCurve.GetDamageMult(floorIndex);
+
+        var allSpawned = new List<GameObject>();
+
         for (int i = 0; i < numChunks; i++)
         {
             GameObject prefab = chunkGen.GetRandomMapChunk(band);
@@ -94,17 +100,77 @@ public class MapSpawner : MonoBehaviour
 
             SpawnEnemies spawn = chunk.GetComponentInChildren<SpawnEnemies>();
             if (spawn != null && weightedPool.Count > 0)
-                LastSpawnedEnemyCount += spawn.SpawnEnemiesFromTileLayer(weightedPool, fillFraction);
+            {
+                var spawnedHere = spawn.SpawnEnemiesFromTileLayer(weightedPool, fillFraction);
+                allSpawned.AddRange(spawnedHere);
+                LastSpawnedEnemyCount += spawnedHere.Count;
+            }
 
             _chunkOffset += width + chunkSpacing;
         }
 
-        // Initial spawn position determined by TeleportEntry of initial chunk.
+        ApplyFloorScaling(allSpawned, healthMult, damageMult);
+
         if (_chunks.Count > 0)
             SpawnPosition = _chunks[0].GetComponentInChildren<TeleportEntry>().transform.position;
 
         LinkTeleporters();
+
+        if (_chunks.Count > 0 && weightedPool.Count > 0)
+        {
+            int eliteCount = DetermineEliteCountForFloor(floorIndex);
+            for (int i = 0; i < eliteCount; i++)
+                SpawnEliteAtEndpoint(_chunks[_chunks.Count - 1], weightedPool, healthMult, damageMult, i);
+        }
+
         return _chunks;
+    }
+
+    private static int DetermineEliteCountForFloor(int floorIndex)
+    {
+        bool milestone = WorldProgression.IsBossFloor(floorIndex + 1) || WorldProgression.IsWorldTwoTransition(floorIndex + 1);
+        bool lateFloor = floorIndex >= 3;
+        return (milestone || (lateFloor && Random.value < 0.35f)) ? 2 : 1;
+    }
+
+    private static void ApplyFloorScaling(List<GameObject> enemies, float healthMult, float damageMult)
+    {
+        if (enemies == null || enemies.Count == 0)
+            return;
+        if (Mathf.Approximately(healthMult, 1f) && Mathf.Approximately(damageMult, 1f))
+            return;
+
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            var go = enemies[i];
+            if (go == null) continue;
+            var enemy = go.GetComponent<EnemyBase>();
+            if (enemy == null) continue;
+            enemy.ApplyRuntimeScaling(healthMult, 1f, damageMult);
+        }
+    }
+
+    private void SpawnEliteAtEndpoint(GameObject lastChunk, List<(GameObject prefab, float weight)> weightedPool, float healthMult, float damageMult, int indexInGroup)
+    {
+        var tp = lastChunk.GetComponentInChildren<Teleporter>();
+        Vector3 center = tp != null ? tp.transform.position : lastChunk.transform.position;
+
+        Vector2 offset = Random.insideUnitCircle.normalized * 1.35f + Random.insideUnitCircle * 0.4f;
+        if (indexInGroup > 0)
+            offset += new Vector2(1.6f, 0f);
+
+        GameObject prefab = weightedPool[Random.Range(0, weightedPool.Count)].prefab;
+        if (prefab == null) return;
+
+        var go = Instantiate(prefab, center + new Vector3(offset.x, offset.y, 0f), Quaternion.identity, lastChunk.transform);
+        var enemy = go.GetComponent<EnemyBase>();
+        if (enemy != null)
+            enemy.ApplyRuntimeScaling(healthMult, 1f, damageMult);
+
+        if (go.GetComponent<EliteModifier>() == null)
+            go.AddComponent<EliteModifier>();
+
+        LastSpawnedEnemyCount++;
     }
 
     float DifficultyToFillFraction(int difficulty)

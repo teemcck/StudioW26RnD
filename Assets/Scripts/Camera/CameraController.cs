@@ -8,10 +8,25 @@ public class CameraController : MonoBehaviour
     [SerializeField] private CinemachineImpulseSource impulseSource;
     [SerializeField] private Transform playerTransform;
 
+    [Header("Context Zoom")]
+    [Tooltip("Enemy layer used by crowd-zoom polling.")]
+    [SerializeField] private LayerMask crowdZoomEnemyLayer = ~0;
+    [Tooltip("Radius of the crowd detection circle, in world units.")]
+    [SerializeField] private float crowdZoomRadius = 5.5f;
+    [Tooltip("Ortho offset applied when the crowd is at its max size.")]
+    [SerializeField] private float crowdZoomMaxOffset = 0.6f;
+    [Tooltip("Rate at which the ortho offset lerps toward its target.")]
+    [SerializeField] private float crowdZoomLerpSpeed = 2.5f;
+
     private CinemachineConfiner2D _confiner;
     private float _orthoBaseline;
     private Coroutine _orthoRoutine;
     private Transform _savedFollowBeforePhase;
+    private float _breathOffset;
+    private Coroutine _breathRoutine;
+    private float _crowdOffsetTarget;
+    private float _crowdOffset;
+    private float _nextCrowdPollTime;
 
     private void Awake()
     {
@@ -83,6 +98,84 @@ public class CameraController : MonoBehaviour
             cineCamera.Follow = playerTransform;
     }
 
+    private void LateUpdate()
+    {
+        if (cineCamera == null)
+            return;
+
+        if (Time.unscaledTime >= _nextCrowdPollTime)
+        {
+            _nextCrowdPollTime = Time.unscaledTime + 0.25f;
+            PollCrowdZoom();
+        }
+
+        _crowdOffset = Mathf.Lerp(_crowdOffset, _crowdOffsetTarget, Mathf.Clamp01(Time.unscaledDeltaTime * crowdZoomLerpSpeed));
+
+        if (_orthoRoutine == null)
+        {
+            float target = Mathf.Max(0.1f, _orthoBaseline + _crowdOffset + _breathOffset);
+            cineCamera.Lens.OrthographicSize = target;
+        }
+    }
+
+    private void PollCrowdZoom()
+    {
+        if (playerTransform == null)
+        {
+            _crowdOffsetTarget = 0f;
+            return;
+        }
+
+        var hits = Physics2D.OverlapCircleAll(playerTransform.position, crowdZoomRadius, crowdZoomEnemyLayer);
+        int enemyCount = 0;
+        for (int i = 0; i < hits.Length; i++)
+        {
+            if (hits[i] == null) continue;
+            if (hits[i].GetComponentInParent<EnemyBase>() != null)
+                enemyCount++;
+        }
+
+        CrowdZoom(enemyCount);
+    }
+
+    /// <summary>Driven from an external poller or <see cref="PollCrowdZoom"/>.</summary>
+    public void CrowdZoom(int nearbyEnemyCount)
+    {
+        float t = Mathf.Clamp01(nearbyEnemyCount / 5f);
+        _crowdOffsetTarget = t * crowdZoomMaxOffset;
+    }
+
+    /// <summary>Short ortho "breath" — dip by <paramref name="amount"/> for <paramref name="duration"/>, then restore.</summary>
+    public void BreathIn(float amount = 0.25f, float duration = 0.25f)
+    {
+        if (_breathRoutine != null)
+            StopCoroutine(_breathRoutine);
+        _breathRoutine = StartCoroutine(BreathRoutine(amount, duration));
+    }
+
+    private System.Collections.IEnumerator BreathRoutine(float amount, float duration)
+    {
+        float half = duration * 0.5f;
+        float u = 0f;
+        while (u < 1f)
+        {
+            u += Time.unscaledDeltaTime / Mathf.Max(0.01f, half);
+            _breathOffset = Mathf.Lerp(0f, -Mathf.Abs(amount), Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(u)));
+            yield return null;
+        }
+
+        u = 0f;
+        while (u < 1f)
+        {
+            u += Time.unscaledDeltaTime / Mathf.Max(0.01f, half);
+            _breathOffset = Mathf.Lerp(-Mathf.Abs(amount), 0f, Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(u)));
+            yield return null;
+        }
+
+        _breathOffset = 0f;
+        _breathRoutine = null;
+    }
+
     public void Shake(float intensity = 0.2f)
     {
         if (impulseSource == null)
@@ -99,6 +192,38 @@ public class CameraController : MonoBehaviour
     public void ShakeShieldBreak()
     {
         Shake(0.16f);
+    }
+
+    public void ShakeTap() => ShakeWithShape(CinemachineImpulseDefinition.ImpulseShapes.Bump, 0.08f, 0.25f);
+
+    public void ShakeMedium(Vector2 direction = default) => ShakeWithShape(CinemachineImpulseDefinition.ImpulseShapes.Recoil, 0.18f, 0.9f, direction);
+
+    public void ShakeFatality() => ShakeWithShape(CinemachineImpulseDefinition.ImpulseShapes.Rumble, 0.55f, 1.4f);
+
+    private void ShakeWithShape(CinemachineImpulseDefinition.ImpulseShapes shape, float duration, float magnitude, Vector2 direction = default)
+    {
+        if (impulseSource == null || impulseSource.ImpulseDefinition == null)
+            return;
+
+        var def = impulseSource.ImpulseDefinition;
+        float prevDur = def.ImpulseDuration;
+        var prevShape = def.ImpulseShape;
+        var prevType = def.ImpulseType;
+
+        def.ImpulseShape = shape;
+        def.ImpulseType = CinemachineImpulseDefinition.ImpulseTypes.Uniform;
+        def.ImpulseDuration = duration;
+
+        Vector2 dir = direction.sqrMagnitude > 0.0001f ? direction.normalized : Random.insideUnitCircle;
+        if (dir.sqrMagnitude < 0.0001f)
+            dir = Vector2.right;
+        dir.Normalize();
+
+        impulseSource.GenerateImpulseWithVelocity(new Vector3(dir.x * magnitude, dir.y * magnitude, 0f));
+
+        def.ImpulseDuration = prevDur;
+        def.ImpulseShape = prevShape;
+        def.ImpulseType = prevType;
     }
 
     public void ShakeRumble(float intensity = 0.2f)

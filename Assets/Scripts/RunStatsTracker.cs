@@ -7,10 +7,14 @@ public class RunStatsTracker : MonoBehaviour
     public int TotalKillsThisRun     { get; private set; }
     public float TotalTimeSeconds    { get; private set; }
     public int TotalXP               { get; private set; }
+    public int HighestFloorIndex     { get; private set; } = -1;
+    public float BiggestHit          { get; private set; }
 
     private IEventBinding<EnemyKilledEvent>     _killBinding;
     private IEventBinding<FloorCompletedEvent>  _floorBinding;
     private IEventBinding<PlayerDiedEvent>      _deathBinding;
+    private IEventBinding<FloorLoadedEvent>     _floorLoadedBinding;
+    private IEventBinding<EnemyDamagedEvent>    _enemyDamagedBinding;
 
     private void Awake()
     {
@@ -24,6 +28,8 @@ public class RunStatsTracker : MonoBehaviour
         _killBinding  = EventBus<EnemyKilledEvent>.Register(OnEnemyKilled);
         _floorBinding = EventBus<FloorCompletedEvent>.Register(OnFloorCompleted);
         _deathBinding = EventBus<PlayerDiedEvent>.Register(OnPlayerDied);
+        _floorLoadedBinding = EventBus<FloorLoadedEvent>.Register(OnFloorLoaded);
+        _enemyDamagedBinding = EventBus<EnemyDamagedEvent>.Register(OnEnemyDamaged);
     }
 
     private void OnDisable()
@@ -31,6 +37,22 @@ public class RunStatsTracker : MonoBehaviour
         EventBus<EnemyKilledEvent>.Unsubscribe(_killBinding);
         EventBus<FloorCompletedEvent>.Unsubscribe(_floorBinding);
         EventBus<PlayerDiedEvent>.Unsubscribe(_deathBinding);
+        EventBus<FloorLoadedEvent>.Unsubscribe(_floorLoadedBinding);
+        EventBus<EnemyDamagedEvent>.Unsubscribe(_enemyDamagedBinding);
+    }
+
+    private void OnFloorLoaded(FloorLoadedEvent evt)
+    {
+        if (evt.FloorIndex > HighestFloorIndex)
+            HighestFloorIndex = evt.FloorIndex;
+    }
+
+    private void OnEnemyDamaged(EnemyDamagedEvent evt)
+    {
+        if (!evt.Context.WasCausedByPlayer)
+            return;
+        if (evt.DamageDealt > BiggestHit)
+            BiggestHit = evt.DamageDealt;
     }
 
     private void Update()

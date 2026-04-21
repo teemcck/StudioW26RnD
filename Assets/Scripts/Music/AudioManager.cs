@@ -78,13 +78,29 @@ public sealed class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip xpSummaryCountTickSfx;
     [SerializeField] private AudioClip xpSummaryTotalCompleteSfx;
 
+    [Header("Game Feel SFX")]
+    [SerializeField] private AudioClip perfectDodgeSfx;
+    [SerializeField] private AudioClip critHitSfx;
+    [SerializeField] private AudioClip eliteSpawnSfx;
+    [SerializeField] private AudioClip chunkTransitionSfx;
+    [SerializeField] private AudioClip continueReadySfx;
+
     private readonly List<AudioSource> _sfxPool = new();
     private readonly List<LoopingStem> _activeStems = new();
+    private readonly List<AudioLowPassFilter> _musicLowPassFilters = new();
+
+    private Coroutine _duckRoutine;
+    private float _duckMultiplier = 1f;
+    private Coroutine _lowHpFilterRoutine;
+    private float _lowHpFilterTarget = 22000f;
+    private const float LowHpFilterMinCutoff = 900f;
+    private const float LowHpFilterMaxCutoff = 22000f;
 
     private Transform _runtimeRoot;
     private AudioSource _introSource;
     private MusicState _currentMusicState = MusicState.None;
     private WorldBand _currentBand = WorldBand.WorldOne;
+    private bool _worldTwoPlaybackStarted;
     private int _currentThreatLevel = 1;
     private int _pendingThreatLevel = 1;
     private float _pendingThreatSince = -1f;
@@ -166,14 +182,142 @@ public sealed class AudioManager : MonoBehaviour
 
     public void PlayXpSummaryBlockLand(float volumeScale = 1f) => PlaySfx(xpSummaryBlockLandSfx, volumeScale);
 
-    public void PlayXpSummaryCountTick(float volumeScale = 0.35f) => PlaySfx(xpSummaryCountTickSfx, volumeScale);
+    public void PlayXpSummaryCountTick(float volumeScale = 0.35f, float pitch = 1f) => PlaySfx(xpSummaryCountTickSfx, volumeScale, pitch);
 
     public void PlayXpSummaryTotalComplete(float volumeScale = 1f) => PlaySfx(xpSummaryTotalCompleteSfx, volumeScale);
+
+    public void PlayPerfectDodge(float volumeScale = 1f) => PlaySfx(perfectDodgeSfx, volumeScale);
+    public void PlayCritHit(float volumeScale = 1f) => PlaySfx(critHitSfx, volumeScale);
+    public void PlayEliteSpawn(float volumeScale = 1f) => PlaySfx(eliteSpawnSfx, volumeScale);
+    public void PlayChunkTransition(float volumeScale = 1f) => PlaySfx(chunkTransitionSfx, volumeScale);
+    public void PlayContinueReady(float volumeScale = 0.8f) => PlaySfx(continueReadySfx, volumeScale);
+
+    /// <summary>
+    /// Ducks all music stems (and intro) by multiplying their effective volume by
+    /// <paramref name="toVolume"/> for <paramref name="seconds"/> unscaled seconds,
+    /// then restores. Safe to call overlapping — later calls override earlier ones.
+    /// </summary>
+    public void DuckMusic(float seconds, float toVolume = 0f)
+    {
+        if (seconds <= 0f)
+            return;
+
+        if (_duckRoutine != null)
+            StopCoroutine(_duckRoutine);
+
+        _duckRoutine = StartCoroutine(DuckMusicRoutine(seconds, Mathf.Clamp01(toVolume)));
+    }
+
+    private IEnumerator DuckMusicRoutine(float seconds, float toVolume)
+    {
+        _duckMultiplier = toVolume;
+        ApplyDuckMultiplierNow();
+        yield return new WaitForSecondsRealtime(seconds);
+        _duckMultiplier = 1f;
+        ApplyDuckMultiplierNow();
+        _duckRoutine = null;
+    }
+
+    private void ApplyDuckMultiplierNow()
+    {
+        for (int i = 0; i < _activeStems.Count; i++)
+            _activeStems[i].SetDuckMultiplier(_duckMultiplier);
+
+        if (_introSource != null)
+            _introSource.volume = musicVolume * _duckMultiplier;
+    }
+
+    /// <summary>
+    /// Play a one-shot SFX panned based on its world position relative to the main
+    /// camera, giving a soft sense of direction without full 3D spatialization.
+    /// </summary>
+    public void PlaySfxAtWorld(AudioClip clip, Vector3 worldPos, float volumeScale = 1f)
+    {
+        if (clip == null)
+            return;
+
+        float pan = 0f;
+        Camera cam = Camera.main;
+        if (cam != null && cam.orthographic)
+        {
+            float halfWidth = Mathf.Max(0.01f, cam.orthographicSize * cam.aspect);
+            pan = Mathf.Clamp((worldPos.x - cam.transform.position.x) / halfWidth, -1f, 1f) * 0.85f;
+        }
+        else if (cam != null)
+        {
+            Vector3 vp = cam.WorldToViewportPoint(worldPos);
+            pan = Mathf.Clamp((vp.x - 0.5f) * 2f, -1f, 1f) * 0.85f;
+        }
+
+        AudioSource src = GetAvailableSfxSource();
+        src.pitch = 1f;
+        src.panStereo = pan;
+        float v = sfxVolume * Mathf.Clamp01(volumeScale);
+        src.volume = v;
+        src.PlayOneShot(clip, v);
+    }
+
+    /// <summary>
+    /// Engages/disengages the low-HP low-pass filter on music stems. When
+    /// <paramref name="active"/>, cutoff lerps toward LowHpFilterMinCutoff as t01
+    /// approaches 1; when inactive, it ramps back to max.
+    /// </summary>
+    public void SetLowHpFilter(bool active, float t01)
+    {
+        float target = active
+            ? Mathf.Lerp(LowHpFilterMaxCutoff, LowHpFilterMinCutoff, Mathf.Clamp01(t01))
+            : LowHpFilterMaxCutoff;
+
+        _lowHpFilterTarget = target;
+        if (_lowHpFilterRoutine == null)
+            _lowHpFilterRoutine = StartCoroutine(LowHpFilterRoutine());
+    }
+
+    private IEnumerator LowHpFilterRoutine()
+    {
+        const float rampSpeed = 20000f;
+
+        while (true)
+        {
+            float current = _musicLowPassFilters.Count > 0 && _musicLowPassFilters[0] != null
+                ? _musicLowPassFilters[0].cutoffFrequency
+                : LowHpFilterMaxCutoff;
+
+            if (Mathf.Approximately(current, _lowHpFilterTarget))
+            {
+                if (Mathf.Approximately(_lowHpFilterTarget, LowHpFilterMaxCutoff))
+                    break;
+
+                yield return null;
+                continue;
+            }
+
+            float next = Mathf.MoveTowards(current, _lowHpFilterTarget, rampSpeed * Time.unscaledDeltaTime);
+            for (int i = _musicLowPassFilters.Count - 1; i >= 0; i--)
+            {
+                var f = _musicLowPassFilters[i];
+                if (f == null)
+                {
+                    _musicLowPassFilters.RemoveAt(i);
+                    continue;
+                }
+
+                f.cutoffFrequency = next;
+            }
+
+            yield return null;
+        }
+
+        _lowHpFilterRoutine = null;
+    }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (mode == LoadSceneMode.Additive)
             return;
+
+        if (scene.name == "GameplayLoop" || scene.name == "MenuScene" || scene.name == "DeathScene")
+            _worldTwoPlaybackStarted = false;
 
         StartCoroutine(RefreshAfterSceneLoad());
     }
@@ -216,7 +360,7 @@ public sealed class AudioManager : MonoBehaviour
         if (evt.Context.IsStatusEffect)
             return;
 
-        PlayEnemyHit();
+        PlaySfxAtWorld(enemyHitSfx, evt.Position);
     }
 
     private void OnUpgradeSelected(UpgradeSelectedEvent evt) => PlayUpgradeSelected();
@@ -288,6 +432,9 @@ public sealed class AudioManager : MonoBehaviour
 
     private bool ShouldHoldForWorldTwoStart()
     {
+        if (_worldTwoPlaybackStarted)
+            return false;
+
         if (GameplayHandler.Instance == null)
             return false;
 
@@ -399,6 +546,7 @@ public sealed class AudioManager : MonoBehaviour
                     CreateStem(world2Sidebreak, "W2_Sidebreak", layerStart, WorldTwoLoopPointSeconds);
                     CreateStem(world2Breakdown, "W2_Breakdown", layerStart, WorldTwoLoopPointSeconds);
                     CreateStem(world2Waah, "W2_Waah", layerStart, WorldTwoLoopPointSeconds);
+                    _worldTwoPlaybackStarted = true;
                 }
 
                 _currentThreatLevel = CalculateThreatLevel();
@@ -478,6 +626,12 @@ public sealed class AudioManager : MonoBehaviour
         src.playOnAwake = false;
         src.loop = false;
         src.volume = 0f;
+
+        var filter = go.AddComponent<AudioLowPassFilter>();
+        filter.cutoffFrequency = _lowHpFilterTarget;
+        filter.lowpassResonanceQ = 1f;
+        _musicLowPassFilters.Add(filter);
+
         return src;
     }
 
@@ -501,13 +655,14 @@ public sealed class AudioManager : MonoBehaviour
             _sfxPool.Add(CreateSfxSource($"Sfx_{_sfxPool.Count}"));
     }
 
-    private void PlaySfx(AudioClip clip, float volumeScale = 1f)
+    private void PlaySfx(AudioClip clip, float volumeScale = 1f, float pitch = 1f)
     {
         if (clip == null)
             return;
 
         AudioSource src = GetAvailableSfxSource();
-        src.pitch = 1f;
+        src.pitch = pitch;
+        src.panStereo = 0f;
         src.volume = sfxVolume * Mathf.Clamp01(volumeScale);
         src.PlayOneShot(clip, sfxVolume * Mathf.Clamp01(volumeScale));
     }
@@ -618,6 +773,8 @@ public sealed class AudioManager : MonoBehaviour
         private double _nextScheduledDsp;
         private bool _useA = true;
         private float _targetVolume;
+        private float _currentLevel;
+        private float _duckMultiplier = 1f;
 
         public LoopingStem(string name, AudioSource a, AudioSource b, AudioClip clip, double firstStartDsp, double loopPointSeconds)
         {
@@ -635,6 +792,15 @@ public sealed class AudioManager : MonoBehaviour
             _targetVolume = Mathf.Clamp01(volume);
         }
 
+        public void SetDuckMultiplier(float multiplier)
+        {
+            _duckMultiplier = Mathf.Clamp01(multiplier);
+
+            float applied = _currentLevel * _duckMultiplier;
+            if (_a != null) _a.volume = applied;
+            if (_b != null) _b.volume = applied;
+        }
+
         public void Tick(double dspTime, double scheduleLeadSeconds, float deltaTime)
         {
             if (_clip == null)
@@ -648,7 +814,7 @@ public sealed class AudioManager : MonoBehaviour
                 if (source != null)
                 {
                     source.clip = _clip;
-                    source.volume = _targetVolume;
+                    source.volume = _currentLevel * _duckMultiplier;
                     source.PlayScheduled(_nextScheduledDsp);
                 }
 
@@ -662,16 +828,17 @@ public sealed class AudioManager : MonoBehaviour
             if (deltaTime <= 0f)
                 return;
 
-            float currentVolume = _a != null ? _a.volume : _targetVolume;
-            float fadeDuration = _targetVolume > currentVolume
+            float fadeDuration = _targetVolume > _currentLevel
                 ? StemFadeInDurationSeconds
                 : StemFadeOutDurationSeconds;
             float step = fadeDuration <= 0.0001f
                 ? 1f
                 : deltaTime / fadeDuration;
-            float nextVolume = Mathf.MoveTowards(currentVolume, _targetVolume, step);
-            if (_a != null) _a.volume = nextVolume;
-            if (_b != null) _b.volume = nextVolume;
+            _currentLevel = Mathf.MoveTowards(_currentLevel, _targetVolume, step);
+
+            float applied = _currentLevel * _duckMultiplier;
+            if (_a != null) _a.volume = applied;
+            if (_b != null) _b.volume = applied;
         }
 
         public void Dispose()

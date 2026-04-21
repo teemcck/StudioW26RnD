@@ -128,6 +128,7 @@ public class RangedEnemy : EnemyBase
 
         if (Time.time < _nextShootTime || !projectilePrefab) return;
         if (dist > maxShootDistance) return;
+        if (IsInPostSpawnGrace) return;
 
         BeginAttack();
     }
@@ -180,7 +181,8 @@ public class RangedEnemy : EnemyBase
         _firedThisAttack = true;
         Vector2 fire = firePoint ? (Vector2)firePoint.position : (Vector2)transform.position;
         var proj = Instantiate(projectilePrefab, fire, Quaternion.identity);
-        proj.Fire(_lockedShootDirection, 0f, 0f, new DamageContext(gameObject, gameObject, AttackKind.Ranged, "enemy_projectile"));
+        float scaledDamage = projectilePrefab.BaseDamage * DamageMultiplier;
+        proj.Fire(_lockedShootDirection, scaledDamage, 0f, new DamageContext(gameObject, gameObject, AttackKind.Ranged, "enemy_projectile"));
         AudioManager.Instance?.PlayUfoAttack();
         SpawnMuzzleFlash(fire);
     }

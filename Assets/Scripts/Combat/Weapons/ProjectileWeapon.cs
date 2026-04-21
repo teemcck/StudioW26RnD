@@ -44,12 +44,16 @@ public class ProjectileWeapon : WeaponBase
             ? runtime.BuildAttackSnapshot(attackKind, position, target, 0)
             : default;
 
-        float damageValue = snapshot.ApplyTo(GetDamage());
+        var playerStats = GetComponentInParent<PlayerStats>();
+        bool isCrit = CombatRoll.TryRollCrit(playerStats, out float critMult);
+
+        float damageValue = snapshot.ApplyTo(GetDamage()) * critMult;
         projectile.Fire(
             direction,
             damageValue,
             GetKnockback(),
-            new DamageContext(gameObject, transform.root.gameObject, attackKind, sourceId, triggersOnHitEffects: triggerOnHitEffects));
+            new DamageContext(gameObject, transform.root.gameObject, attackKind, sourceId,
+                isStatusEffect: false, triggersOnHitEffects: triggerOnHitEffects, isCrit: isCrit));
         runtime?.NotifyAttackPerformed(attackKind, snapshot);
     }
 }

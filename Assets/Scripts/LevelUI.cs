@@ -305,6 +305,9 @@ public class LevelUI : MonoBehaviour
             yield return CountTotalXp(xp);
         }
 
+        yield return new WaitForSecondsRealtime(0.4f);
+        AudioManager.Instance?.PlayContinueReady();
+
         if (summaryContinueButton != null)
             summaryContinueButton.interactable = true;
 
@@ -350,13 +353,14 @@ public class LevelUI : MonoBehaviour
 
     private static float EaseOutCubic(float x) => 1f - Mathf.Pow(1f - x, 3f);
 
-    private void TryPlaySummaryCountTick()
+    private void TryPlaySummaryCountTick(float progress01 = 0f)
     {
         float interval = Mathf.Max(0.02f, summaryCountTickInterval);
         if (Time.unscaledTime - _nextSummaryCountTickUnscaled < interval)
             return;
         _nextSummaryCountTickUnscaled = Time.unscaledTime;
-        AudioManager.Instance?.PlayXpSummaryCountTick();
+        float pitch = Mathf.Lerp(0.95f, 1.45f, Mathf.Clamp01(progress01));
+        AudioManager.Instance?.PlayXpSummaryCountTick(pitch: pitch);
     }
 
     private IEnumerator ShakeSummaryPanel(RectTransform panelRt)
@@ -394,7 +398,7 @@ public class LevelUI : MonoBehaviour
             if (summaryKillsText != null)
                 summaryKillsText.text = FormatEnemyXpBlock(killed, avoided, killShown, avoidShown);
             if (killShown > 0 || avoidShown > 0)
-                TryPlaySummaryCountTick();
+                TryPlaySummaryCountTick(Mathf.Max(killT, avoidT));
             yield return null;
         }
         if (summaryKillsText != null)
@@ -413,7 +417,7 @@ public class LevelUI : MonoBehaviour
             if (summaryTimeText != null)
                 summaryTimeText.text = FormatTimeBonusBlock(floorTimeHms, timeShown);
             if (timeShown > 0)
-                TryPlaySummaryCountTick();
+                TryPlaySummaryCountTick(te);
             yield return null;
         }
         if (summaryTimeText != null)
@@ -432,7 +436,7 @@ public class LevelUI : MonoBehaviour
             if (summaryXPText != null)
                 summaryXPText.text = FormatTotalXpBlock(shown);
             if (shown > 0)
-                TryPlaySummaryCountTick();
+                TryPlaySummaryCountTick(u);
             yield return null;
         }
         if (summaryXPText != null)

@@ -100,9 +100,9 @@ public class SplittingEnemy : MeleeEnemy
         base.ExecuteFrailty(context);
     }
 
-    public override void ApplyRuntimeScaling(float healthMultiplier, float sizeMultiplier = 1f)
+    public override void ApplyRuntimeScaling(float healthMultiplier, float sizeMultiplier = 1f, float damageMultiplier = 1f)
     {
-        base.ApplyRuntimeScaling(healthMultiplier, sizeMultiplier);
+        base.ApplyRuntimeScaling(healthMultiplier, sizeMultiplier, damageMultiplier);
         if (_splitDepth <= 0)
             return;
         float rangeFactor = Mathf.Pow(splitSizeMultiplier, _splitDepth);
@@ -225,6 +225,8 @@ public class SplittingEnemy : MeleeEnemy
         }
         _isAttackLocked = false;
 
+        ClearExistingStrikeArc();
+
         if (Rb)
         {
             Rb.linearVelocity = Vector2.zero;
@@ -285,7 +287,7 @@ public class SplittingEnemy : MeleeEnemy
             if (go.TryGetComponent<SplittingEnemy>(out var childSplit))
                 childSplit.AssignSlimeGroup(_killGroup, _splitDepth + 1);
             if (go.TryGetComponent<EnemyBase>(out var eb))
-                eb.ApplyRuntimeScaling(splitHealthMultiplier, splitSizeMultiplier);
+                eb.ApplyRuntimeScaling(splitHealthMultiplier, splitSizeMultiplier, DamageMultiplier);
             EnsureSplitSpawnPhysics(go);
             spawned++;
         }

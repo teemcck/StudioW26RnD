@@ -38,6 +38,16 @@ public class AOEProjectile : MonoBehaviour
 
     protected int ExplosionGroundSortingLayerId => groundExplosionSortingLayerId;
 
+    /// <summary>Multiply both direct and explosion damage by <paramref name="multiplier"/>.</summary>
+    public void ScaleDamage(float multiplier)
+    {
+        if (multiplier <= 0f || Mathf.Approximately(multiplier, 1f))
+            return;
+
+        directDamage *= multiplier;
+        explosionDamage *= multiplier;
+    }
+
     private float GetExplosionDamageRadius(float ringWorldScale)
     {
         if (groundExplosionSprite != null)

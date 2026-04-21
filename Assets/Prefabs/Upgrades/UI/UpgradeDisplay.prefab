@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5479726647171600034}
   - component: {fileID: 8334008204082807047}
+  - component: {fileID: 2830155038469533302}
   m_Layer: 0
   m_Name: UpgradeDisplay
   m_TagString: Untagged
@@ -50,6 +51,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeDisplay
   cardImage: {fileID: 9185783456493822481}
+--- !u!114 &2830155038469533302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2999386350082327958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b1b11c00861148698b335756c0cc0eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CardFloatAnimation
+  scaleAmplitude: 0.025
+  rotationAmplitude: 1.6
+  scaleHz: 0.6
+  rotationHz: 0.43
+  useUnscaledTime: 1
 --- !u!1 &6232369020030931228
 GameObject:
   m_ObjectHideFlags: 0

@@ -160,6 +160,7 @@ MonoBehaviour:
   maxFlightTime: 1.65
   showLandingTelegraph: 1
   landingTelegraphSprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  groundShadowPrefab: {fileID: 8589580890927051280, guid: 8f0be972a8e76480fbf40d6ccb6bd799, type: 3}
   landingTelegraphColor: {r: 1, g: 0.4, b: 0.12, a: 0.28}
   landingTelegraphSortingOrder: -10
   landingTelegraphSortingLayerId: 211765407
