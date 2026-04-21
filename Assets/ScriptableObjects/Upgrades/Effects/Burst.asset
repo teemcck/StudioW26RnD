@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Burst
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeEffectsSO
   upgradeID: Burst
-  maxStacks: 1
+  maxStacks: -1
   scaleWithStacks: 0
   traits:
   - 2

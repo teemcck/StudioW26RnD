@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ranger
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeEffectsSO
   upgradeID: Ranger
-  maxStacks: 1
+  maxStacks: -1
   scaleWithStacks: 0
   traits:
   - 2

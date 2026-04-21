@@ -116,7 +116,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.18
+      scalar: 0.75
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -223,7 +223,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 0.9558428, b: 0.6556604, a: 1}
+      maxColor: {r: 0.6039216, g: 0.6627451, b: 0.73333335, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -287,7 +287,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.08
+      scalar: 0.16
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -1308,8 +1308,8 @@ ParticleSystem:
       maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 0.9977291, g: 1, b: 0.8160377, a: 1}
-        key1: {r: 1, g: 0.9950831, b: 0.759434, a: 0}
+        key0: {r: 0.6039216, g: 0.6627451, b: 0.73333335, a: 1}
+        key1: {r: 0.6039216, g: 0.6627451, b: 0.73333335, a: 0}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -4867,7 +4867,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7543455239983765911}
@@ -4974,9 +4974,7 @@ MonoBehaviour:
   speed: 8
   lifetime: 3
   spriteRenderer: {fileID: 4065348627379111466}
-  flightAnimationSprites:
-  - {fileID: -5521385146551640076, guid: 8a3582665f6e72e40bcfb0ea66686393, type: 3}
-  - {fileID: 4024378601183990415, guid: 8a3582665f6e72e40bcfb0ea66686393, type: 3}
+  flightAnimationSprites: []
   animationFps: 16
   rotateToDirection: 1
   damage: 2

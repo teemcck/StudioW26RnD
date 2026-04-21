@@ -67,13 +67,13 @@ public class EnemyStatusEffectController : MonoBehaviour
 
     public float GetMoveSpeedMultiplier()
     {
-        float confusionPenalty = Mathf.Min(3, GetStackCount(StatusEffectIds.Confusion)) * 0.15f;
+        float confusionPenalty = Mathf.Min(2, GetStackCount(StatusEffectIds.Confusion)) * 0.4f;
         return Mathf.Max(0.1f, 1f - confusionPenalty);
     }
 
     public float GetAttackSpeedMultiplier()
     {
-        float confusionPenalty = Mathf.Min(3, GetStackCount(StatusEffectIds.Confusion)) * 0.15f;
+        float confusionPenalty = Mathf.Min(2, GetStackCount(StatusEffectIds.Confusion)) * 0.4f;
         return Mathf.Max(0.1f, 1f - confusionPenalty);
     }
 

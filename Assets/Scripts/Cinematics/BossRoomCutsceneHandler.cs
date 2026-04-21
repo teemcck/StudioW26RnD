@@ -11,6 +11,7 @@ public sealed class BossRoomCutsceneHandler : MonoBehaviour
     [SerializeField] private MonoBehaviour introSequenceBehaviour;
     [SerializeField] private CameraController cameraController;
     [SerializeField] private PlayerController player;
+    [SerializeField] private Transform playerSpawnPoint;
     [SerializeField] private BossHealthBarUI healthBar;
 
     [Header("Timing")]
@@ -106,11 +107,8 @@ public sealed class BossRoomCutsceneHandler : MonoBehaviour
             yield break;
         }
 
-        if (!player)
-        {
-            var go = GameObject.FindGameObjectWithTag("Player");
-            if (go) player = go.GetComponent<PlayerController>();
-        }
+        ResolvePlayerReference();
+        PreparePlayerForIntro();
 
         if (!healthBar)
             healthBar = FindFirstObjectByType<BossHealthBarUI>(FindObjectsInactive.Include);
@@ -256,6 +254,35 @@ public sealed class BossRoomCutsceneHandler : MonoBehaviour
 
         boss.SetIntroCutsceneActive(false);
         boss.StartCombatAfterCutscene();
+    }
+
+    private void ResolvePlayerReference()
+    {
+        if (player)
+            return;
+
+        PlayerController[] players = FindObjectsByType<PlayerController>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        if (players.Length > 0)
+            player = players[0];
+    }
+
+    private void PreparePlayerForIntro()
+    {
+        if (!player)
+            return;
+
+        if (!player.gameObject.activeSelf)
+            player.gameObject.SetActive(true);
+
+        Transform spawn = playerSpawnPoint ? playerSpawnPoint : player.transform;
+        player.transform.SetPositionAndRotation(spawn.position, spawn.rotation);
+
+        if (player.TryGetComponent<Rigidbody2D>(out var rb))
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            rb.simulated = true;
+        }
     }
 }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -92,6 +93,7 @@ public class UpgradeManager : MonoBehaviour
     public bool TryGetEffect(string id, out UpgradeEffectsSO so)  => _effectMap.TryGetValue(id, out so);
     public bool TryGetDisplay(string id, out UpgradeDisplaySO so) => _displayMap.TryGetValue(id, out so);
     public int GetStack(string id) => _stacks.TryGetValue(id, out int s) ? s : 0;
+    public PlayerController CurrentPlayer => playerController;
     public List<UpgradeDisplaySO> GetAppliedUpgradeDisplays()
     {
         var results = new List<UpgradeDisplaySO>();
@@ -113,6 +115,21 @@ public class UpgradeManager : MonoBehaviour
         foreach (var pair in _stacks)
             total += pair.Value;
         return total;
+    }
+
+    public List<UpgradeDisplaySO> GetAllUpgradeDisplays()
+    {
+        return allDisplays
+            .Where(display => display != null && !string.IsNullOrEmpty(display.upgradeID))
+            .OrderBy(display => display.upgradeName)
+            .ToList();
+    }
+
+    public int GetMaxStacksForUpgrade(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+            return 0;
+        return _effectMap.TryGetValue(id, out var effect) ? effect.maxStacks : 0;
     }
 
     public int CountUpgradesByMinimumRarity(UpgradeRarity minimumRarity)
@@ -171,6 +188,13 @@ public class UpgradeManager : MonoBehaviour
     /// </summary>
     public void OpenUpgradeSelection(int count)
     {
+        ResolveUpgradeUiHandler();
+        if (upgradeUIHandler == null)
+        {
+            Debug.LogError("[UpgradeManager] Cannot open upgrade selection because no UpgradeUIHandler is available in the active scene.");
+            return;
+        }
+
         List<UpgradeDisplaySO> choices = GetRandomUpgradeChoices(count);
         upgradeUIHandler.DisplayUpgrades(choices);
     }
@@ -283,7 +307,7 @@ public class UpgradeManager : MonoBehaviour
             // If no player provided, try to find one
             if (player == null)
             {
-                var found = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+                var found = FindObjectsByType<PlayerController>(FindObjectsInactive.Include, FindObjectsSortMode.None);
                 if (found.Length > 0)
                 {
                     player = found[0];
@@ -304,7 +328,9 @@ public class UpgradeManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        var found = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+        ResolveUpgradeUiHandler();
+
+        var found = FindObjectsByType<PlayerController>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         if (found.Length == 0)
             return;
 
@@ -343,6 +369,16 @@ public class UpgradeManager : MonoBehaviour
         }
 
         _cachedContext.Runtime?.RefreshDynamicModifiers(this);
+    }
+
+    private void ResolveUpgradeUiHandler()
+    {
+        if (upgradeUIHandler != null)
+            return;
+
+        upgradeUIHandler = UpgradeUIHandler.Instance;
+        if (upgradeUIHandler == null)
+            upgradeUIHandler = FindFirstObjectByType<UpgradeUIHandler>(FindObjectsInactive.Include);
     }
 
     private static float RarityWeight(UpgradeRarity r) => r switch

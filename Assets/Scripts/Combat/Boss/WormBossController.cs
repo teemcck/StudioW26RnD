@@ -2002,6 +2002,8 @@ public sealed class WormBossController : EnemyBase
 
     private void BindHealthBar()
     {
+        if (!healthBarUI)
+            healthBarUI = FindFirstObjectByType<BossHealthBarUI>(FindObjectsInactive.Include);
         if (!healthBarUI) return;
         healthBarUI.Bind(this);
         healthBarUI.SetHealth(HealthNormalized);

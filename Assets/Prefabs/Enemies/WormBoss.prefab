@@ -33,7 +33,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
+  m_LocalScale: {x: 2.5, y: 2.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -235,6 +235,13 @@ MonoBehaviour:
   shieldPingColor: {r: 0.42, g: 0.78, b: 1, a: 1}
   shieldPingDuration: 0.18
   damageStunDuration: 0.32
+  shieldBreakStunDuration: 2
+  shieldBreakKnockbackForce: 4.05
+  shieldBreakCameraShake: 0.24
+  shieldBreakWobbleDegrees: 4.6
+  shieldBreakChildWobbleX: 0.058
+  shieldBreakChildWobbleY: 0.042
+  shieldBreakChildWobbleDegrees: 4.5
   phaseTransitionCamera: {fileID: 0}
   phaseTransitionShieldFillPhase2: 0.95
   phaseTransitionShieldFillPhase3: 1.35
@@ -243,9 +250,18 @@ MonoBehaviour:
   phaseTransitionShakeEnterPhase2: 0.38
   phaseTransitionShakeEnterPhase3: 0.62
   phaseTransitionShakeResume: 0.14
+  waitForExternalCutscene: 0
+  deathPanPlayerToBossSeconds: 1.25
+  deathHealthBarFadeSeconds: 1
+  deathHealthDrainSeconds: 0.45
+  deathPanBossToTeleporterSeconds: 1.25
+  deathTeleporterFadeSeconds: 1
+  deathPanTeleporterToPlayerSeconds: 1.25
+  escapeSequenceManager: {fileID: 0}
   undergroundSpeed: 3.2
   rubbleTrailInterval: 0.08
   rubbleColor: {r: 0.48, g: 0.32, b: 0.18, a: 0.82}
+  rubbleSortingOrder: 50
   idleTimeAfterAttackByPhase:
   - 2
   - 1.4
@@ -262,6 +278,7 @@ MonoBehaviour:
   shieldRegenSeekThreshold: 0.2
   repositionEmergeDamage: 10
   repositionEmergeRadius: 0.85
+  baseArenaEdgePadding: 0.52
   spriteFacesRightByDefault: 0
   minFlipInterval: 0.25
   flipThreshold: 0.25
@@ -304,7 +321,6 @@ MonoBehaviour:
   laserMouthOffset: {x: 0.4, y: 0.05}
   laserBetweenSweepPause: 0.22
   riseRubbleColor: {r: 0.55, g: 0.38, b: 0.22, a: 0.92}
-  waitForExternalCutscene: 0
 --- !u!114 &990070009
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: deus_ex_machina
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeEffectsSO
   upgradeID: deus_ex_machina
-  maxStacks: 1
+  maxStacks: -1
   scaleWithStacks: 0
   traits: []
   effects:

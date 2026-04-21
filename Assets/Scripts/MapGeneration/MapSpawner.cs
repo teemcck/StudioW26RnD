@@ -206,6 +206,25 @@ public class MapSpawner : MonoBehaviour
         };
     }
 
+    // This is a meme function for the debug menu.
+    public GameObject SpawnDebugRandomEnemyNear(Vector2 center, float radius = 2.5f)
+    {
+        WorldBand band = GameplayHandler.Instance != null
+            ? WorldProgression.GetBandForFloor(GameplayHandler.Instance.CurrentFloorIndex)
+            : WorldBand.WorldOne;
+
+        List<(GameObject prefab, float weight)> pool = BuildWeightedPool(band);
+        if (pool.Count == 0)
+            return null;
+
+        GameObject prefab = GetRandomPrefab(pool);
+        if (!prefab)
+            return null;
+
+        Vector2 offset = UnityEngine.Random.insideUnitCircle * Mathf.Max(0.5f, radius);
+        return Instantiate(prefab, center + offset, Quaternion.identity, chunkContainer ? chunkContainer : transform);
+    }
+
     private void LinkTeleporters()
     {
         int count = _chunks.Count;
@@ -305,5 +324,23 @@ public class MapSpawner : MonoBehaviour
             Mathf.Abs(local.size.y * lossy.y),
             Mathf.Abs(local.size.z * lossy.z));
         return new Bounds(worldCenter, worldSize);
+    }
+
+    private static GameObject GetRandomPrefab(List<(GameObject prefab, float weight)> pool)
+    {
+        float totalWeight = 0f;
+        foreach (var entry in pool)
+            totalWeight += entry.weight;
+
+        float roll = UnityEngine.Random.Range(0f, totalWeight);
+        float cumulative = 0f;
+        foreach (var entry in pool)
+        {
+            cumulative += entry.weight;
+            if (roll < cumulative)
+                return entry.prefab;
+        }
+
+        return pool[pool.Count - 1].prefab;
     }
 }

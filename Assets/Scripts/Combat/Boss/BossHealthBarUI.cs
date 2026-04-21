@@ -28,13 +28,42 @@ public sealed class BossHealthBarUI : MonoBehaviour
 
     private void Awake()
     {
+        ResolveReferences();
+        CacheBaseColors();
+    }
+
+    private void OnEnable()
+    {
+        ResolveReferences();
+    }
+
+    private void ResolveReferences()
+    {
+        if (!rootCanvas)
+            rootCanvas = FindFirstObjectByType<Canvas>(FindObjectsInactive.Include);
+
+        if (!healthImage || !shieldImage)
+        {
+            Image[] images = rootCanvas ? rootCanvas.GetComponentsInChildren<Image>(true) : GetComponentsInChildren<Image>(true);
+            foreach (Image image in images)
+            {
+                if (!image)
+                    continue;
+
+                string objectName = image.gameObject.name;
+                if (!healthImage && objectName == "BossHealth")
+                    healthImage = image;
+                else if (!shieldImage && objectName == "BossShield")
+                    shieldImage = image;
+            }
+        }
+
         if (!introFadeGroup)
         {
             introFadeGroup = GetComponent<CanvasGroup>();
             if (!introFadeGroup && rootCanvas)
                 introFadeGroup = rootCanvas.GetComponent<CanvasGroup>();
         }
-        CacheBaseColors();
     }
 
     private void CacheBaseColors()
@@ -46,24 +75,21 @@ public sealed class BossHealthBarUI : MonoBehaviour
 
     public void Bind(WormBossController boss)
     {
+        ResolveReferences();
         if (!_initialized) CacheBaseColors();
         SetHealth(boss.HealthNormalized);
         SetShield(boss.CurrentShieldNormalized);
-        if (introFadeGroup)
-        {
-            if (rootCanvas) rootCanvas.enabled = true;
-            gameObject.SetActive(true);
-        }
-        else
-            ShowBar();
+        ShowBar();
     }
 
     public void HideForIntroFade()
     {
+        ResolveReferences();
         if (introFadeGroup)
         {
             introFadeGroup.alpha = 0f;
             introFadeGroup.blocksRaycasts = false;
+            introFadeGroup.interactable = false;
             if (rootCanvas) rootCanvas.enabled = true;
             gameObject.SetActive(true);
         }
@@ -73,6 +99,8 @@ public sealed class BossHealthBarUI : MonoBehaviour
 
     public IEnumerator FadeInFromIntro(float duration)
     {
+        ResolveReferences();
+        ShowBar();
         duration = Mathf.Max(0.01f, duration);
         if (introFadeGroup)
         {
@@ -85,6 +113,7 @@ public sealed class BossHealthBarUI : MonoBehaviour
             }
             introFadeGroup.alpha = 1f;
             introFadeGroup.blocksRaycasts = true;
+            introFadeGroup.interactable = false;
         }
         else
             ShowBar();
@@ -173,12 +202,25 @@ public sealed class BossHealthBarUI : MonoBehaviour
 
     public void ShowBar()
     {
+        ResolveReferences();
         if (rootCanvas) rootCanvas.enabled = true;
+        if (introFadeGroup)
+        {
+            introFadeGroup.alpha = 1f;
+            introFadeGroup.blocksRaycasts = false;
+            introFadeGroup.interactable = false;
+        }
         gameObject.SetActive(true);
     }
 
     public void HideBar()
     {
+        if (introFadeGroup)
+        {
+            introFadeGroup.alpha = 0f;
+            introFadeGroup.blocksRaycasts = false;
+            introFadeGroup.interactable = false;
+        }
         if (rootCanvas) rootCanvas.enabled = false;
     }
 

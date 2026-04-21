@@ -150,7 +150,7 @@ public class StatusEffectManager : MonoBehaviour
     private void RefreshStatBackedEffects()
     {
         int swiftnessStacks = Mathf.Min(3, GetStackCount(StatusEffectIds.Swiftness));
-        int confusionStacks = Mathf.Min(3, GetStackCount(StatusEffectIds.Confusion));
+        int confusionStacks = Mathf.Min(2, GetStackCount(StatusEffectIds.Confusion));
 
         int swiftnessDelta = swiftnessStacks - _appliedSwiftnessStacks;
         if (swiftnessDelta != 0)
@@ -164,7 +164,7 @@ public class StatusEffectManager : MonoBehaviour
         int confusionDelta = confusionStacks - _appliedConfusionStacks;
         if (confusionDelta != 0)
         {
-            float delta = confusionDelta * -0.15f;
+            float delta = confusionDelta * -0.4f;
             _playerStats.AddMultiplier(PlayerStatType.MoveSpeed, delta);
             _playerStats.AddMultiplier(PlayerStatType.AttackSpeed, delta);
             _appliedConfusionStacks = confusionStacks;

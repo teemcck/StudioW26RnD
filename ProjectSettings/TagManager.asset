@@ -50,6 +50,9 @@ TagManager:
   - name: Player/Obstacles
     uniqueID: 211765407
     locked: 0
+  - name: Elevated
+    uniqueID: 3206781263
+    locked: 0
   - name: VFX
     uniqueID: 838984925
     locked: 0

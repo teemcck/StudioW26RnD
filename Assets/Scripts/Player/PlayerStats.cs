@@ -15,7 +15,7 @@ public enum PlayerStatType
     // Combat
     AttackDamage, AttackSpeed, AttackRange, CritChance, CritMultiplier,
     // Defence
-    MaxHealth, DamageReduction, DodgeChance,
+    MaxHealth, HealthRegen, DamageReduction, DodgeChance,
     // Economy
     XPMultiplier
 }
@@ -35,6 +35,7 @@ public static class PlayerStatTypeExtensions
         PlayerStatType.CritChance     => "Crit Chance",
         PlayerStatType.CritMultiplier => "Crit Multiplier",
         PlayerStatType.MaxHealth      => "Max Health",
+        PlayerStatType.HealthRegen    => "Health Regen",
         PlayerStatType.DamageReduction => "DamageReduction",
         PlayerStatType.DodgeChance    => "Dodge Chance",
         PlayerStatType.XPMultiplier   => "XP Multiplier",
@@ -99,6 +100,7 @@ public class PlayerStats : MonoBehaviour
 
     [Header("Defence")]
     [SerializeField] private float baseMaxHealth  = 100f;
+    [SerializeField] private float baseHealthRegen = 2f;
     [SerializeField] private float baseDamageReduction    = 0f;
     [SerializeField] private float baseDodgeChance = 0f;
 
@@ -126,6 +128,7 @@ public class PlayerStats : MonoBehaviour
             [PlayerStatType.CritChance]     = new(baseCritChance),
             [PlayerStatType.CritMultiplier] = new(baseCritMultiplier),
             [PlayerStatType.MaxHealth]      = new(baseMaxHealth),
+            [PlayerStatType.HealthRegen]    = new(baseHealthRegen),
             [PlayerStatType.DamageReduction] = new(baseDamageReduction),
             [PlayerStatType.DodgeChance]    = new(baseDodgeChance),
             [PlayerStatType.XPMultiplier]   = new(baseXPMultiplier)
@@ -174,6 +177,7 @@ public class PlayerStats : MonoBehaviour
     public float CritChance     => Mathf.Clamp01(_stats[PlayerStatType.CritChance].Value);
     public float CritMultiplier => _stats[PlayerStatType.CritMultiplier].Value;
     public float MaxHealth      => _stats[PlayerStatType.MaxHealth].Value;
+    public float HealthRegen    => Mathf.Max(0f, _stats[PlayerStatType.HealthRegen].Value);
     public float DamageReduction          => _stats[PlayerStatType.DamageReduction].Value;
     public float DodgeChance    => Mathf.Clamp01(_stats[PlayerStatType.DodgeChance].Value);
     public float XPMultiplier   => _stats[PlayerStatType.XPMultiplier].Value;

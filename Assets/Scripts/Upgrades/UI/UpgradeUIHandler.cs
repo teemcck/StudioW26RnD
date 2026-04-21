@@ -20,7 +20,12 @@ public class UpgradeUIHandler : MonoBehaviour
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
-        DontDestroyOnLoad(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 
     public void DisplayUpgrades(List<UpgradeDisplaySO> upgradeOptions)

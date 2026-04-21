@@ -42,9 +42,14 @@ public class SimpleProjectile : MonoBehaviour
         _damageContext = context;
         _animTimer = 0f;
         _animFrame = 0;
+<<<<<<< Updated upstream
         ApplyAnimationFrame(_animFrame);
         TintTrailForSource(context);
 
+=======
+        if (HasFlightAnimationFrames())
+            ApplyAnimationFrame(_animFrame);
+>>>>>>> Stashed changes
         Destroy(gameObject, lifetime);
     }
 
@@ -78,7 +83,7 @@ public class SimpleProjectile : MonoBehaviour
     {
         if (_animator && _animator.runtimeAnimatorController != null)
             return;
-        if (spriteRenderer == null || flightAnimationSprites == null || flightAnimationSprites.Length == 0)
+        if (!HasMultipleFlightAnimationFrames())
             return;
 
         float fps = Mathf.Max(0.1f, animationFps);
@@ -94,9 +99,22 @@ public class SimpleProjectile : MonoBehaviour
 
     private void ApplyAnimationFrame(int frame)
     {
-        if (spriteRenderer == null || flightAnimationSprites == null || flightAnimationSprites.Length == 0)
+        if (!HasFlightAnimationFrames())
             return;
         spriteRenderer.sprite = flightAnimationSprites[Mathf.Clamp(frame, 0, flightAnimationSprites.Length - 1)];
+    }
+
+    private bool HasFlightAnimationFrames()
+    {
+        return spriteRenderer != null &&
+               flightAnimationSprites != null &&
+               flightAnimationSprites.Length > 0 &&
+               flightAnimationSprites[0] != null;
+    }
+
+    private bool HasMultipleFlightAnimationFrames()
+    {
+        return HasFlightAnimationFrames() && flightAnimationSprites.Length > 1;
     }
 
     private void OnTriggerEnter2D(Collider2D other)

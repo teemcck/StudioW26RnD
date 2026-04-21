@@ -14,6 +14,7 @@ public class MeleeEnemy : EnemyBase
     protected float MeleeAttackCooldown => attackCooldown;
     protected float MeleeContactDamage => contactDamage;
 
+<<<<<<< Updated upstream
     protected void ApplySplitMeleeTuning(float attackRangeMultiplier, float moveSpeedMultiplier)
     {
         attackRange = Mathf.Max(0.05f, attackRange * attackRangeMultiplier);
@@ -23,6 +24,13 @@ public class MeleeEnemy : EnemyBase
     protected void MultiplyMeleeContactDamage(float factor)
     {
         contactDamage = Mathf.Max(0.01f, contactDamage * factor);
+=======
+    protected void ApplyMeleeRuntimeScaling(float rangeMultiplier, float damageMultiplier, float cooldownMultiplier = 1f)
+    {
+        attackRange = Mathf.Max(0.05f, attackRange * Mathf.Max(0f, rangeMultiplier));
+        contactDamage = Mathf.Max(0.05f, contactDamage * Mathf.Max(0f, damageMultiplier));
+        attackCooldown = Mathf.Max(0.05f, attackCooldown * Mathf.Max(0.05f, cooldownMultiplier));
+>>>>>>> Stashed changes
     }
 
     protected virtual void FixedUpdate()

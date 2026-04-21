@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 public class GameplayHandler : MonoBehaviour
 {
     public static GameplayHandler Instance { get; private set; }
+    private static int? s_debugForcedFloorIndex;
+    private static bool s_debugPreserveRunState;
 
     [Header("References")]
     [SerializeField] private MapSpawner mapSpawner;
@@ -45,6 +47,7 @@ public class GameplayHandler : MonoBehaviour
     private int _currentChunkCount;
     private int _totalEnemies;
     private int _enemiesKilled;
+    private float _killXpWeightTotal;
     private float _floorStartTime;
     private int _floorIndex = 0;
     private List<GameObject> _currentChunks;
@@ -66,6 +69,14 @@ public class GameplayHandler : MonoBehaviour
     {
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
+<<<<<<< Updated upstream
+=======
+        ApplyDebugFloorOverrideIfPresent();
+
+        // Don't instantiate player here - wait for floor start
+        // _playerObject = Instantiate(playerPrefab);
+        // ChangeCameraTracking(_playerObject.transform);
+>>>>>>> Stashed changes
     }
 
     private void OnEnable()
@@ -107,6 +118,7 @@ public class GameplayHandler : MonoBehaviour
         if (_playerObject == null)
         {
             _playerObject = Instantiate(playerPrefab);
+            InitializeNewRunState();
             EnsurePlayerHud();
             EnablePlayerMovement(true);
             ChangeCameraTracking(_playerObject.transform);
@@ -135,6 +147,7 @@ public class GameplayHandler : MonoBehaviour
 
         CurrentState = FloorState.Playing;
         _enemiesKilled = 0;
+        _killXpWeightTotal = 0f;
         _floorStartTime = Time.time;
 
         _playerObject.transform.position = mapSpawner.SpawnPosition;
@@ -158,8 +171,12 @@ public class GameplayHandler : MonoBehaviour
         }
 
         float elapsed = Time.time - _floorStartTime;
+<<<<<<< Updated upstream
         FloorXPBreakdown xpBreakdown = GetFloorXPBreakdown(_enemiesKilled, _totalEnemies, elapsed);
         int floorXP = xpBreakdown.TotalXP;
+=======
+        int floorXP = CalculateXP(_killXpWeightTotal, _enemiesKilled, _totalEnemies, elapsed);
+>>>>>>> Stashed changes
 
         int previousTotalXP = RunStatsTracker.Instance.TotalXP;
 
@@ -235,6 +252,7 @@ public class GameplayHandler : MonoBehaviour
         _nextChunkCount = TriangularRoll(GameConstants.MinChunkCount, GameConstants.MaxChunkCount, mode: (GameConstants.MinChunkCount + GameConstants.MaxChunkCount) / 2);
     }
 
+<<<<<<< Updated upstream
     /// <summary>
     /// Samples an integer from a triangular distribution over [min, max] centered at mode.
     /// The two U[0,1] samples follow a standard Irwin–Hall construction that reproduces
@@ -247,6 +265,13 @@ public class GameplayHandler : MonoBehaviour
         float range = max - min;
         if (range <= 0f)
             return min;
+=======
+    private int CalculateXP(float killXpWeightTotal, int killed, int total, float elapsed)
+    {
+        float killXP    = killXpWeightTotal * baseXP * killXPMultiplier;
+        float avoidXP   = (total - killed) * baseXP * avoidXPMultiplier;
+        float timeBonus = Mathf.Lerp(timeBonusMax, 0f, elapsed / timeBonusWindow);
+>>>>>>> Stashed changes
 
         float modeT = (clampedMode - min) / range;
         float sample;
@@ -312,6 +337,20 @@ public class GameplayHandler : MonoBehaviour
 
     public int XPPerFloor => xpPerFloor;
 
+    public static void DebugJumpToGameplayFloor(int floorIndex, bool preserveRunState = true)
+    {
+        s_debugForcedFloorIndex = Mathf.Max(0, floorIndex);
+        s_debugPreserveRunState = preserveRunState;
+        SceneManager.LoadScene("GameplayLoop");
+    }
+
+    public static void DebugJumpToBoss(bool preserveRunState = true)
+    {
+        s_debugForcedFloorIndex = WorldProgression.BossFloorIndex;
+        s_debugPreserveRunState = preserveRunState;
+        SceneManager.LoadScene("BossGameplay");
+    }
+
     private int CountUpgradeThresholdsCrossed(int previousTotalXP, int currentTotalXP)
     {
         int threshold = Mathf.Max(1, xpPerFloor);
@@ -366,6 +405,47 @@ public class GameplayHandler : MonoBehaviour
         }
     }
 
+    private void InitializeNewRunState()
+    {
+        PlayerController playerController = _playerObject ? _playerObject.GetComponent<PlayerController>() : null;
+        if (ConsumeDebugPreserveRunState())
+            return;
+
+        UpgradeManager.Instance?.ResetRun(playerController);
+        RunStatsTracker.Instance?.ResetRunStats();
+        ApplyStartupDebugUpgrades(playerController);
+    }
+
+    private static void ApplyStartupDebugUpgrades(PlayerController playerController)
+    {
+        if (playerController == null || UpgradeManager.Instance == null)
+            return;
+
+        foreach (var configured in StartupUpgradeDebugState.GetConfiguredUpgrades())
+        {
+            for (int i = 0; i < configured.StackCount; i++)
+                UpgradeManager.Instance.ApplyUpgrade(configured.UpgradeId, playerController);
+        }
+    }
+
+    private void ApplyDebugFloorOverrideIfPresent()
+    {
+        if (!s_debugForcedFloorIndex.HasValue)
+            return;
+
+        _floorIndex = s_debugForcedFloorIndex.Value;
+        _hasShownWorldOneIntro = _floorIndex > 0;
+        _hasShownWorldTwoIntro = _floorIndex >= WorldProgression.WorldTwoStartFloorIndex;
+        s_debugForcedFloorIndex = null;
+    }
+
+    private static bool ConsumeDebugPreserveRunState()
+    {
+        bool preserve = s_debugPreserveRunState;
+        s_debugPreserveRunState = false;
+        return preserve;
+    }
+
     private void EnablePlayerMovement(bool enable)
     {
         if (_playerObject != null)
@@ -405,7 +485,9 @@ public class GameplayHandler : MonoBehaviour
     private void OnEnemyKilled(EnemyKilledEvent evt)
     {
         if (CurrentState != FloorState.Playing) return;
-        _enemiesKilled++;
+        _killXpWeightTotal += Mathf.Max(0f, evt.KillXpWeight);
+        if (evt.CountsTowardEnemyStats)
+            _enemiesKilled++;
     }
 
     private void OnPlayerReachedEndpoint(PlayerReachedEndpointEvent evt)

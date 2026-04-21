@@ -28,15 +28,29 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
     [SerializeField] private int hitPulseSortingOrderBoost = 2;
 
     protected Rigidbody2D Rb { get; private set; }
+<<<<<<< Updated upstream
     protected Transform Player { get; private set; }
     private PlayerCombatAnchor _playerCombatAnchor;
 
     [Header("Spawn Safety")]
     [Tooltip("Seconds after spawn during which this enemy will not deal contact damage. Gives the player a moment to orient.")]
     [SerializeField] private float postSpawnGracePeriod = 0.6f;
+=======
+    protected Transform Player
+    {
+        get
+        {
+            if (_player == null || !_player.gameObject.activeInHierarchy)
+                TryResolvePlayer();
+            return _player;
+        }
+        private set => _player = value;
+    }
+>>>>>>> Stashed changes
 
     private float _health;
     private bool _isDead;
+    private Transform _player;
     private readonly Dictionary<int, float> _contactDamageCooldownByTarget = new();
     private float _hitReactionUntil;
     private float _spawnTime;
@@ -56,6 +70,8 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
     public float DamageMultiplier { get; private set; } = 1f;
 
     public virtual bool UsesWorldFloatingHealthBar => true;
+    public virtual bool CountsTowardEnemyStats => true;
+    public virtual float KillXpWeight => 1f;
     public EnemyStatusEffectController StatusEffects => _statusEffects;
     protected bool IsInHitReaction => Time.time < _hitReactionUntil;
     protected float EffectiveMoveSpeed => moveSpeed * (_statusEffects ? _statusEffects.GetMoveSpeedMultiplier() : 1f);
@@ -88,6 +104,7 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         _statusEffects = GetComponent<EnemyStatusEffectController>() ?? gameObject.AddComponent<EnemyStatusEffectController>();
         _ = GetComponent<EnemyWorldVisuals>() ?? gameObject.AddComponent<EnemyWorldVisuals>();
 
+<<<<<<< Updated upstream
         var playerGo = GameObject.FindGameObjectWithTag("Player");
         Player = playerGo ? playerGo.transform : null;
         if (playerGo != null)
@@ -111,6 +128,9 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         if (col != null)
             return col.ClosestPoint(fromWorld);
         return (Vector2)Player.position;
+=======
+        TryResolvePlayer();
+>>>>>>> Stashed changes
     }
 
     public virtual void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce, DamageContext context = default)
@@ -190,6 +210,8 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
             Enemy = this,
             EnemyType = GetType().Name,
             Position = transform.position,
+            CountsTowardEnemyStats = CountsTowardEnemyStats,
+            KillXpWeight = Mathf.Max(0f, KillXpWeight),
             Context = context
         });
         Destroy(gameObject);
@@ -323,5 +345,12 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         Texture2D texture = Texture2D.whiteTexture;
         _whiteSprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
         return _whiteSprite;
+    }
+
+    protected bool TryResolvePlayer()
+    {
+        PlayerController[] players = FindObjectsByType<PlayerController>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        _player = players.Length > 0 ? players[0].transform : null;
+        return _player != null;
     }
 }

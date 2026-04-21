@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ballista
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeEffectsSO
   upgradeID: Ballista
-  maxStacks: 1
+  maxStacks: -1
   scaleWithStacks: 0
   traits:
   - 2

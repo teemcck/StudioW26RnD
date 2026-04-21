@@ -16,10 +16,10 @@ public static class GameConstants
     public const int MaxChunkCount = 4;
 
     /// <summary>Enemy spawn density at MinDifficulty: percent of spawn-layer tiles that get an enemy.</summary>
-    public const float MinEnemyFillPercent = 1f;
+    public const float MinEnemyFillPercent = 2.5f;
 
     /// <summary>Enemy spawn density at MaxDifficulty.</summary>
-    public const float MaxEnemyFillPercent = 2f;
+    public const float MaxEnemyFillPercent = 3.5f;
 }
 
 public enum WorldBand
@@ -30,8 +30,8 @@ public enum WorldBand
 
 public static class WorldProgression
 {
-    public const int WorldOneFloorCount = 5;
-    public const int WorldTwoFloorCount = 5;
+    public const int WorldOneFloorCount = 3;
+    public const int WorldTwoFloorCount = 3;
     public const int WorldTwoStartFloorIndex = WorldOneFloorCount;
     public const int BossFloorIndex = WorldOneFloorCount + WorldTwoFloorCount;
 

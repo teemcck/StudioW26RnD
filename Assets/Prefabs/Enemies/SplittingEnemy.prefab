@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 880030002}
   - component: {fileID: 880030003}
   - component: {fileID: 880030004}
-  - component: {fileID: 880030005}
   - component: {fileID: 880030008}
   - component: {fileID: 880030006}
   - component: {fileID: 880030007}
+  - component: {fileID: 4074494588046284380}
   m_Layer: 7
   m_Name: SplittingEnemy
   m_TagString: Untagged
@@ -31,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 880030001}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.008, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -123,43 +123,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!70 &880030005
-CapsuleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 880030001}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.66, y: 0.92}
-  m_Direction: 0
 --- !u!95 &880030008
 Animator:
   serializedVersion: 7
@@ -198,15 +161,35 @@ MonoBehaviour:
   weight: 1
   moveSpeed: 2.2
   damageFlash: {fileID: 880030007}
+<<<<<<< Updated upstream
   attackRange: 0.72
+=======
+  minHitReactionDuration: 0.07
+  maxHitReactionDuration: 0.2
+  showHitPulse: 1
+  hitPulseColor: {r: 1, g: 0.9, b: 0.35, a: 0.9}
+  hitPulseDuration: 0.11
+  hitPulseStartScale: 0.45
+  hitPulseEndScale: 0.9
+  hitPulseSortingOrderBoost: 2
+  attackRange: 0.8
+>>>>>>> Stashed changes
   attackCooldown: 1
   contactDamage: 2
-  splitEnemyPrefab: {fileID: 880030001, guid: e7f3a2b1c4d5846e9a0f1b2c3d4e5f73, type: 3}
+  splitEnemyPrefab: {fileID: 880030001}
   splitCount: 2
   splitHealthMultiplier: 0.45
   splitSizeMultiplier: 0.7
   splitSpawnRadius: 0.35
   maxSplitDepth: 2
+  animator: {fileID: 0}
+  idleStateName: SlimeSplitter_Idle
+  attackStateName: SlimeSplitter_Attack
+  splitStateName: SlimeSplitter_Split
+  attackAnimationDuration: 0.9
+  attackDamageMomentSeconds: 0.45
+  splitSpawnAtSeconds: 0.24
+  splitAnimationDuration: 0.5
 --- !u!114 &880030007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -222,3 +205,49 @@ MonoBehaviour:
   spriteRenderer: {fileID: 880030003}
   flashColor: {r: 1, g: 0.63529414, b: 0.63529414, a: 1}
   flashDuration: 0.08
+--- !u!61 &4074494588046284380
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880030001}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0.00084894896, y: -0.051932678}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.64, y: 0.64}
+    newSize: {x: 0.64, y: 0.64}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.53642654, y: 0.42404047}
+  m_EdgeRadius: 0

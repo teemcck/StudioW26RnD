@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Manages the player HUD display including health and XP bars.
@@ -148,6 +149,10 @@ public sealed class PlayerHudUI : MonoBehaviour
     /// </summary>
     private bool IsGameplayActive()
     {
+        string sceneName = SceneManager.GetActiveScene().name;
+        if (sceneName == "BossGameplay")
+            return true;
+
         if (GameplayHandler.Instance == null)
             return false;
 

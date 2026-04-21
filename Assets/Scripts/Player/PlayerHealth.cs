@@ -12,6 +12,10 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     [SerializeField] private float damageVisualKnockbackSpeed = 0.7f;
     [SerializeField] private float deathAnimationDuration = 0.32f;
 
+    [Header("Passive Regeneration")]
+    [Tooltip("Seconds after taking damage before passive regeneration resumes.")]
+    [SerializeField] private float passiveRegenDelayAfterDamage = 4f;
+
     [Header("Hit Feedback")]
     [SerializeField] private float hitStopDuration = 0.05f;
     [SerializeField] private float hitShakeIntensity = 0.2f;
@@ -42,6 +46,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     }
 
     private float _invulnerableUntil;
+    private float _passiveRegenBlockedUntil;
 
     private void Start()
     {
@@ -63,10 +68,28 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             playerStats.StatChanged -= OnStatChanged;
     }
 
+    private void Update()
+    {
+        if (_dead || playerStats == null)
+            return;
+
+        float passiveRegenPerSecond = playerStats.HealthRegen;
+        if (passiveRegenPerSecond <= 0f || Time.time < _passiveRegenBlockedUntil)
+            return;
+
+        float maxHealth = playerStats.MaxHealth;
+        if (CurrentHealth >= maxHealth)
+            return;
+
+        Heal(passiveRegenPerSecond * Time.deltaTime);
+    }
+
     public void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce, DamageContext context = default)
     {
         if (damage <= 0f) return;
         if (Time.time < _invulnerableUntil) return;
+        if (StartupUpgradeDebugState.InfiniteHealthEnabled)
+            return;
 
         if (_dashController != null && _dashController.IsDodgeInvulnerable)
         {
@@ -75,6 +98,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         }
 
         float adjustedDamage = ApplyDamageReduction(damage);
+        BlockPassiveRegen();
 
         float totalInvulnerability = Mathf.Max(invulnerableTime, damageStunDuration);
         _invulnerableUntil = Time.time + totalInvulnerability;
@@ -161,8 +185,11 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         if (_dead || damage <= 0f)
             return;
+        if (StartupUpgradeDebugState.InfiniteHealthEnabled)
+            return;
 
         float adjustedDamage = ApplyDamageReduction(damage);
+        BlockPassiveRegen();
         CurrentHealth = Mathf.Max(0f, CurrentHealth - adjustedDamage);
         EventBus<PlayerDamagedEvent>.Raise(new PlayerDamagedEvent
         {
@@ -180,6 +207,11 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         float multiplier = _upgradeRuntime != null ? _upgradeRuntime.GetIncomingDamageMultiplier() : 1f;
         return Mathf.Max(0f, damage * multiplier);
+    }
+
+    private void BlockPassiveRegen()
+    {
+        _passiveRegenBlockedUntil = Time.time + Mathf.Max(0f, passiveRegenDelayAfterDamage);
     }
 
     private void OnStatChanged(PlayerStatType statType, float oldValue, float newValue)

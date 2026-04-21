@@ -8,6 +8,9 @@ public class SplittingEnemy : MeleeEnemy
     [SerializeField] private int splitCount = 2;
     [SerializeField] private float splitHealthMultiplier = 0.45f;
     [SerializeField] private float splitSizeMultiplier = 0.7f;
+    [SerializeField] private float splitAttackRangeMultiplier = 0.5f;
+    [SerializeField] private float splitDamageMultiplier = 0.5f;
+    [SerializeField] private float splitKillXpWeightMultiplier = 0.5f;
     [SerializeField] private float splitSpawnRadius = 0.35f;
     [SerializeField] private int maxSplitDepth = 2;
     [SerializeField] private float splitMoveSpeedMultiplierPerDepth = 1.12f;
@@ -40,6 +43,10 @@ public class SplittingEnemy : MeleeEnemy
     private Coroutine _splitDeathRoutine;
     private DamageContext _pendingDeathContext;
     private bool _deathWillSpawnChildren;
+    private float _killXpWeight = 1f;
+
+    public override bool CountsTowardEnemyStats => _splitDepth == 0;
+    public override float KillXpWeight => _killXpWeight;
 
     private SlimeKillGroup _killGroup;
 
@@ -283,11 +290,24 @@ public class SplittingEnemy : MeleeEnemy
         {
             float rad = step * i * Mathf.Deg2Rad;
             Vector2 offset = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * splitSpawnRadius;
+<<<<<<< Updated upstream
             var go = Instantiate(splitEnemyPrefab, (Vector2)transform.position + offset, Quaternion.identity);
             if (go.TryGetComponent<SplittingEnemy>(out var childSplit))
                 childSplit.AssignSlimeGroup(_killGroup, _splitDepth + 1);
             if (go.TryGetComponent<EnemyBase>(out var eb))
                 eb.ApplyRuntimeScaling(splitHealthMultiplier, splitSizeMultiplier, DamageMultiplier);
+=======
+            var go = Instantiate(splitEnemyPrefab, (Vector2)transform.position + offset, Quaternion.identity, transform.parent);
+            if (go.TryGetComponent<EnemyBase>(out var eb))
+                eb.ApplyRuntimeScaling(splitHealthMultiplier, splitSizeMultiplier);
+            if (go.TryGetComponent<SplittingEnemy>(out var childSplit))
+            {
+                childSplit.SetSplitDepth(_splitDepth + 1);
+                childSplit.ConfigureAsSplitChild(this);
+            }
+            if (go.TryGetComponent<EnemyWorldVisuals>(out var visuals))
+                visuals.RebuildVisuals();
+>>>>>>> Stashed changes
             EnsureSplitSpawnPhysics(go);
             spawned++;
         }
@@ -295,6 +315,18 @@ public class SplittingEnemy : MeleeEnemy
         return spawned;
     }
 
+<<<<<<< Updated upstream
+=======
+    private void ConfigureAsSplitChild(SplittingEnemy parent)
+    {
+        _killXpWeight = Mathf.Max(0f, parent._killXpWeight * parent.splitKillXpWeightMultiplier);
+        ApplyMeleeRuntimeScaling(parent.splitAttackRangeMultiplier, parent.splitDamageMultiplier);
+    }
+
+    /// <summary>
+    /// Split clones are scaled at runtime; ensure RB/colliders are simulated and physics state is current.
+    /// </summary>
+>>>>>>> Stashed changes
     private static void EnsureSplitSpawnPhysics(GameObject go)
     {
         if (go.TryGetComponent<Rigidbody2D>(out var rb))

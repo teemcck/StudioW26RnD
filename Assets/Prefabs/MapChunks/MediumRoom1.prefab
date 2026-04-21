@@ -253,9 +253,9 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 211765407
-  m_SortingLayer: 2
-  m_SortingOrder: 0
+  m_SortingLayerID: 1329374815
+  m_SortingLayer: -1
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0.203125, z: 0}
@@ -681,9 +681,9 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 211765407
-  m_SortingLayer: 2
-  m_SortingOrder: 1
+  m_SortingLayerID: -1088186033
+  m_SortingLayer: 3
+  m_SortingOrder: 2
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -774,7 +774,7 @@ Tilemap:
   m_GameObject: {fileID: 4033536086807877419}
   m_Enabled: 1
   m_Tiles:
-  - first: {x: 10, y: 38, z: 0}
+  - first: {x: 10, y: 37, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 3
@@ -785,7 +785,7 @@ Tilemap:
       dummyAlignment: 0
       m_AllTileFlags: 1073741824
   m_AnimatedTiles:
-  - first: {x: 10, y: 38, z: 0}
+  - first: {x: 10, y: 37, z: 0}
     second:
       serializedVersion: 2
       m_AnimatedSprites:
@@ -1195,8 +1195,8 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 211765407
-  m_SortingLayer: 2
+  m_SortingLayerID: -1088186033
+  m_SortingLayer: 3
   m_SortingOrder: 1
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -6665,8 +6665,8 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: -60828127
-  m_SortingLayer: 1
+  m_SortingLayerID: 1329374815
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -10675,8 +10675,8 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 211765407
-  m_SortingLayer: 2
+  m_SortingLayerID: -1088186033
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}

@@ -18,5 +18,7 @@ public struct EnemyKilledEvent
     public EnemyBase Enemy;
     public string EnemyType;
     public Vector2 Position;
+    public bool CountsTowardEnemyStats;
+    public float KillXpWeight;
     public DamageContext Context;
 }

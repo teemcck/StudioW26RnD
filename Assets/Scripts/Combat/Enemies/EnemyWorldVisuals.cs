@@ -6,6 +6,8 @@ using UnityEngine;
 [RequireComponent(typeof(EnemyBase))]
 public sealed class EnemyWorldVisuals : MonoBehaviour
 {
+    private sealed class VisualRootMarker : MonoBehaviour { }
+
     private const float HealthBarScale = 0.8f;
     private const float MinBarWidth = 0.6f;
     private const float MaxBarWidth = 1.8f;
@@ -105,12 +107,16 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
         }
     }
 
-    private void CreateVisuals()
+    private void CreateVisuals(bool skipReuseExisting = false)
     {
+        if (!skipReuseExisting && TryReuseExistingVisualRoot())
+            return;
+
         var root = new GameObject($"{name}_WorldVisuals");
         _visualRoot = root.transform;
         _visualRoot.SetParent(transform, false);
         _visualRoot.localPosition = Vector3.zero;
+        _visualRoot.gameObject.AddComponent<VisualRootMarker>();
 
         if (_worldHealthBarEnabled)
             CreateHealthBar();
@@ -131,6 +137,30 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
         _activeStatusAnimations[effectId] = StartCoroutine(PlayStatusAnimation(effectId, frames));
     }
 
+    public void RebuildVisuals()
+    {
+        Transform oldRoot = _visualRoot;
+        _visualRoot = null;
+        _barRoot = null;
+        _barFrameRenderer = null;
+        _barBackgroundRenderer = null;
+        _barFillRenderer = null;
+
+        foreach (var running in _activeStatusAnimations.Values)
+        {
+            if (running != null)
+                StopCoroutine(running);
+        }
+
+        _activeStatusAnimations.Clear();
+
+        if (oldRoot != null)
+            Destroy(oldRoot.gameObject);
+
+        CacheTrackedRenderers();
+        CreateVisuals(skipReuseExisting: true);
+    }
+
     private void CreateHealthBar()
     {
         _barRoot = new GameObject("HealthBar").transform;
@@ -139,6 +169,54 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
         _barFrameRenderer = CreateSpriteRenderer("Frame", _barRoot, new Color(0.04f, 0.04f, 0.04f, 0.95f), 10);
         _barBackgroundRenderer = CreateSpriteRenderer("Background", _barRoot, new Color(0.18f, 0.08f, 0.08f, 0.95f), 11);
         _barFillRenderer = CreateSpriteRenderer("Fill", _barRoot, BaseHealthBarColor, 12);
+    }
+
+    private bool TryReuseExistingVisualRoot()
+    {
+        VisualRootMarker[] markers = GetComponentsInChildren<VisualRootMarker>(true);
+        if (markers.Length == 0)
+            return false;
+
+        _visualRoot = markers[0].transform;
+        for (int i = 1; i < markers.Length; i++)
+        {
+            if (markers[i] != null)
+                Destroy(markers[i].gameObject);
+        }
+
+        CacheHealthBarReferences();
+        if (_worldHealthBarEnabled)
+        {
+            if (_barRoot == null)
+                CreateHealthBar();
+        }
+        else if (_barRoot != null)
+        {
+            Destroy(_barRoot.gameObject);
+            _barRoot = null;
+            _barFrameRenderer = null;
+            _barBackgroundRenderer = null;
+            _barFillRenderer = null;
+        }
+
+        return true;
+    }
+
+    private void CacheHealthBarReferences()
+    {
+        _barRoot = _visualRoot != null ? _visualRoot.Find("HealthBar") : null;
+        _barFrameRenderer = FindBarRenderer("Frame");
+        _barBackgroundRenderer = FindBarRenderer("Background");
+        _barFillRenderer = FindBarRenderer("Fill");
+    }
+
+    private SpriteRenderer FindBarRenderer(string childName)
+    {
+        if (_barRoot == null)
+            return null;
+
+        Transform child = _barRoot.Find(childName);
+        return child ? child.GetComponent<SpriteRenderer>() : null;
     }
 
     private SpriteRenderer CreateSpriteRenderer(string objectName, Transform parent, Color color, int sortingOrder)
@@ -277,6 +355,10 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
             Destroy(_visualRoot.gameObject);
 
         _visualRoot = null;
+        _barRoot = null;
+        _barFrameRenderer = null;
+        _barBackgroundRenderer = null;
+        _barFillRenderer = null;
     }
 
     private List<Sprite> GetStatusFrames(string effectId)

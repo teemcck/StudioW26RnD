@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Bulwark
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeEffectsSO
   upgradeID: Bulwark
-  maxStacks: 1
+  maxStacks: -1
   scaleWithStacks: 0
   traits: []
   effects:

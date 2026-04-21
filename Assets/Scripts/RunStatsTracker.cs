@@ -62,12 +62,23 @@ public class RunStatsTracker : MonoBehaviour
         TotalTimeSeconds += Time.deltaTime;
     }
 
-    private void OnEnemyKilled(EnemyKilledEvent evt) => TotalKillsThisRun++;
+    private void OnEnemyKilled(EnemyKilledEvent evt)
+    {
+        if (evt.CountsTowardEnemyStats)
+            TotalKillsThisRun++;
+    }
 
     public void AddXP(int amount)
     {
         TotalXP += amount;
         Debug.Log($"XP added: {amount}, Total XP: {TotalXP}");
+    }
+
+    public void ResetRunStats()
+    {
+        TotalKillsThisRun = 0;
+        TotalTimeSeconds = 0f;
+        TotalXP = 0;
     }
 
     private void OnFloorCompleted(FloorCompletedEvent evt)
