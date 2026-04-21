@@ -62,8 +62,12 @@ public sealed class StartupUpgradeDebugMenu : MonoBehaviour
 
     private void Update()
     {
-        if (Keyboard.current != null && Keyboard.current.pKey.wasPressedThisFrame)
-            _visible = !_visible;
+        if (Keyboard.current == null || !Keyboard.current.pKey.wasPressedThisFrame)
+            return;
+
+        _visible = !_visible;
+        if (_visible)
+            StartupUpgradeDebugState.AlignWithUpgradeManager(UpgradeManager.Instance);
     }
 
     private void OnGUI()
@@ -345,7 +349,11 @@ public sealed class StartupUpgradeDebugMenu : MonoBehaviour
 
     private static void SyncConfiguredUpgradesToActiveRun(UpgradeManager manager)
     {
-        if (manager == null || manager.CurrentPlayer == null)
+        if (manager == null)
+            return;
+
+        PlayerController player = ResolvePlayerController();
+        if (player == null)
             return;
 
         List<UpgradeDisplaySO> displays = manager.GetAllUpgradeDisplays();
@@ -359,14 +367,14 @@ public sealed class StartupUpgradeDebugMenu : MonoBehaviour
 
             while (current < desired)
             {
-                if (!manager.ApplyUpgrade(display.upgradeID, manager.CurrentPlayer))
+                if (!manager.ApplyUpgrade(display.upgradeID, player))
                     break;
                 current++;
             }
 
             while (current > desired)
             {
-                manager.RevokeUpgrade(display.upgradeID, manager.CurrentPlayer);
+                manager.RevokeUpgrade(display.upgradeID, player);
                 current--;
             }
         }

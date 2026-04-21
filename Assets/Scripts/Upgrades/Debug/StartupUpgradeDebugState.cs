@@ -47,4 +47,17 @@ public static class StartupUpgradeDebugState
             configured.Add(new ConfiguredUpgrade(pair.Key, pair.Value));
         return configured;
     }
+
+    public static void AlignWithUpgradeManager(UpgradeManager manager)
+    {
+        if (manager == null)
+            return;
+
+        foreach (var display in manager.GetAllUpgradeDisplays())
+        {
+            if (display == null || string.IsNullOrEmpty(display.upgradeID))
+                continue;
+            SetCount(display.upgradeID, manager.GetStack(display.upgradeID));
+        }
+    }
 }

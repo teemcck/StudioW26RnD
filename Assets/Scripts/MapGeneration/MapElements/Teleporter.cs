@@ -13,6 +13,10 @@ public class Teleporter : MonoBehaviour
 {
     [HideInInspector] public Transform destination;
 
+    [Header("Player safety")]
+    [Tooltip("After arriving on the next chunk, the player ignores damage from enemies for this long.")]
+    [SerializeField] private float arrivalEnemyDamageGraceSeconds = 0.8f;
+
     private bool _transitioning;
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -36,20 +40,21 @@ public class Teleporter : MonoBehaviour
     {
         AudioManager.Instance?.PlayChunkTransition();
 
+        float grace = arrivalEnemyDamageGraceSeconds;
         var overlay = ChunkTransitionOverlay.Instance;
         if (overlay != null)
         {
-            yield return overlay.Play(() => MovePlayerWithCameraSnap(player, targetPos));
+            yield return overlay.Play(() => MovePlayerWithCameraSnap(player, targetPos, grace));
         }
         else
         {
-            MovePlayerWithCameraSnap(player, targetPos);
+            MovePlayerWithCameraSnap(player, targetPos, grace);
         }
 
         _transitioning = false;
     }
 
-    private static void MovePlayerWithCameraSnap(Transform player, Vector3 targetPos)
+    private static void MovePlayerWithCameraSnap(Transform player, Vector3 targetPos, float graceSeconds)
     {
         var cam = Object.FindFirstObjectByType<CinemachineCamera>();
         CinemachineFollow follow = cam != null ? cam.GetComponent<CinemachineFollow>() : null;
@@ -64,6 +69,10 @@ public class Teleporter : MonoBehaviour
         }
 
         player.position = targetPos;
+
+        var health = player.GetComponent<PlayerHealth>() ?? player.GetComponentInChildren<PlayerHealth>();
+        if (health != null)
+            health.BeginTeleporterArrivalGrace(graceSeconds);
 
         if (hadDamping)
         {

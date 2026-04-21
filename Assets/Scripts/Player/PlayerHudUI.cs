@@ -27,6 +27,10 @@ public sealed class PlayerHudUI : MonoBehaviour
     [Header("Animation")]
     [SerializeField] private float fillLerpSpeed = 10f;
 
+    [Header("Upgrade strip (boss / single-scene builds)")]
+    [SerializeField] private GameObject upgradeStripIconPrefab;
+    [SerializeField] private GameObject upgradeStripOverflowChipPrefab;
+
     private PlayerHealth _playerHealth;
     private PlayerStats _playerStats;
     private CanvasGroup _hudCanvasGroup;
@@ -38,29 +42,92 @@ public sealed class PlayerHudUI : MonoBehaviour
     private float _displayedHealthNormalized = 1f;
     private float _displayedXpNormalized;
     private bool _initializedDisplayedValues;
+    private bool _bossCutsceneSuppressHud;
+    private bool _bossHudIntroFadeActive;
+    private float _bossHudIntroFadeAlpha;
 
     private void Awake()
     {
         _playerHealth = GetComponent<PlayerHealth>();
         _playerStats = GetComponent<PlayerStats>();
         EnsureUi();
-        _ = GetComponent<AppliedUpgradeStripUI>() ?? gameObject.AddComponent<AppliedUpgradeStripUI>();
+        FixHudCanvasScaleIfBroken();
 
-        // Hide HUD initially - will show when gameplay starts
         SetHudVisibility(false);
+    }
+
+    private void Start()
+    {
+        if (UpgradeManager.Instance != null)
+            UpgradeManager.Instance.EnsurePersistentAppliedUpgradeStrip(upgradeStripIconPrefab, upgradeStripOverflowChipPrefab);
+    }
+
+    private void OnEnable()
+    {
+        // Boss intro toggles canvas/cutscene flags; re-sync bar baselines when the player is enabled again.
+        _initializedDisplayedValues = false;
+    }
+
+    /// <summary>
+    /// Boss intro hides the HUD without disabling gameplay state; avoids putting CanvasGroup on the
+    /// player root (which would fight the HUD canvas CanvasGroup every LateUpdate).
+    /// </summary>
+    public void SetBossCutsceneHudSuppressed(bool suppress)
+    {
+        _bossCutsceneSuppressHud = suppress;
+    }
+
+    /// <summary>
+    /// Boss intro: after letterbox, fade the player HUD in together with the boss bar. Alpha 0 keeps the
+    /// canvas updating (bars) while invisible. Call <see cref="ClearBossHudIntroFade"/> when the fade ends.
+    /// </summary>
+    public void SetBossHudIntroFade(float alpha01)
+    {
+        _bossHudIntroFadeActive = true;
+        _bossHudIntroFadeAlpha = Mathf.Clamp01(alpha01);
+    }
+
+    public void ClearBossHudIntroFade()
+    {
+        _bossHudIntroFadeActive = false;
+    }
+
+    public static void InvalidateAllDisplayedValues()
+    {
+        foreach (var hud in Object.FindObjectsByType<PlayerHudUI>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            hud.ClearSmoothedHudState();
+    }
+
+    private void ClearSmoothedHudState()
+    {
+        _initializedDisplayedValues = false;
     }
 
     private void LateUpdate()
     {
-        // Skip updates if player components aren't initialized
+        bool isGameplayActive = IsGameplayActive();
+        bool hudAllowed = isGameplayActive && !_bossCutsceneSuppressHud;
+        bool barUpdates = hudAllowed || _bossHudIntroFadeActive;
+
+        if (_bossHudIntroFadeActive)
+        {
+            EnsureUi();
+            if (hudCanvas != null)
+                hudCanvas.enabled = true;
+            if (_hudCanvasGroup != null)
+            {
+                _hudCanvasGroup.alpha = _bossHudIntroFadeAlpha;
+                _hudCanvasGroup.blocksRaycasts = false;
+                _hudCanvasGroup.interactable = false;
+            }
+        }
+        else
+            SetHudVisibility(hudAllowed);
+
         if (_playerHealth == null || _playerStats == null)
             return;
 
-        // Check if we should be visible during gameplay
-        bool isGameplayActive = IsGameplayActive();
-        SetHudVisibility(isGameplayActive);
-
-        if (isGameplayActive)
+        if (barUpdates)
         {
             UpdateHealthBar();
             UpdateXpBar();
@@ -104,7 +171,9 @@ public sealed class PlayerHudUI : MonoBehaviour
         EnsureUi();
 
         int totalXp = RunStatsTracker.Instance != null ? Mathf.Max(0, RunStatsTracker.Instance.TotalXP) : 0;
-        int xpThreshold = GameplayHandler.Instance != null ? Mathf.Max(1, GameplayHandler.Instance.XPPerFloor) : 1;
+        int xpThreshold = GameplayHandler.Instance != null
+            ? Mathf.Max(1, GameplayHandler.Instance.XPPerFloor)
+            : Mathf.Max(1, GameplayHandler.LastPublishedXpPerFloor);
         int displayXp = totalXp % xpThreshold;
         float xpNormalized = (float)displayXp / xpThreshold;
         _displayedXpNormalized = Mathf.Lerp(_displayedXpNormalized, xpNormalized, Time.deltaTime * fillLerpSpeed);
@@ -218,7 +287,9 @@ public sealed class PlayerHudUI : MonoBehaviour
             _displayedHealthNormalized = Mathf.Clamp01(_playerHealth.CurrentHealth / maxHealth);
 
             int totalXp = RunStatsTracker.Instance != null ? Mathf.Max(0, RunStatsTracker.Instance.TotalXP) : 0;
-            int xpThreshold = GameplayHandler.Instance != null ? Mathf.Max(1, GameplayHandler.Instance.XPPerFloor) : 1;
+            int xpThreshold = GameplayHandler.Instance != null
+                ? Mathf.Max(1, GameplayHandler.Instance.XPPerFloor)
+                : Mathf.Max(1, GameplayHandler.LastPublishedXpPerFloor);
             _displayedXpNormalized = Mathf.Clamp01((float)(totalXp % xpThreshold) / xpThreshold);
             _initializedDisplayedValues = true;
         }
@@ -228,6 +299,19 @@ public sealed class PlayerHudUI : MonoBehaviour
 
         if (healthFillRect == null || healthValueText == null || xpFillRect == null || xpValueText == null)
             Debug.LogWarning("[PlayerHudUI] Missing HUD references. Expected child objects named HealthFill, HealthText, XPFill, and XPText.");
+    }
+
+    private void FixHudCanvasScaleIfBroken()
+    {
+        if (hudCanvas == null)
+            return;
+
+        var rt = hudCanvas.transform as RectTransform;
+        if (rt == null)
+            return;
+
+        if (rt.localScale.x < 0.001f || rt.localScale.y < 0.001f || rt.localScale.z < 0.001f)
+            rt.localScale = Vector3.one;
     }
 
     private RectTransform FindChildRect(string childName)

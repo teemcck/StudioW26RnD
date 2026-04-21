@@ -100,7 +100,7 @@ public class PlayerStats : MonoBehaviour
 
     [Header("Defence")]
     [SerializeField] private float baseMaxHealth  = 100f;
-    [SerializeField] private float baseHealthRegen = 2f;
+    [SerializeField] private float baseHealthRegen = 0.2f;
     [SerializeField] private float baseDamageReduction    = 0f;
     [SerializeField] private float baseDodgeChance = 0f;
 
@@ -112,6 +112,19 @@ public class PlayerStats : MonoBehaviour
     private Dictionary<PlayerStatType, Stat> _stats;
 
     private void Awake() => InitStats();
+
+    /// <summary>Other components (e.g. <see cref="PlayerHudUI"/>) can read stats in Awake before this Awake runs — ensure the table exists.</summary>
+    private void EnsureStatsInitialized()
+    {
+        if (_stats == null)
+            InitStats();
+    }
+
+    private Stat GetStat(PlayerStatType type)
+    {
+        EnsureStatsInitialized();
+        return _stats[type];
+    }
 
     private void InitStats()
     {
@@ -139,6 +152,7 @@ public class PlayerStats : MonoBehaviour
 
     public void AddFlat(PlayerStatType type, float delta)
     {
+        EnsureStatsInitialized();
         if (_stats.TryGetValue(type, out var stat))
         {
             float before = stat.Value;
@@ -151,6 +165,7 @@ public class PlayerStats : MonoBehaviour
 
     public void AddMultiplier(PlayerStatType type, float delta)
     {
+        EnsureStatsInitialized();
         if (_stats.TryGetValue(type, out var stat))
         {
             float before = stat.Value;
@@ -162,25 +177,28 @@ public class PlayerStats : MonoBehaviour
     }
 
     public float Get(PlayerStatType type)
-        => _stats.TryGetValue(type, out var s) ? s.Value : 0f;
+    {
+        EnsureStatsInitialized();
+        return _stats.TryGetValue(type, out var s) ? s.Value : 0f;
+    }
     
     // Typed property accessors - use these to improve code clarity elsewhere
 
-    public float MoveSpeed      => _stats[PlayerStatType.MoveSpeed].Value;
-    public float DashSpeed      => _stats[PlayerStatType.DashSpeed].Value;
-    public int   DashCount      => Mathf.RoundToInt(_stats[PlayerStatType.DashCount].Value);
-    public float DashCooldown   => Mathf.Max(0.05f, _stats[PlayerStatType.DashCooldown].Value);
-    public float DashDistance   => _stats[PlayerStatType.DashDistance].Value;
-    public float AttackDamage   => _stats[PlayerStatType.AttackDamage].Value;
-    public float AttackSpeed    => _stats[PlayerStatType.AttackSpeed].Value;
-    public float AttackRange    => _stats[PlayerStatType.AttackRange].Value;
-    public float CritChance     => Mathf.Clamp01(_stats[PlayerStatType.CritChance].Value);
-    public float CritMultiplier => _stats[PlayerStatType.CritMultiplier].Value;
-    public float MaxHealth      => _stats[PlayerStatType.MaxHealth].Value;
-    public float HealthRegen    => Mathf.Max(0f, _stats[PlayerStatType.HealthRegen].Value);
-    public float DamageReduction          => _stats[PlayerStatType.DamageReduction].Value;
-    public float DodgeChance    => Mathf.Clamp01(_stats[PlayerStatType.DodgeChance].Value);
-    public float XPMultiplier   => _stats[PlayerStatType.XPMultiplier].Value;
+    public float MoveSpeed      => GetStat(PlayerStatType.MoveSpeed).Value;
+    public float DashSpeed      => GetStat(PlayerStatType.DashSpeed).Value;
+    public int   DashCount      => Mathf.RoundToInt(GetStat(PlayerStatType.DashCount).Value);
+    public float DashCooldown   => Mathf.Max(0.05f, GetStat(PlayerStatType.DashCooldown).Value);
+    public float DashDistance   => GetStat(PlayerStatType.DashDistance).Value;
+    public float AttackDamage   => GetStat(PlayerStatType.AttackDamage).Value;
+    public float AttackSpeed    => GetStat(PlayerStatType.AttackSpeed).Value;
+    public float AttackRange    => GetStat(PlayerStatType.AttackRange).Value;
+    public float CritChance     => Mathf.Clamp01(GetStat(PlayerStatType.CritChance).Value);
+    public float CritMultiplier => GetStat(PlayerStatType.CritMultiplier).Value;
+    public float MaxHealth      => GetStat(PlayerStatType.MaxHealth).Value;
+    public float HealthRegen    => Mathf.Max(0f, GetStat(PlayerStatType.HealthRegen).Value);
+    public float DamageReduction          => GetStat(PlayerStatType.DamageReduction).Value;
+    public float DodgeChance    => Mathf.Clamp01(GetStat(PlayerStatType.DodgeChance).Value);
+    public float XPMultiplier   => GetStat(PlayerStatType.XPMultiplier).Value;
 
     /// <summary>Wipes all bonuses - call at run start.</summary>
     public void ResetToBase() => InitStats();

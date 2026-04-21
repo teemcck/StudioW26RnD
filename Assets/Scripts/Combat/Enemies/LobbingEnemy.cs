@@ -65,6 +65,11 @@ public class LobbingEnemy : EnemyBase
         _baseScale = transform.localScale;
     }
 
+    protected override void OnRuntimeScalingApplied()
+    {
+        _baseScale = transform.localScale;
+    }
+
     private void OnEnable()
     {
         _facingSign = 1;
@@ -97,8 +102,11 @@ public class LobbingEnemy : EnemyBase
         Vector2 dir = toPlayer.sqrMagnitude > 0.0001f ? toPlayer.normalized : Vector2.zero;
         UpdateFacing(toPlayer, Rb.linearVelocity);
 
-        if (!IsPlayerInSameChunk())
+        if (!IsPlayerOnSameChunk())
+        {
+            Rb.linearVelocity = Vector2.zero;
             return;
+        }
 
         if (IsInHitReaction)
         {
@@ -177,7 +185,7 @@ public class LobbingEnemy : EnemyBase
     private void TryFireLockedShot()
     {
         if (_firedThisAttack || !projectilePrefab) return;
-        if (!IsPlayerInSameChunk()) return;
+        if (!IsPlayerOnSameChunk()) return;
         _firedThisAttack = true;
         DestroyPreShotIndicator();
 
@@ -185,7 +193,7 @@ public class LobbingEnemy : EnemyBase
         var proj = Instantiate(projectilePrefab, fire, Quaternion.identity);
         proj.ScaleDamage(DamageMultiplier);
         proj.FireBallistic(fire, _lockedTargetPoint, horizontalShotSpeed);
-        AudioManager.Instance?.PlayUfoAttack();
+        AudioManager.Instance?.PlayUfoAttackAt(transform.position);
         SpawnMuzzleFlash(fire);
     }
 
@@ -347,13 +355,6 @@ public class LobbingEnemy : EnemyBase
         }
         DestroyPreShotIndicator();
         PlayState(idleStateName, forceRestart: true);
-    }
-
-    private bool IsPlayerInSameChunk()
-    {
-        if (!Player) return false;
-        if (MapSpawner.Instance == null) return true;
-        return MapSpawner.Instance.ArePositionsInSameChunk(transform.position, Player.position);
     }
 
     private static Vector2 GetPlayerFeetWorld(Transform player)

@@ -119,6 +119,17 @@ public sealed class BossHealthBarUI : MonoBehaviour
             ShowBar();
     }
 
+    /// <summary>Used with PlayerHudUI so boss bar and player HUD fade in on the same curve.</summary>
+    public void SetIntroFadeAlpha(float alpha01)
+    {
+        ResolveReferences();
+        if (!introFadeGroup)
+            return;
+        introFadeGroup.alpha = Mathf.Clamp01(alpha01);
+        if (alpha01 > 0.001f && rootCanvas)
+            rootCanvas.enabled = true;
+    }
+
     public IEnumerator FadeOutForDeath(float duration)
     {
         duration = Mathf.Max(0.01f, duration);

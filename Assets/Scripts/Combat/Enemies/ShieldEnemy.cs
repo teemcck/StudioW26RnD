@@ -51,6 +51,12 @@ public class ShieldEnemy : MeleeEnemy
 
     protected override void FixedUpdate()
     {
+        if (!IsPlayerOnSameChunk())
+        {
+            Rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
         AimShieldTowardPlayer();
         base.FixedUpdate();
     }
@@ -126,7 +132,7 @@ public class ShieldEnemy : MeleeEnemy
         PlayShieldFlash();
 
         if (HitSparkSpawner.Instance != null)
-            HitSparkSpawner.Instance.Spawn(transform.position, GameColors.HitShield);
+            HitSparkSpawner.Instance.Spawn(transform.position, GameColors.HitShield, HitSparkCategory.Shield);
 
         if (_shieldHp <= 0f)
         {

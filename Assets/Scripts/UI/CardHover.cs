@@ -46,7 +46,16 @@ public sealed class CardHover : MonoBehaviour, IPointerEnterHandler, IPointerExi
         if (data == null) return;
 
         _hovered = true;
-        CardDetailPanel.Instance?.Show(_rt, data, stackCount, detailAnchor, compactDetailPanel);
+        RectTransform anchor = _rt;
+        DetailAnchor place = detailAnchor;
+        if (AppliedUpgradesOverflowListPanel.ActiveInstance is { IsOpen: true } overflow &&
+            overflow.DescriptionAnchor != null)
+        {
+            anchor = overflow.DescriptionAnchor;
+            place = DetailAnchor.BelowAnchor;
+        }
+
+        CardDetailPanel.Instance?.Show(anchor, data, stackCount, place, compactDetailPanel);
 
         if (_animRoutine != null) StopCoroutine(_animRoutine);
         _animRoutine = StartCoroutine(AnimateScaleTo(_restScale * hoverScale));

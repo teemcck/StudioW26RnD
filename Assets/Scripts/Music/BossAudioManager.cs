@@ -32,6 +32,8 @@ public sealed class BossAudioManager : MonoBehaviour
     [SerializeField] private AudioClip sfxShieldDamage;
     [SerializeField] private AudioClip sfxShieldBreak;
     [SerializeField] [Range(0f, 2f)] private float bossSfxVolume = 1f;
+    [Tooltip("Random pitch ± around 1.0 for one-shots (e.g. 0.01 ≈ ±1%).")]
+    [SerializeField] [Range(0f, 0.04f)] private float bossSfxPitchJitterHalfRange = 0.01f;
     [SerializeField] [Range(0.65f, 1f)] private float deathSfxPitchLean = 0.92f;
     [SerializeField] private AudioMixerGroup sfxOutput;
 
@@ -111,7 +113,10 @@ public sealed class BossAudioManager : MonoBehaviour
     private void PlayBossSfxClip(AudioClip clip, float volumeScale = 1f)
     {
         if (!clip || !_sfxSource) return;
+        float h = bossSfxPitchJitterHalfRange;
+        _sfxSource.pitch = h <= 0f ? 1f : Mathf.Clamp(1f + UnityEngine.Random.Range(-h, h), 0.5f, 2f);
         _sfxSource.PlayOneShot(clip, Mathf.Clamp01(bossSfxVolume * volumeScale));
+        _sfxSource.pitch = 1f;
     }
 
     public void PlayPhaseTransitionToPhase2Sfx() => PlayBossSfxClip(sfxPhaseTransitionToPhase2);

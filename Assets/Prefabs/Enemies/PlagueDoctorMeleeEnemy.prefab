@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 910070007}
   - component: {fileID: 910070008}
   - component: {fileID: 3934071374010812034}
+  - component: {fileID: 2988569124042472248}
   m_Layer: 7
   m_Name: PlagueDoctorMeleeEnemy
   m_TagString: Untagged
@@ -65,7 +66,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -208,12 +209,14 @@ MonoBehaviour:
   hitPulseStartScale: 0.45
   hitPulseEndScale: 0.9
   hitPulseSortingOrderBoost: 2
+  postSpawnGracePeriod: 0.6
   attackRange: 0.9
   attackCooldown: 0.7
   contactDamage: 2.5
   chaseForceMultiplier: 1
   attackAnimationDuration: 1.05
   vulnerableDuration: 1.5
+  vulnerableIncomingDamageMultiplier: 1.25
   damageMomentSeconds: 0.9
   swingHalfAngleDegrees: 55
   swingReach: 1
@@ -229,6 +232,8 @@ MonoBehaviour:
   targetFacingThreshold: 0.2
   minFlipInterval: 0.12
   spriteFacesRightByDefault: 0
+  lungeDistance: 0.9
+  lungeDuration: 0.22
   enableSwingSlashVfx: 1
   slashVfxTransform: {fileID: 910070010}
   slashVfxAnimator: {fileID: 910070012}
@@ -302,6 +307,77 @@ MonoBehaviour:
   statusFrameDuration: 0.06
   statusYOffset: 0.3
   statusScaleMultiplier: 1
+--- !u!114 &2988569124042472248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910070001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.ShadowCaster2D
+  m_ShadowGroup: 0
+  m_Priority: 0
+  m_ComponentVersion: 5
+  m_HasRenderer: 1
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 0
+  m_AlphaCutoff: 0.1
+  m_ApplyToSortingLayers: 5fa63c4f0000000021d65ffc9f489f0c4f9923bfdde40132
+  m_ShapePath:
+  - {x: -0.0676254, y: 0.0045763627, z: 0}
+  - {x: -0.086968996, y: 0.059424467, z: 0}
+  - {x: -0.12129176, y: 0.11891724, z: 0}
+  - {x: -0.06866353, y: 0.16239274, z: 0}
+  - {x: -0.08468081, y: 0.2218855, z: 0}
+  - {x: -0.15103814, y: 0.17841002, z: 0}
+  - {x: -0.15790269, y: 0.24019098, z: 0}
+  - {x: -0.096121736, y: 0.28824285, z: 0}
+  - {x: -0.099659964, y: 0.33542362, z: 0}
+  - {x: 0.02872628, y: 0.34, z: 0}
+  - {x: 0.06176292, y: 0.24019098, z: 0}
+  - {x: 0.11439115, y: 0.26307282, z: 0}
+  - {x: 0.14642571, y: 0.2516319, z: 0}
+  - {x: 0.12583207, y: 0.16696909, z: 0}
+  - {x: 0.096085675, y: 0.17383365, z: 0}
+  - {x: 0.10523841, y: 0.20586823, z: 0}
+  - {x: 0.07091566, y: 0.18985093, z: 0}
+  - {x: 0.10194815, y: 0.011440918, z: 0}
+  - {x: 0.06862748, y: 0.054848105, z: 0}
+  - {x: 0.015999254, y: 0.009084426, z: 0}
+  - {x: -0.0023062155, y: 0.06400084, z: 0}
+  - {x: -0.020611681, y: -0.00922104, z: 0}
+  - {x: -0.059510805, y: 0.041119, z: 0}
+  m_ShapePathHash: 2111746719
+  m_InstanceId: 0
+  m_ShadowShape2DComponent: {fileID: 0}
+  m_ShadowShape2DProvider:
+    rid: -2
+  m_ShadowCastingSource: 1
+  m_ShadowMesh:
+    m_Mesh: {fileID: 0}
+    m_LocalBounds:
+      m_Center: {x: -0.005738497, y: 0.16538948, z: 0}
+      m_Extent: {x: 0.15216419, y: 0.17461053, z: 0}
+    m_EdgeProcessing: 1
+    m_TrimEdge: 0.03
+    m_FlipX: 0
+    m_FlipY: 0
+    m_InitialTrim: 0.03
+  m_CastingOption: 1
+  m_PreviousTrimEdge: 0.03
+  m_PreviousEdgeProcessing: 1
+  m_PreviousShadowCastingSource: 1
+  m_PreviousShadowShape2DSource: {fileID: 910070003}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!1 &910070009
 GameObject:
   m_ObjectHideFlags: 0
@@ -361,7 +437,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

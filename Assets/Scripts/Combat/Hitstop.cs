@@ -5,6 +5,9 @@ public sealed class Hitstop : MonoBehaviour
 {
     public static Hitstop Instance { get; private set; }
 
+    /// <summary>Time scales in this range are treated as accidental micro slow-mo (e.g. boss shield break) and reset to 1 after hitstop.</summary>
+    private const float AmbiguousSlowMoMax = 0.35f;
+
     private Coroutine _activeRoutine;
     private int _activePriority = -1;
     private float _activeEndUnscaledTime;
@@ -21,7 +24,10 @@ public sealed class Hitstop : MonoBehaviour
     {
         if (_activeRoutine != null)
         {
-            Time.timeScale = _savedTimeScale;
+            float r = _savedTimeScale;
+            if (r > 0.02f && r < AmbiguousSlowMoMax)
+                r = 1f;
+            Time.timeScale = r;
             Time.fixedDeltaTime = _savedFixedDelta;
         }
         if (Instance == this) Instance = null;
@@ -39,12 +45,18 @@ public sealed class Hitstop : MonoBehaviour
             if (priority == _activePriority && requestedEnd <= _activeEndUnscaledTime) return;
 
             StopCoroutine(_activeRoutine);
-            Time.timeScale = _savedTimeScale;
+            float interruptedRestore = _savedTimeScale;
+            if (interruptedRestore > 0.02f && interruptedRestore < AmbiguousSlowMoMax)
+                interruptedRestore = 1f;
+            Time.timeScale = interruptedRestore;
             Time.fixedDeltaTime = _savedFixedDelta;
         }
         else
         {
-            _savedTimeScale = Time.timeScale;
+            float s = Time.timeScale;
+            if (s <= 0.02f || (s > 0.02f && s < AmbiguousSlowMoMax))
+                s = 1f;
+            _savedTimeScale = s;
             _savedFixedDelta = Time.fixedDeltaTime;
         }
 
@@ -60,7 +72,10 @@ public sealed class Hitstop : MonoBehaviour
         Time.timeScale = 0f;
         Time.fixedDeltaTime = 0f;
         yield return new WaitForSecondsRealtime(unscaledSeconds);
-        Time.timeScale = _savedTimeScale;
+        float restore = _savedTimeScale;
+        if (restore > 0.02f && restore < AmbiguousSlowMoMax)
+            restore = 1f;
+        Time.timeScale = restore;
         Time.fixedDeltaTime = _savedFixedDelta;
         _activeRoutine = null;
         _activePriority = -1;

@@ -17,6 +17,7 @@ MonoBehaviour:
   m_RendererType: 1
   m_RendererData: {fileID: 0}
   m_RendererDataList:
+  - {fileID: 11400000, guid: 32351971e6074179942384edecced8e3, type: 2}
   - {fileID: 11400000, guid: 65bc7dbf4170f435aa868c779acfb082, type: 2}
   m_DefaultRendererIndex: 0
   m_RequireDepthTexture: 0
@@ -87,8 +88,8 @@ MonoBehaviour:
   m_SmallMeshScreenPercentage: 0
   m_GPUResidentDrawerEnableOcclusionCullingInCameras: 0
   m_ShadowType: 1
-  m_LocalShadowsSupported: 0
-  m_LocalShadowsAtlasResolution: 256
+  m_LocalShadowsSupported: 1
+  m_LocalShadowsAtlasResolution: 512
   m_MaxPixelLights: 0
   m_ShadowAtlasResolution: 256
   m_VolumeFrameworkUpdateMode: 0

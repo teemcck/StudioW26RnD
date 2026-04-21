@@ -1,8 +1,16 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class SimpleProjectile : MonoBehaviour
 {
+    [Header("Visual (optional)")]
+    [SerializeField] private bool enableFlightPointLight = true;
+    [SerializeField] [Range(0.05f, 0.65f)] private float flightLightIntensityPlayer = 0.34f;
+    [SerializeField] [Range(0.05f, 0.65f)] private float flightLightIntensityEnemy = 0.24f;
+    [SerializeField] private float flightLightOuterRadius = 0.62f;
+    [SerializeField] private float flightLightInnerRadius = 0.06f;
+
     [SerializeField] private float speed = 8f;
     [SerializeField] private float lifetime = 3f;
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -24,6 +32,7 @@ public class SimpleProjectile : MonoBehaviour
     private int _animFrame;
     private float _runtimeDamage;
     private float _runtimeKnockback;
+    private float _runtimeSpeed = -1f;
     private DamageContext _damageContext;
 
     private void Awake()
@@ -34,23 +43,45 @@ public class SimpleProjectile : MonoBehaviour
         _animator = GetComponent<Animator>();
     }
 
-    public void Fire(Vector2 direction, float damageOverride, float knockbackOverride, DamageContext context)
+    public void Fire(Vector2 direction, float damageOverride, float knockbackOverride, DamageContext context, float speedOverride = -1f)
     {
         _dir = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector2.right;
         _runtimeDamage = damageOverride > 0f ? damageOverride : damage;
         _runtimeKnockback = knockbackOverride > 0f ? knockbackOverride : knockbackForce;
+        _runtimeSpeed = speedOverride;
         _damageContext = context;
         _animTimer = 0f;
         _animFrame = 0;
-<<<<<<< Updated upstream
         ApplyAnimationFrame(_animFrame);
         TintTrailForSource(context);
-
-=======
-        if (HasFlightAnimationFrames())
-            ApplyAnimationFrame(_animFrame);
->>>>>>> Stashed changes
+        SetupFlightLight(context);
         Destroy(gameObject, lifetime);
+    }
+
+    void SetupFlightLight(DamageContext context)
+    {
+        if (!enableFlightPointLight)
+            return;
+
+        var go = new GameObject("ProjectileFlightLight2D");
+        go.transform.SetParent(transform, false);
+        go.transform.localPosition = Vector3.zero;
+
+        var light = go.AddComponent<Light2D>();
+        light.lightType = Light2D.LightType.Point;
+        light.blendStyleIndex = TransientPointLight2D.AdditiveBlendStyleIndex;
+        light.overlapOperation = Light2D.OverlapOperation.Additive;
+        light.falloffIntensity = 0.58f;
+        light.pointLightInnerRadius = flightLightInnerRadius;
+        light.pointLightOuterRadius = flightLightOuterRadius;
+
+        bool player = context.WasCausedByPlayer;
+        light.intensity = player ? flightLightIntensityPlayer : flightLightIntensityEnemy;
+        light.color = player
+            ? Color.Lerp(GameColors.SafeDash, Color.white, 0.25f)
+            : new Color(0.98f, 0.55f, 1f, 1f);
+        Light2DGameplayTargets.ApplyLocalAccentWithoutMapLayer(light);
+        Light2DGameplayTargets.EnableAccentLightShadows(light, shadowIntensity: 0.45f, shadowSoftness: 0.25f);
     }
 
     private void TintTrailForSource(DamageContext context)
@@ -68,7 +99,8 @@ public class SimpleProjectile : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _rb.linearVelocity = _dir * speed;
+        float moveSpeed = _runtimeSpeed > 0f ? _runtimeSpeed : speed;
+        _rb.linearVelocity = _dir * moveSpeed;
 
         if (rotateToDirection && _dir.sqrMagnitude > 0.0001f)
         {

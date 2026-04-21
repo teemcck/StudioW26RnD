@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 990070006}
   - component: {fileID: 990070009}
   - component: {fileID: 990070007}
+  - component: {fileID: 1588195824408296443}
   m_Layer: 7
   m_Name: WormBoss
   m_TagString: Untagged
@@ -64,7 +65,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -207,6 +208,7 @@ MonoBehaviour:
   hitPulseStartScale: 0.6
   hitPulseEndScale: 1.2
   hitPulseSortingOrderBoost: 2
+  postSpawnGracePeriod: 0.6
   animator: {fileID: 990070008}
   spriteRenderer: {fileID: 990070003}
   baseTilemap: {fileID: 0}
@@ -349,3 +351,56 @@ MonoBehaviour:
   spriteRenderer: {fileID: 990070003}
   flashColor: {r: 1, g: 0.55, b: 0.55, a: 1}
   flashDuration: 0.08
+--- !u!114 &1588195824408296443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990070001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.ShadowCaster2D
+  m_ShadowGroup: 0
+  m_Priority: 0
+  m_ComponentVersion: 5
+  m_HasRenderer: 0
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 0
+  m_AlphaCutoff: 0.1
+  m_ApplyToSortingLayers: 5fa63c4f0000000021d65ffc9f489f0c4f9923bfdde40132
+  m_ShapePath:
+  - {x: -0.41, y: -0.36, z: 0}
+  - {x: -0.41, y: 0.36, z: 0}
+  - {x: 0.41, y: 0.36, z: 0}
+  - {x: 0.41, y: -0.36, z: 0}
+  m_ShapePathHash: 0
+  m_InstanceId: 0
+  m_ShadowShape2DComponent: {fileID: 990070003}
+  m_ShadowShape2DProvider:
+    rid: 3121471083032871253
+  m_ShadowCastingSource: 2
+  m_ShadowMesh:
+    m_Mesh: {fileID: 0}
+    m_LocalBounds:
+      m_Center: {x: 0, y: 0, z: 0}
+      m_Extent: {x: 0.31999207, y: 0.269989, z: 0}
+    m_EdgeProcessing: 1
+    m_TrimEdge: 0.09
+    m_FlipX: 0
+    m_FlipY: 0
+    m_InitialTrim: 0.09
+  m_CastingOption: 1
+  m_PreviousTrimEdge: 0
+  m_PreviousEdgeProcessing: -1
+  m_PreviousShadowCastingSource: -1
+  m_PreviousShadowShape2DSource: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 3121471083032871253
+      type: {class: ShadowShape2DProvider_SpriteRenderer, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data: 

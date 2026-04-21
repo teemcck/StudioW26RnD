@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 [DisallowMultipleComponent]
 [RequireComponent(typeof(EnemyBase))]
 public sealed class EnemyWorldVisuals : MonoBehaviour
@@ -42,6 +41,8 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
     private SpriteRenderer _barFrameRenderer;
     private SpriteRenderer _barBackgroundRenderer;
     private SpriteRenderer _barFillRenderer;
+    /// <summary>Yellow overlay on the frame: same outer size as <see cref="_barFrameRenderer"/>, width scales from the left with shield.</summary>
+    private SpriteRenderer _eliteShieldFrameOverlay;
 
     private void Awake()
     {
@@ -69,6 +70,13 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
 
         if (_enemy.IsDead)
             return;
+
+        if (_elite == null)
+        {
+            _elite = GetComponent<EliteModifier>();
+            if (_elite != null && _worldHealthBarEnabled && _barRoot != null && _eliteShieldFrameOverlay == null)
+                NotifyEliteAttached();
+        }
 
         if (!_worldHealthBarEnabled || _barRoot == null)
             return;
@@ -145,6 +153,7 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
         _barFrameRenderer = null;
         _barBackgroundRenderer = null;
         _barFillRenderer = null;
+        _eliteShieldFrameOverlay = null;
 
         foreach (var running in _activeStatusAnimations.Values)
         {
@@ -161,14 +170,28 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
         CreateVisuals(skipReuseExisting: true);
     }
 
+    /// <summary>
+    /// Call when <see cref="EliteModifier"/> is added at runtime after Awake (e.g. map spawner).
+    /// Refreshes the elite reference and rebuilds the health bar so shield UI appears immediately.
+    /// </summary>
+    public void NotifyEliteAttached()
+    {
+        _elite = GetComponent<EliteModifier>();
+        if (_elite == null)
+            return;
+        RebuildVisuals();
+    }
+
     private void CreateHealthBar()
     {
         _barRoot = new GameObject("HealthBar").transform;
         _barRoot.SetParent(_visualRoot, false);
 
         _barFrameRenderer = CreateSpriteRenderer("Frame", _barRoot, new Color(0.04f, 0.04f, 0.04f, 0.95f), 10);
-        _barBackgroundRenderer = CreateSpriteRenderer("Background", _barRoot, new Color(0.18f, 0.08f, 0.08f, 0.95f), 11);
-        _barFillRenderer = CreateSpriteRenderer("Fill", _barRoot, BaseHealthBarColor, 12);
+        if (_elite != null)
+            CreateEliteShieldFrameOverlay();
+        _barBackgroundRenderer = CreateSpriteRenderer("Background", _barRoot, new Color(0.18f, 0.08f, 0.08f, 0.95f), 12);
+        _barFillRenderer = CreateSpriteRenderer("Fill", _barRoot, BaseHealthBarColor, 13);
     }
 
     private bool TryReuseExistingVisualRoot()
@@ -197,6 +220,7 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
             _barFrameRenderer = null;
             _barBackgroundRenderer = null;
             _barFillRenderer = null;
+            _eliteShieldFrameOverlay = null;
         }
 
         return true;
@@ -208,6 +232,8 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
         _barFrameRenderer = FindBarRenderer("Frame");
         _barBackgroundRenderer = FindBarRenderer("Background");
         _barFillRenderer = FindBarRenderer("Fill");
+        Transform eliteOverlay = _barRoot != null ? _barRoot.Find("EliteShieldFrameOverlay") : null;
+        _eliteShieldFrameOverlay = eliteOverlay ? eliteOverlay.GetComponent<SpriteRenderer>() : null;
     }
 
     private SpriteRenderer FindBarRenderer(string childName)
@@ -235,15 +261,11 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
     private void UpdateHealthBar(Bounds bounds)
     {
         float barWidth = Mathf.Clamp(bounds.size.x * 0.95f, MinBarWidth, MaxBarWidth) * HealthBarScale;
-        float normalized = _enemy.HealthNormalized;
-        float fillWidth = Mathf.Max(0.0001f, barWidth * normalized);
+        float fillNorm = _enemy.HealthNormalized;
+        float fillWidth = Mathf.Max(0.0001f, barWidth * fillNorm);
         float y = bounds.max.y + BarYOffset;
         float barHeight = BarHeight * HealthBarScale;
         float framePadding = FramePadding * HealthBarScale;
-
-        bool eliteWithShield = _elite != null && _elite.HasShield;
-        if (eliteWithShield)
-            framePadding *= 2.2f;
 
         _barRoot.position = new Vector3(bounds.center.x, y, bounds.center.z);
         _barFrameRenderer.transform.localScale = new Vector3(barWidth + framePadding, barHeight + framePadding, 1f);
@@ -251,11 +273,10 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
         _barFillRenderer.transform.localScale = new Vector3(fillWidth, barHeight * 0.82f, 1f);
         _barFillRenderer.color = GetHealthBarColor();
 
+        _barFrameRenderer.color = new Color(0.04f, 0.04f, 0.04f, 0.95f);
+
         if (_elite != null)
-        {
-            Color frameTarget = eliteWithShield ? GameColors.EliteAccent : new Color(0.04f, 0.04f, 0.04f, 0.95f);
-            _barFrameRenderer.color = Color.Lerp(_barFrameRenderer.color, frameTarget, Time.deltaTime * 8f);
-        }
+            UpdateEliteShieldFrameOverlay(barWidth, barHeight, framePadding);
 
         float leftEdge = -barWidth * 0.5f;
         _barFillRenderer.transform.localPosition = new Vector3(leftEdge + fillWidth * 0.5f, 0f, 0f);
@@ -359,6 +380,62 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
         _barFrameRenderer = null;
         _barBackgroundRenderer = null;
         _barFillRenderer = null;
+        _eliteShieldFrameOverlay = null;
+    }
+
+    private void CreateEliteShieldFrameOverlay()
+    {
+        if (_elite == null || _barRoot == null)
+            return;
+
+        var go = new GameObject("EliteShieldFrameOverlay");
+        go.transform.SetParent(_barRoot, false);
+        go.transform.localPosition = Vector3.zero;
+
+        var sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = GetUnitSprite();
+        Color y = GameColors.EliteAccent;
+        y.a = 1f;
+        sr.color = y;
+        sr.sortingLayerName = GetSortingLayerName();
+        sr.sortingOrder = GetBaseSortingOrder() + 11;
+        _eliteShieldFrameOverlay = sr;
+    }
+
+    /// <summary>
+    /// Same outer rect as the dark frame; width = full width × shield (left edge fixed, shrinks toward the right).
+    /// </summary>
+    private void UpdateEliteShieldFrameOverlay(float barWidth, float barHeight, float framePadding)
+    {
+        if (_elite == null || _barRoot == null)
+            return;
+
+        if (_eliteShieldFrameOverlay == null)
+            CreateEliteShieldFrameOverlay();
+        if (_eliteShieldFrameOverlay == null)
+            return;
+
+        float shieldFrac = _elite.HasShield ? Mathf.Clamp01(_elite.ShieldNormalized) : 0f;
+        if (!_elite.HasShield || shieldFrac <= 0.001f)
+        {
+            _eliteShieldFrameOverlay.gameObject.SetActive(false);
+            return;
+        }
+
+        float outerW = barWidth + framePadding;
+        float outerH = barHeight + framePadding;
+        float halfW = outerW * 0.5f;
+        float w = outerW * shieldFrac;
+
+        _eliteShieldFrameOverlay.gameObject.SetActive(true);
+        _eliteShieldFrameOverlay.transform.localScale = new Vector3(w, outerH, 1f);
+        _eliteShieldFrameOverlay.transform.localPosition = new Vector3(-halfW + w * 0.5f, 0f, -0.002f);
+
+        Color y = GameColors.EliteAccent;
+        y.a = 1f;
+        if (_elite.IsShieldRegenerating)
+            y = Color.Lerp(y, new Color(1f, 0.98f, 0.45f, 1f), 0.4f);
+        _eliteShieldFrameOverlay.color = y;
     }
 
     private List<Sprite> GetStatusFrames(string effectId)

@@ -39,6 +39,11 @@ public sealed class BossEscapeSequenceManager : MonoBehaviour
     [SerializeField] private int maxAliveEnemies = 10;
     [SerializeField] private int maxTotalSpawns = 30;
 
+    [Header("Difficulty")]
+    [Tooltip("Multiplies final-floor scaling so escape spawns are slightly tougher than the last normal floor.")]
+    [SerializeField] private float escapeEnemyHealthScaleBonus = 1.16f;
+    [SerializeField] private float escapeEnemyDamageScaleBonus = 1.12f;
+
     private Coroutine _spawnLoop;
     private Coroutine _rumbleLoop;
     private bool _escapeActive;
@@ -219,9 +224,32 @@ public sealed class BossEscapeSequenceManager : MonoBehaviour
             return false;
 
         GameObject instance = Instantiate(prefab, pos.Value, Quaternion.identity, parent);
+        ApplyEscapeEnemyScaling(instance);
         _spawned.Add(instance);
         _totalSpawned++;
         return true;
+    }
+
+    private void ApplyEscapeEnemyScaling(GameObject instance)
+    {
+        if (instance == null)
+            return;
+
+        int floorIdx = Mathf.Max(0, WorldProgression.BossFloorIndex - 1);
+        if (GameplayHandler.Instance != null)
+            floorIdx = Mathf.Max(floorIdx, GameplayHandler.Instance.CurrentFloorIndex);
+
+        float healthMult = FloorScalingCurve.GetHealthMult(floorIdx);
+        float damageMult = FloorScalingCurve.GetDamageMult(floorIdx);
+
+        var enemy = instance.GetComponent<EnemyBase>();
+        if (enemy == null)
+            return;
+
+        float hBonus = Mathf.Max(1f, escapeEnemyHealthScaleBonus);
+        float dBonus = Mathf.Max(1f, escapeEnemyDamageScaleBonus);
+
+        enemy.ApplyRuntimeScaling(healthMult * hBonus, 1f, damageMult * dBonus);
     }
 
     private IEnumerator EscapeRumbleLoop()

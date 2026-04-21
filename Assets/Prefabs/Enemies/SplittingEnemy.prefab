@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 880030006}
   - component: {fileID: 880030007}
   - component: {fileID: 4074494588046284380}
+  - component: {fileID: 1562485048539563262}
   m_Layer: 7
   m_Name: SplittingEnemy
   m_TagString: Untagged
@@ -63,7 +64,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -161,9 +162,6 @@ MonoBehaviour:
   weight: 1
   moveSpeed: 2.2
   damageFlash: {fileID: 880030007}
-<<<<<<< Updated upstream
-  attackRange: 0.72
-=======
   minHitReactionDuration: 0.07
   maxHitReactionDuration: 0.2
   showHitPulse: 1
@@ -172,16 +170,26 @@ MonoBehaviour:
   hitPulseStartScale: 0.45
   hitPulseEndScale: 0.9
   hitPulseSortingOrderBoost: 2
-  attackRange: 0.8
->>>>>>> Stashed changes
+  postSpawnGracePeriod: 0.6
+  attackRange: 0.72
   attackCooldown: 1
   contactDamage: 2
   splitEnemyPrefab: {fileID: 880030001}
   splitCount: 2
   splitHealthMultiplier: 0.45
   splitSizeMultiplier: 0.7
+  splitAttackRangeMultiplier: 0.5
+  splitDamageMultiplier: 0.5
+  splitKillXpWeightMultiplier: 0.5
   splitSpawnRadius: 0.35
   maxSplitDepth: 2
+  splitMoveSpeedMultiplierPerDepth: 1.12
+  smallestSlimeContactDamageMultiplier: 0.5
+  strikeRangeFraction: 0.58
+  minStrikeReachVsMeleeRange: 0.9
+  pointBlankConeBypassDistance: 0.3
+  strikeArcDegrees: 100
+  attackStartBuffer: 0.04
   animator: {fileID: 0}
   idleStateName: SlimeSplitter_Idle
   attackStateName: SlimeSplitter_Attack
@@ -251,3 +259,62 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.53642654, y: 0.42404047}
   m_EdgeRadius: 0
+--- !u!114 &1562485048539563262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880030001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.ShadowCaster2D
+  m_ShadowGroup: 0
+  m_Priority: 0
+  m_ComponentVersion: 5
+  m_HasRenderer: 1
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 0
+  m_AlphaCutoff: 0.1
+  m_ApplyToSortingLayers: 5fa63c4f0000000021d65ffc9f489f0c4f9923bfdde40132
+  m_ShapePath:
+  - {x: -0.15396692, y: -0.21869166, z: 0}
+  - {x: -0.23855136, y: -0.11523891, z: 0}
+  - {x: -0.23855136, y: 0.00014000293, z: 0}
+  - {x: -0.12863982, y: 0.09487038, z: 0}
+  - {x: -0.019049995, y: 0.11551893, z: 0}
+  - {x: 0.07100184, y: 0.10426245, z: 0}
+  - {x: 0.17366575, y: 0.055472717, z: 0}
+  - {x: 0.22577842, y: -0.008302347, z: 0}
+  - {x: 0.24266316, y: -0.078655355, z: 0}
+  - {x: 0.1933646, y: -0.16803746, z: 0}
+  - {x: 0.0935148, y: -0.22217546, z: 0}
+  m_ShapePathHash: -224166898
+  m_InstanceId: 0
+  m_ShadowShape2DComponent: {fileID: 0}
+  m_ShadowShape2DProvider:
+    rid: -2
+  m_ShadowCastingSource: 1
+  m_ShadowMesh:
+    m_Mesh: {fileID: 0}
+    m_LocalBounds:
+      m_Center: {x: 0.0020558983, y: -0.05332826, z: 0}
+      m_Extent: {x: 0.24060726, y: 0.1688472, z: 0}
+    m_EdgeProcessing: 1
+    m_TrimEdge: 0.03
+    m_FlipX: 0
+    m_FlipY: 0
+    m_InitialTrim: 0.03
+  m_CastingOption: 1
+  m_PreviousTrimEdge: 0.03
+  m_PreviousEdgeProcessing: 1
+  m_PreviousShadowCastingSource: 1
+  m_PreviousShadowShape2DSource: {fileID: 880030003}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

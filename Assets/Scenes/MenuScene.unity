@@ -507,6 +507,68 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 567917455}
   m_CullTransparentMesh: 1
+--- !u!1001 &583223381
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1439734109348068865, guid: 5922e17f0372a49a48d7a7f7c0f2d664, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1439734109348068865, guid: 5922e17f0372a49a48d7a7f7c0f2d664, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1439734109348068865, guid: 5922e17f0372a49a48d7a7f7c0f2d664, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1439734109348068865, guid: 5922e17f0372a49a48d7a7f7c0f2d664, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1439734109348068865, guid: 5922e17f0372a49a48d7a7f7c0f2d664, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1439734109348068865, guid: 5922e17f0372a49a48d7a7f7c0f2d664, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1439734109348068865, guid: 5922e17f0372a49a48d7a7f7c0f2d664, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1439734109348068865, guid: 5922e17f0372a49a48d7a7f7c0f2d664, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1439734109348068865, guid: 5922e17f0372a49a48d7a7f7c0f2d664, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1439734109348068865, guid: 5922e17f0372a49a48d7a7f7c0f2d664, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7550417537185901925, guid: 5922e17f0372a49a48d7a7f7c0f2d664, type: 3}
+      propertyPath: m_Name
+      value: GlobalLight2D_Base
+      objectReference: {fileID: 0}
+    - target: {fileID: 8472107527573274746, guid: 5922e17f0372a49a48d7a7f7c0f2d664, type: 3}
+      propertyPath: m_Intensity
+      value: 0.75
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6218349567123045678, guid: 5922e17f0372a49a48d7a7f7c0f2d664, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5922e17f0372a49a48d7a7f7c0f2d664, type: 3}
 --- !u!1 &587943791
 GameObject:
   m_ObjectHideFlags: 0
@@ -1687,8 +1749,8 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 1329374815
+  m_SortingOrder: -100
   m_TargetDisplay: 0
 --- !u!224 &1382523610
 RectTransform:
@@ -2388,6 +2450,13 @@ MonoBehaviour:
   sfxVolume: 1
   threatRadiusMultiplier: 1
   minimumThreatRadius: 18
+  sfxPitchJitterHalfRange: 0.012
+  enemyAttackSfxPitchHalfRange: 0.03
+  ufoAttackWorldVolumeScale: 0.68
+  plagueAttackWorldVolumeScale: 0.7
+  worldSfxNearFullDistance: 2
+  worldSfxFarBlendDistance: 28
+  worldSfxMinVolumeMultiplier: 0.28
   menuMusic: {fileID: 8300000, guid: 30513b3b185ce7945afe5210d8de180f, type: 3}
   world1Start: {fileID: 8300000, guid: c7e307f3f887c694abf24afb7f87a3b8, type: 3}
   world1CalmChords: {fileID: 8300000, guid: 2700320a0d36d994384217623582f91c, type: 3}
@@ -2431,6 +2500,14 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 675397825b49ccd469eec30db02ea6a9, type: 3}
   - {fileID: 8300000, guid: ac337a557ab3b7549b066d2a81d3c27d, type: 3}
   ufoAttackSfx: {fileID: 8300000, guid: 58ab3b097d9eb3747892c44cea5521f0, type: 3}
+  xpSummaryBlockLandSfx: {fileID: 0}
+  xpSummaryCountTickSfx: {fileID: 0}
+  xpSummaryTotalCompleteSfx: {fileID: 0}
+  perfectDodgeSfx: {fileID: 0}
+  critHitSfx: {fileID: 0}
+  eliteSpawnSfx: {fileID: 0}
+  chunkTransitionSfx: {fileID: 0}
+  continueReadySfx: {fileID: 0}
 --- !u!1 &2030366151
 GameObject:
   m_ObjectHideFlags: 0
@@ -2573,3 +2650,4 @@ SceneRoots:
   - {fileID: 1501838428}
   - {fileID: 842419526}
   - {fileID: 1905480182}
+  - {fileID: 583223381}

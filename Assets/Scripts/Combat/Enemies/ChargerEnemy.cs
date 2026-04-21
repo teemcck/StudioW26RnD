@@ -31,6 +31,12 @@ public class ChargerEnemy : EnemyBase
     {
         if (!Player) return;
 
+        if (!IsPlayerOnSameChunk())
+        {
+            Rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
         Vector2 toPlayer = GetPlayerCombatWorldPoint() - (Vector2)transform.position;
         float dist = toPlayer.magnitude;
         Vector2 dir = toPlayer.sqrMagnitude > 0.0001f ? toPlayer.normalized : Vector2.zero;
@@ -89,20 +95,20 @@ public class ChargerEnemy : EnemyBase
         if (dist > attackRange) return;
         float cooldown = attackCooldown / Mathf.Max(0.1f, EffectiveAttackSpeedMultiplier);
         if (TryDealContactDamage(Player, contactDamage, cooldown, 0f, true, dir))
-            AudioManager.Instance?.PlayUfoAttack(0.9f);
+            AudioManager.Instance?.PlayUfoAttackAt(transform.position, 0.78f);
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
         float cooldown = attackCooldown / Mathf.Max(0.1f, EffectiveAttackSpeedMultiplier);
         if (TryDealContactDamage(collision.collider, contactDamage, cooldown, 0f))
-            AudioManager.Instance?.PlayUfoAttack(0.9f);
+            AudioManager.Instance?.PlayUfoAttackAt(transform.position, 0.78f);
     }
 
     private void OnTriggerStay2D(Collider2D other)
     {
         float cooldown = attackCooldown / Mathf.Max(0.1f, EffectiveAttackSpeedMultiplier);
         if (TryDealContactDamage(other, contactDamage, cooldown, 0f))
-            AudioManager.Instance?.PlayUfoAttack(0.9f);
+            AudioManager.Instance?.PlayUfoAttackAt(transform.position, 0.78f);
     }
 }

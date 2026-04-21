@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 880060005}
   - component: {fileID: 880060006}
   - component: {fileID: 880060007}
+  - component: {fileID: 667492985932783052}
   m_Layer: 7
   m_Name: TankEnemy
   m_TagString: Untagged
@@ -62,7 +63,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -175,6 +176,15 @@ MonoBehaviour:
   weight: 2.5
   moveSpeed: 1.72
   damageFlash: {fileID: 880060007}
+  minHitReactionDuration: 0.07
+  maxHitReactionDuration: 0.2
+  showHitPulse: 1
+  hitPulseColor: {r: 1, g: 0.9, b: 0.35, a: 0.9}
+  hitPulseDuration: 0.11
+  hitPulseStartScale: 0.45
+  hitPulseEndScale: 0.9
+  hitPulseSortingOrderBoost: 2
+  postSpawnGracePeriod: 0.6
   attackRange: 0.85
   attackCooldown: 1.15
   contactDamage: 4
@@ -193,3 +203,56 @@ MonoBehaviour:
   spriteRenderer: {fileID: 880060003}
   flashColor: {r: 1, g: 0.63529414, b: 0.63529414, a: 1}
   flashDuration: 0.08
+--- !u!114 &667492985932783052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880060001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.ShadowCaster2D
+  m_ShadowGroup: 0
+  m_Priority: 0
+  m_ComponentVersion: 5
+  m_HasRenderer: 0
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 0
+  m_AlphaCutoff: 0.1
+  m_ApplyToSortingLayers: 5fa63c4f0000000021d65ffc9f489f0c4f9923bfdde40132
+  m_ShapePath:
+  - {x: -0.33, y: -0.46, z: 0}
+  - {x: -0.33, y: 0.46, z: 0}
+  - {x: 0.33, y: 0.46, z: 0}
+  - {x: 0.33, y: -0.46, z: 0}
+  m_ShapePathHash: 0
+  m_InstanceId: 0
+  m_ShadowShape2DComponent: {fileID: 880060003}
+  m_ShadowShape2DProvider:
+    rid: 3121471083032871252
+  m_ShadowCastingSource: 2
+  m_ShadowMesh:
+    m_Mesh: {fileID: 0}
+    m_LocalBounds:
+      m_Center: {x: 0, y: 0, z: 0}
+      m_Extent: {x: 0.2999878, y: 0.42999268, z: 0}
+    m_EdgeProcessing: 1
+    m_TrimEdge: 0.03
+    m_FlipX: 0
+    m_FlipY: 0
+    m_InitialTrim: 0.03
+  m_CastingOption: 1
+  m_PreviousTrimEdge: 0
+  m_PreviousEdgeProcessing: -1
+  m_PreviousShadowCastingSource: -1
+  m_PreviousShadowShape2DSource: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 3121471083032871252
+      type: {class: ShadowShape2DProvider_SpriteRenderer, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data: 

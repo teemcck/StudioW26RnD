@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fa14961c-680c-4353-bff4-f455f4453ca6" name="Changes" comment="">
-<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/Assets/Animations/Player/Player.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animations/Player/Player.controller" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Enemies/LobbingEnemy.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Enemies/LobbingEnemy.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Enemies/PlagueDoctorMeleeEnemy.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Enemies/PlagueDoctorMeleeEnemy.prefab" afterDir="false" />
@@ -18,12 +17,10 @@
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Combat/Weapons/MeleeSwingWeapon.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Combat/Weapons/MeleeSwingWeapon.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/MapGeneration/MapSpawner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/MapGeneration/MapSpawner.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerController.cs" afterDir="false" />
-=======
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Combat/DamageFlash.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Combat/DamageFlash.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/GameplayHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/GameplayHandler.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/LevelUI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/LevelUI.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Upgrades/UpgradeManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Upgrades/UpgradeManager.cs" afterDir="false" />
->>>>>>> 892abef1e5a0e3d1eb0db1a751c4540709f8a917
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,12 +31,8 @@
     <option name="firstShow" value="false" />
   </component>
   <component name="EmbeddingIndexingInfo">
-<<<<<<< HEAD
     <option name="cachedIndexableFilesCount" value="76" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
-=======
-    <option name="cachedIndexableFilesCount" value="3" />
->>>>>>> 892abef1e5a0e3d1eb0db1a751c4540709f8a917
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -180,12 +173,9 @@
       <workItem from="1775347256037" duration="4953000" />
       <workItem from="1775362810451" duration="2670000" />
       <workItem from="1775621473454" duration="18949000" />
-<<<<<<< HEAD
-      <workItem from="1776401480103" duration="261000" />
-=======
       <workItem from="1776008296714" duration="5269000" />
       <workItem from="1776389119337" duration="10562000" />
->>>>>>> 892abef1e5a0e3d1eb0db1a751c4540709f8a917
+      <workItem from="1776401480103" duration="261000" />
     </task>
     <servers />
   </component>
@@ -252,15 +242,12 @@
           <properties documentPath="C:\Users\Tristan\Desktop\StudioW26RnD\Assets\Scripts\RewardSystem\LevelReward.cs" containingFunctionPresentation="Method 'OnDisable'" />
           <option name="timeStamp" value="14" />
         </line-breakpoint>
-<<<<<<< HEAD
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Assets/Scripts/Upgrades/UpgradeManager.cs</url>
           <line>112</line>
           <properties documentPath="C:\Users\Tristan\Desktop\StudioW26RnD\Assets\Scripts\Upgrades\UpgradeManager.cs" containingFunctionPresentation="Method 'OpenUpgradeSelection'" />
           <option name="timeStamp" value="19" />
         </line-breakpoint>
-=======
->>>>>>> 892abef1e5a0e3d1eb0db1a751c4540709f8a917
       </breakpoints>
     </breakpoint-manager>
   </component>

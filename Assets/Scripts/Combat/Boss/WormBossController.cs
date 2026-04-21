@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Tilemaps;
 
 [RequireComponent(typeof(SpriteRenderer))]
@@ -218,6 +219,7 @@ public sealed class WormBossController : EnemyBase
     private Coroutine _repositionRoutine;
 
     private Coroutine _shieldBreakFeedbackRoutine;
+    private ShadowCaster2D[] _shadowCasters;
     private Vector3 _spriteVisualBaseLocal;
     private Quaternion _spriteVisualBaseLocalRot = Quaternion.identity;
     private bool _spriteVisualIsChild;
@@ -244,6 +246,7 @@ public sealed class WormBossController : EnemyBase
         base.Awake();
         _rb = GetComponent<Rigidbody2D>();
         _mainCollider = GetComponent<Collider2D>();
+        _shadowCasters = GetComponentsInChildren<ShadowCaster2D>(true);
         if (!animator) animator = GetComponent<Animator>();
         if (!spriteRenderer) spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer)
@@ -1613,16 +1616,15 @@ public sealed class WormBossController : EnemyBase
     {
         CameraController camCtrl = phaseTransitionCamera ? phaseTransitionCamera : FindFirstObjectByType<CameraController>();
         if (camCtrl)
-            camCtrl.ShakeMedium();
+            camCtrl.Shake(Mathf.Max(0.05f, shieldBreakCameraShake));
 
         ResolveBossAudio()?.PlayShieldBreakSfx();
 
         ShieldBreakShockwaveVfx.Spawn(transform, spriteRenderer);
 
-        float prevScale = Time.timeScale;
-        Time.timeScale = 0.1f;
+        if (Hitstop.Instance != null)
+            Hitstop.Instance.Freeze(0.055f, priority: 7);
         yield return new WaitForSecondsRealtime(0.055f);
-        Time.timeScale = prevScale > 0.02f ? prevScale : 1f;
 
         if (Rb)
         {
@@ -2038,7 +2040,11 @@ public sealed class WormBossController : EnemyBase
         CameraController cam = phaseTransitionCamera ? phaseTransitionCamera : FindFirstObjectByType<CameraController>();
         if (AudioManager.Instance != null)
             AudioManager.Instance.DuckMusic(0.08f, 0f);
-        if (cam) cam.ShakeFatality();
+        if (cam)
+        {
+            float enterShake = newPhase >= 3 ? phaseTransitionShakeEnterPhase3 : phaseTransitionShakeEnterPhase2;
+            cam.Shake(Mathf.Max(0.05f, enterShake));
+        }
         if (cam) cam.PhaseTransitionZoomIn(transform);
 
         if (newPhase == 2) ResolveBossAudio()?.PlayPhaseTransitionToPhase2Sfx();
@@ -2214,6 +2220,18 @@ public sealed class WormBossController : EnemyBase
                 c.a = _baseAlpha;
                 spriteRenderer.color = c;
                 _shieldPingBaseColor = c;
+            }
+        }
+
+        // No ground shadow while burrowed; restore 2D shadow casting when surfaced.
+        bool castShadow = !underground;
+        if (_shadowCasters != null)
+        {
+            for (int i = 0; i < _shadowCasters.Length; i++)
+            {
+                ShadowCaster2D sc = _shadowCasters[i];
+                if (sc != null)
+                    sc.castsShadows = castShadow;
             }
         }
     }

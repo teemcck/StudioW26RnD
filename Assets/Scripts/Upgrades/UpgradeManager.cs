@@ -1,7 +1,9 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary>
 /// Central registry and runtime coordinator for the upgrade system.
@@ -23,7 +25,16 @@ public class UpgradeManager : MonoBehaviour
 
     [Header("External References")]
     [SerializeField] private UpgradeUIHandler upgradeUIHandler;
+    [Tooltip("Optional; PlayerHudUI also pushes prefabs at runtime.")]
+    [SerializeField] private GameObject appliedUpgradeStripIconPrefab;
+    [SerializeField] private GameObject appliedUpgradeStripOverflowChipPrefab;
+
+    private AppliedUpgradeStripUI _persistentAppliedUpgradeStrip;
+
     private PlayerController playerController; // Set at runtime.
+
+    /// <summary>DontDestroyOnLoad strip UI — survives into BossGameplay and stays in sync via <see cref="RefreshAppliedUpgradeStripUi"/>.</summary>
+    public AppliedUpgradeStripUI PersistentAppliedUpgradeStrip => _persistentAppliedUpgradeStrip;
 
     // Lookup maps built once at Awake.
     private Dictionary<string, UpgradeEffectsSO>  _effectMap  = new();
@@ -35,6 +46,8 @@ public class UpgradeManager : MonoBehaviour
 
     private UpgradeContext _cachedContext;
     private PlayerController _trackedPlayer;
+    private Coroutine _deferredRebindRoutine;
+    private IEventBinding<PlayerDiedEvent> _playerDiedBinding;
 
     // Manager lifecycle.
 
@@ -59,11 +72,37 @@ public class UpgradeManager : MonoBehaviour
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
+        _playerDiedBinding = EventBus<PlayerDiedEvent>.Register(OnPlayerDied);
     }
 
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+        EventBus<PlayerDiedEvent>.Unsubscribe(_playerDiedBinding);
+    }
+
+    private void OnPlayerDied(PlayerDiedEvent evt)
+    {
+        var pc = FindPreferredPlayerController();
+        if (pc != null)
+            ResetRun(pc);
+        else
+            ClearStacksWithoutEffectRemoval();
+    }
+
+    /// <summary>
+    /// Clears upgrade stacks when no player exists to run effect Remove() (edge case after scene tear-down).
+    /// </summary>
+    private void ClearStacksWithoutEffectRemoval()
+    {
+        _stacks.Clear();
+        _tickingEffects.Clear();
+        _cachedContext = null;
+        _trackedPlayer = null;
+        playerController = null;
+        RefreshAppliedUpgradeStripUi();
+        PlayerHudUI.InvalidateAllDisplayedValues();
+        StartupUpgradeDebugState.AlignWithUpgradeManager(this);
     }
 
     private void BuildMaps()
@@ -97,16 +136,133 @@ public class UpgradeManager : MonoBehaviour
     public List<UpgradeDisplaySO> GetAppliedUpgradeDisplays()
     {
         var results = new List<UpgradeDisplaySO>();
-        foreach (var pair in _stacks)
+        foreach (var display in allDisplays)
         {
-            if (pair.Value <= 0) continue;
-            if (!_displayMap.TryGetValue(pair.Key, out var display) || display == null) continue;
-
-            for (int i = 0; i < pair.Value; i++)
-                results.Add(display);
+            if (display == null || string.IsNullOrEmpty(display.upgradeID))
+                continue;
+            if (GetStack(display.upgradeID) <= 0)
+                continue;
+            results.Add(display);
         }
 
         return results;
+    }
+
+    public static void RefreshAppliedUpgradeStripUi()
+    {
+        if (Instance != null && Instance._persistentAppliedUpgradeStrip != null)
+        {
+            Instance._persistentAppliedUpgradeStrip.RefreshFromManager();
+            return;
+        }
+
+        foreach (var strip in Object.FindObjectsByType<AppliedUpgradeStripUI>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            strip.RefreshFromManager();
+    }
+
+    /// <summary>
+    /// Creates a screen-space overlay strip under this DDOL object (once) and removes legacy scene strips
+    /// so only one strip exists. Call from <see cref="PlayerHudUI"/> with the same prefabs as the player HUD.
+    /// </summary>
+    public void EnsurePersistentAppliedUpgradeStrip(GameObject iconPrefab, GameObject chipPrefab)
+    {
+        if (iconPrefab != null)
+            appliedUpgradeStripIconPrefab = iconPrefab;
+        if (chipPrefab != null)
+            appliedUpgradeStripOverflowChipPrefab = chipPrefab;
+
+        if (_persistentAppliedUpgradeStrip == null)
+            TryRebindExistingAppliedUpgradeStrip();
+
+        if (_persistentAppliedUpgradeStrip != null)
+        {
+            _persistentAppliedUpgradeStrip.AssignDefaultPrefabsIfEmpty(appliedUpgradeStripIconPrefab, appliedUpgradeStripOverflowChipPrefab);
+            _persistentAppliedUpgradeStrip.RefreshFromManager();
+            DestroyLegacyAppliedUpgradeStripRoots(_persistentAppliedUpgradeStrip.gameObject);
+            return;
+        }
+
+        var host = new GameObject("PersistentAppliedUpgradeStrip");
+        host.transform.SetParent(transform, false);
+
+        var canvas = host.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 400;
+        host.AddComponent<GraphicRaycaster>();
+
+        var scaler = host.AddComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920f, 1080f);
+        scaler.matchWidthOrHeight = 0.5f;
+
+        _persistentAppliedUpgradeStrip = host.AddComponent<AppliedUpgradeStripUI>();
+        _persistentAppliedUpgradeStrip.AssignDefaultPrefabsIfEmpty(appliedUpgradeStripIconPrefab, appliedUpgradeStripOverflowChipPrefab);
+        _persistentAppliedUpgradeStrip.EnsureStripRootUnderCanvas(canvas);
+        _persistentAppliedUpgradeStrip.RefreshFromManager();
+
+        DestroyLegacyAppliedUpgradeStripRoots(host);
+    }
+
+    /// <summary>
+    /// Rebinds <see cref="_persistentAppliedUpgradeStrip"/> when the field was cleared but a strip still exists
+    /// (e.g. scene change / debug jump to World 2 while DDOL manager keeps running).
+    /// </summary>
+    private void TryRebindExistingAppliedUpgradeStrip()
+    {
+        var underManager = GetComponentsInChildren<AppliedUpgradeStripUI>(true);
+        if (underManager != null && underManager.Length > 0)
+        {
+            for (int i = 0; i < underManager.Length; i++)
+            {
+                if (underManager[i] != null)
+                {
+                    _persistentAppliedUpgradeStrip = underManager[i];
+                    EnsureStripHostParentedToManager(_persistentAppliedUpgradeStrip);
+                    return;
+                }
+            }
+        }
+
+        var all = Object.FindObjectsByType<AppliedUpgradeStripUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < all.Length; i++)
+        {
+            var s = all[i];
+            if (s == null)
+                continue;
+            if (!s.gameObject.name.StartsWith("PersistentAppliedUpgradeStrip"))
+                continue;
+            _persistentAppliedUpgradeStrip = s;
+            EnsureStripHostParentedToManager(s);
+            return;
+        }
+
+        if (all.Length == 1 && all[0] != null)
+        {
+            _persistentAppliedUpgradeStrip = all[0];
+            EnsureStripHostParentedToManager(all[0]);
+        }
+    }
+
+    private void EnsureStripHostParentedToManager(AppliedUpgradeStripUI strip)
+    {
+        if (strip == null)
+            return;
+        Transform root = strip.transform;
+        if (root.parent != transform)
+            root.SetParent(transform, worldPositionStays: true);
+    }
+
+    static void DestroyLegacyAppliedUpgradeStripRoots(GameObject keepHost)
+    {
+        var strips = Object.FindObjectsByType<AppliedUpgradeStripUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (var strip in strips)
+        {
+            if (strip == null)
+                continue;
+            if (strip.gameObject == keepHost)
+                continue;
+            Destroy(strip.gameObject);
+        }
     }
 
     public int GetTotalUpgradeCount()
@@ -235,6 +391,9 @@ public class UpgradeManager : MonoBehaviour
             if (effect != null && effect.NeedsTick)
                 _tickingEffects.Add((effect, ctx));
 
+        RefreshAppliedUpgradeStripUi();
+        PlayerHudUI.InvalidateAllDisplayedValues();
+        StartupUpgradeDebugState.AlignWithUpgradeManager(this);
         return true;
     }
 
@@ -249,6 +408,9 @@ public class UpgradeManager : MonoBehaviour
         ctx?.Runtime?.RefreshDynamicModifiers(this);
 
         _tickingEffects.RemoveAll(pair => effectSO.effects.Contains(pair.effect));
+        RefreshAppliedUpgradeStripUi();
+        PlayerHudUI.InvalidateAllDisplayedValues();
+        StartupUpgradeDebugState.AlignWithUpgradeManager(this);
     }
 
     // Public API
@@ -296,52 +458,80 @@ public class UpgradeManager : MonoBehaviour
         _tickingEffects.Clear();
         _cachedContext = null;
         ctx?.Runtime?.RefreshDynamicModifiers(this);
+        RefreshAppliedUpgradeStripUi();
+        PlayerHudUI.InvalidateAllDisplayedValues();
+        StartupUpgradeDebugState.AlignWithUpgradeManager(this);
     }
 
     // Helpers
 
     private UpgradeContext GetOrBuildContext(PlayerController player)
     {
-        if (_cachedContext == null || _trackedPlayer != player)
+        if (player == null)
+            player = FindPreferredPlayerController();
+
+        if (player == null)
         {
-            // If no player provided, try to find one
-            if (player == null)
-            {
-                var found = FindObjectsByType<PlayerController>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-                if (found.Length > 0)
-                {
-                    player = found[0];
-                }
-                else
-                {
-                    Debug.LogError("No PlayerController found when building upgrade context!");
-                    return null;
-                }
-            }
-            
-            _cachedContext = UpgradeContext.FromScene(player);
-            _trackedPlayer = player;
-            playerController = player;
+            Debug.LogError("No PlayerController found when building upgrade context!");
+            return null;
         }
+
+        if (_cachedContext != null && _trackedPlayer == player)
+            return _cachedContext;
+
+        _cachedContext = UpgradeContext.FromScene(player);
+        _trackedPlayer = player;
+        playerController = player;
         return _cachedContext;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         ResolveUpgradeUiHandler();
+        if (_deferredRebindRoutine != null)
+        {
+            StopCoroutine(_deferredRebindRoutine);
+            _deferredRebindRoutine = null;
+        }
+        _deferredRebindRoutine = StartCoroutine(DeferredRebindPlayerAfterSceneLoad());
+    }
 
-        var found = FindObjectsByType<PlayerController>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-        if (found.Length == 0)
-            return;
+    private IEnumerator DeferredRebindPlayerAfterSceneLoad()
+    {
+        yield return null;
 
-        var nextPlayer = found[0];
+        var nextPlayer = FindPreferredPlayerController();
+        if (nextPlayer == null)
+        {
+            _deferredRebindRoutine = null;
+            yield break;
+        }
+
         if (_trackedPlayer == nextPlayer && _cachedContext != null)
-            return;
+        {
+            _deferredRebindRoutine = null;
+            yield break;
+        }
 
         playerController = nextPlayer;
         _trackedPlayer = nextPlayer;
         _cachedContext = UpgradeContext.FromScene(nextPlayer);
         ReapplyStacksToTrackedPlayer();
+        _deferredRebindRoutine = null;
+    }
+
+    private static PlayerController FindPreferredPlayerController()
+    {
+        var tagged = GameObject.FindGameObjectWithTag("Player");
+        if (tagged != null)
+        {
+            var pc = tagged.GetComponent<PlayerController>() ?? tagged.GetComponentInChildren<PlayerController>(true);
+            if (pc != null)
+                return pc;
+        }
+
+        var found = Object.FindObjectsByType<PlayerController>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        return found.Length > 0 ? found[0] : null;
     }
 
     private void ReapplyStacksToTrackedPlayer()
@@ -369,6 +559,9 @@ public class UpgradeManager : MonoBehaviour
         }
 
         _cachedContext.Runtime?.RefreshDynamicModifiers(this);
+        RefreshAppliedUpgradeStripUi();
+        PlayerHudUI.InvalidateAllDisplayedValues();
+        StartupUpgradeDebugState.AlignWithUpgradeManager(this);
     }
 
     private void ResolveUpgradeUiHandler()

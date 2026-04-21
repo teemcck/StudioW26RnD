@@ -10,6 +10,8 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
     [SerializeField] private float chaseForceMultiplier = 1f;
     [SerializeField] private float attackAnimationDuration = 1.05f;
     [SerializeField] private float vulnerableDuration = 1.5f;
+    [Tooltip("Extra damage taken from the player while in the vulnerable recovery anim (1 = no bonus).")]
+    [SerializeField] private float vulnerableIncomingDamageMultiplier = 1.25f;
     [SerializeField] private float damageMomentSeconds = 0.9f;
     [SerializeField] private float swingHalfAngleDegrees = 55f;
     [SerializeField] private float swingReach = 1f;
@@ -81,6 +83,11 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
         _baseScale = transform.localScale;
     }
 
+    protected override void OnRuntimeScalingApplied()
+    {
+        _baseScale = transform.localScale;
+    }
+
     private void OnEnable()
     {
         ResetVisuals();
@@ -113,6 +120,12 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
     private void FixedUpdate()
     {
         if (!Player || IsDead) return;
+
+        if (!IsPlayerOnSameChunk())
+        {
+            Rb.linearVelocity = Vector2.zero;
+            return;
+        }
 
         Vector2 toPlayer = (Vector2)(Player.position - transform.position);
         float distanceToPlayer = toPlayer.magnitude;
@@ -180,7 +193,7 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
             if (!struck && u >= strikeMoment)
             {
                 struck = true;
-                AudioManager.Instance?.PlayPlagueAttack();
+                AudioManager.Instance?.PlayPlagueAttackAt(transform.position);
                 TryApplyDirectionalSwingDamage(attackDirection);
                 ApplySwingImpactVisual();
                 PlaySwingSlashVfx(attackDirection);
@@ -191,7 +204,7 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
 
         if (!struck)
         {
-            AudioManager.Instance?.PlayPlagueAttack();
+            AudioManager.Instance?.PlayPlagueAttackAt(transform.position);
             TryApplyDirectionalSwingDamage(attackDirection);
             ApplySwingImpactVisual();
             PlaySwingSlashVfx(attackDirection);
@@ -214,7 +227,11 @@ public class PlagueDoctorMeleeEnemy : EnemyBase
     }
 
     public override void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce, DamageContext context = default)
-        => base.TakeHit(damage, knockbackDirection, knockbackForce, context);
+    {
+        if (_isVulnerable && context.WasCausedByPlayer && vulnerableIncomingDamageMultiplier > 1.0001f)
+            damage *= vulnerableIncomingDamageMultiplier;
+        base.TakeHit(damage, knockbackDirection, knockbackForce, context);
+    }
 
     private void TryApplyDirectionalSwingDamage(Vector2 attackDirection)
     {

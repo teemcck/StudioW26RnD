@@ -53,7 +53,8 @@ public class ProjectileWeapon : WeaponBase
             damageValue,
             GetKnockback(),
             new DamageContext(gameObject, transform.root.gameObject, attackKind, sourceId,
-                isStatusEffect: false, triggersOnHitEffects: triggerOnHitEffects, isCrit: isCrit));
+                isStatusEffect: false, triggersOnHitEffects: triggerOnHitEffects, isCrit: isCrit),
+            projectileSpeedOverride);
         runtime?.NotifyAttackPerformed(attackKind, snapshot);
     }
 }

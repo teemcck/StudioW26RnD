@@ -29,6 +29,23 @@ public sealed class AudioManager : MonoBehaviour
     [SerializeField] private float threatRadiusMultiplier = 1f;
     [SerializeField] private float minimumThreatRadius = DefaultThreatRadius;
 
+    [Header("SFX variety & space")]
+    [Tooltip("Half-range for random pitch around 1.0 (e.g. 0.012 ≈ ±1.2%). Reduces machine-gun repetition.")]
+    [SerializeField] private float sfxPitchJitterHalfRange = 0.042f;
+    [Tooltip("Extra pitch variance for enemy attack one-shots (e.g. 0.03 ≈ ±3%).")]
+    [SerializeField] private float enemyAttackSfxPitchHalfRange = 0.05f;
+    [Tooltip("Default volume scale when playing UFO attack SFX at a world position.")]
+    [SerializeField] [Range(0.15f, 1f)] private float ufoAttackWorldVolumeScale = 0.68f;
+    [Tooltip("Default volume scale when playing plague attack SFX at a world position.")]
+    [SerializeField] [Range(0.15f, 1f)] private float plagueAttackWorldVolumeScale = 0.7f;
+    [Tooltip("Within this horizontal distance from the player, world SFX stay at full relative volume.")]
+    [SerializeField] private float worldSfxNearFullDistance = 2f;
+    [Tooltip("Beyond this distance, world SFX reach the minimum volume multiplier (still audible).")]
+    [SerializeField] private float worldSfxFarBlendDistance = 28f;
+    [Tooltip("Floor for distance-based volume (0–1). Nothing goes fully silent.")]
+    [Range(0.08f, 0.6f)]
+    [SerializeField] private float worldSfxMinVolumeMultiplier = 0.28f;
+
     [Header("Menu Music")]
     [SerializeField] private AudioClip menuMusic;
 
@@ -177,8 +194,23 @@ public sealed class AudioManager : MonoBehaviour
     public void PlayMenuStart() => PlaySfx(menuStartSfx ? menuStartSfx : uiButtonSfx);
     public void PlayPlagueAmbient(float volumeScale = 0.55f) => PlaySfx(plagueAmbientSfx, volumeScale);
     public void PlayPlagueAttack(float volumeScale = 1f) => PlaySfx(plagueAttackSfx, volumeScale);
+    /// <summary>Plague attack at world position: distance falloff, pan, stronger pitch variance, tuned default volume.</summary>
+    public void PlayPlagueAttackAt(Vector3 worldPos, float volumeScale = -1f)
+    {
+        if (volumeScale < 0f)
+            volumeScale = plagueAttackWorldVolumeScale;
+        PlaySfxAtWorld(plagueAttackSfx, worldPos, volumeScale, enemyAttackSfxPitchHalfRange);
+    }
+
     public void PlayPlagueLaugh(float volumeScale = 0.9f) => PlaySfx(GetRandomClip(plagueLaughSfxVariants, plagueAttackSfx), volumeScale);
     public void PlayUfoAttack(float volumeScale = 0.95f) => PlaySfx(ufoAttackSfx, volumeScale);
+    /// <summary>UFO / generic enemy attack at world position: distance falloff, pan, stronger pitch variance.</summary>
+    public void PlayUfoAttackAt(Vector3 worldPos, float volumeScale = -1f)
+    {
+        if (volumeScale < 0f)
+            volumeScale = ufoAttackWorldVolumeScale;
+        PlaySfxAtWorld(ufoAttackSfx, worldPos, volumeScale, enemyAttackSfxPitchHalfRange);
+    }
 
     public void PlayXpSummaryBlockLand(float volumeScale = 1f) => PlaySfx(xpSummaryBlockLandSfx, volumeScale);
 
@@ -230,8 +262,10 @@ public sealed class AudioManager : MonoBehaviour
     /// <summary>
     /// Play a one-shot SFX panned based on its world position relative to the main
     /// camera, giving a soft sense of direction without full 3D spatialization.
+    /// Applies slight pitch variation and soft distance falloff from the player (never fully silent).
     /// </summary>
-    public void PlaySfxAtWorld(AudioClip clip, Vector3 worldPos, float volumeScale = 1f)
+    /// <param name="pitchJitterHalfRange">If &lt; 0, uses <see cref="sfxPitchJitterHalfRange"/>.</param>
+    public void PlaySfxAtWorld(AudioClip clip, Vector3 worldPos, float volumeScale = 1f, float pitchJitterHalfRange = -1f)
     {
         if (clip == null)
             return;
@@ -249,12 +283,9 @@ public sealed class AudioManager : MonoBehaviour
             pan = Mathf.Clamp((vp.x - 0.5f) * 2f, -1f, 1f) * 0.85f;
         }
 
-        AudioSource src = GetAvailableSfxSource();
-        src.pitch = 1f;
-        src.panStereo = pan;
-        float v = sfxVolume * Mathf.Clamp01(volumeScale);
-        src.volume = v;
-        src.PlayOneShot(clip, v);
+        float distanceMul = EvaluateWorldDistanceVolumeMultiplier(worldPos);
+        float pitch = GetMicroPitchMultiplier(pitchJitterHalfRange);
+        PlaySfxPooled(clip, Mathf.Clamp01(volumeScale) * distanceMul, pitch, pan);
     }
 
     /// <summary>
@@ -419,7 +450,9 @@ public sealed class AudioManager : MonoBehaviour
             return MusicState.Menu;
         if (sceneName == "DeathScene")
             return MusicState.Death;
-        if (sceneName == "GameplayLoop" || sceneName == "BossGameplay")
+        if (sceneName == "BossGameplay")
+            return MusicState.None;
+        if (sceneName == "GameplayLoop")
         {
             if (ShouldHoldForWorldTwoStart())
                 return MusicState.None;
@@ -660,11 +693,52 @@ public sealed class AudioManager : MonoBehaviour
         if (clip == null)
             return;
 
+        float p = pitch * GetMicroPitchMultiplier(-1f);
+        PlaySfxPooled(clip, Mathf.Clamp01(volumeScale), p, 0f);
+    }
+
+    /// <summary>
+    /// Shared path: pan is stereo (-1..1), pitch includes any caller bias × micro-jitter for world SFX.
+    /// </summary>
+    private void PlaySfxPooled(AudioClip clip, float volumeScale, float pitch, float panStereo)
+    {
         AudioSource src = GetAvailableSfxSource();
-        src.pitch = pitch;
-        src.panStereo = 0f;
-        src.volume = sfxVolume * Mathf.Clamp01(volumeScale);
-        src.PlayOneShot(clip, sfxVolume * Mathf.Clamp01(volumeScale));
+        src.pitch = Mathf.Clamp(pitch, 0.5f, 2f);
+        src.panStereo = Mathf.Clamp(panStereo, -1f, 1f);
+        float v = sfxVolume * Mathf.Clamp01(volumeScale);
+        src.volume = v;
+        src.PlayOneShot(clip, v);
+    }
+
+    /// <param name="pitchJitterHalfRange">If &lt; 0, uses default <see cref="sfxPitchJitterHalfRange"/>.</param>
+    private float GetMicroPitchMultiplier(float pitchJitterHalfRange = -1f)
+    {
+        float h = pitchJitterHalfRange >= 0f ? pitchJitterHalfRange : sfxPitchJitterHalfRange;
+        h = Mathf.Max(0f, h);
+        if (h <= 0f)
+            return 1f;
+        return 1f + Random.Range(-h, h);
+    }
+
+    /// <summary>
+    /// Softer presence when far, but always at least <see cref="worldSfxMinVolumeMultiplier"/>.
+    /// Uses horizontal distance in 2D from the player (falls back to main camera if no player).
+    /// </summary>
+    private float EvaluateWorldDistanceVolumeMultiplier(Vector3 worldPos)
+    {
+        Transform listener = GetPlayerTransform();
+        if (listener == null && Camera.main != null)
+            listener = Camera.main.transform;
+        if (listener == null)
+            return 1f;
+
+        float d = Vector2.Distance(new Vector2(worldPos.x, worldPos.y), new Vector2(listener.position.x, listener.position.y));
+        float near = Mathf.Max(0.05f, worldSfxNearFullDistance);
+        float far = Mathf.Max(near + 0.5f, worldSfxFarBlendDistance);
+        float t = Mathf.InverseLerp(near, far, d);
+        t = Mathf.SmoothStep(0f, 1f, t);
+        float floorMul = Mathf.Clamp(worldSfxMinVolumeMultiplier, 0.05f, 1f);
+        return Mathf.Lerp(1f, floorMul, t);
     }
 
     private AudioSource GetAvailableSfxSource()

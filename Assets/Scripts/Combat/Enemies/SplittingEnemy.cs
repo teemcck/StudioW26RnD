@@ -46,7 +46,7 @@ public class SplittingEnemy : MeleeEnemy
     private float _killXpWeight = 1f;
 
     public override bool CountsTowardEnemyStats => _splitDepth == 0;
-    public override float KillXpWeight => _killXpWeight;
+    public override float KillXpWeight => Mathf.Max(0f, _killXpWeight) * EliteXpFactor();
 
     private SlimeKillGroup _killGroup;
 
@@ -54,6 +54,11 @@ public class SplittingEnemy : MeleeEnemy
     {
         _killGroup = group;
         _splitDepth = depth;
+    }
+
+    public void InheritKillXpFromParent(SplittingEnemy parent)
+    {
+        _killXpWeight = Mathf.Max(0f, parent._killXpWeight * parent.splitKillXpWeightMultiplier);
     }
 
     protected override void Awake()
@@ -112,7 +117,7 @@ public class SplittingEnemy : MeleeEnemy
         base.ApplyRuntimeScaling(healthMultiplier, sizeMultiplier, damageMultiplier);
         if (_splitDepth <= 0)
             return;
-        float rangeFactor = Mathf.Pow(splitSizeMultiplier, _splitDepth);
+        float rangeFactor = Mathf.Pow(splitSizeMultiplier * splitAttackRangeMultiplier, _splitDepth);
         float speedFactor = Mathf.Pow(splitMoveSpeedMultiplierPerDepth, _splitDepth);
         ApplySplitMeleeTuning(rangeFactor, speedFactor);
         if (_splitDepth >= maxSplitDepth)
@@ -123,6 +128,12 @@ public class SplittingEnemy : MeleeEnemy
     {
         if (_splitDeathRunning || IsDead || !Player)
             return;
+
+        if (!IsPlayerOnSameChunk())
+        {
+            Rb.linearVelocity = Vector2.zero;
+            return;
+        }
 
         Vector2 playerContactPoint = GetPlayerClosestCombatPoint((Vector2)transform.position);
         Vector2 toPlayer = playerContactPoint - (Vector2)transform.position;
@@ -290,24 +301,16 @@ public class SplittingEnemy : MeleeEnemy
         {
             float rad = step * i * Mathf.Deg2Rad;
             Vector2 offset = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * splitSpawnRadius;
-<<<<<<< Updated upstream
-            var go = Instantiate(splitEnemyPrefab, (Vector2)transform.position + offset, Quaternion.identity);
-            if (go.TryGetComponent<SplittingEnemy>(out var childSplit))
-                childSplit.AssignSlimeGroup(_killGroup, _splitDepth + 1);
-            if (go.TryGetComponent<EnemyBase>(out var eb))
-                eb.ApplyRuntimeScaling(splitHealthMultiplier, splitSizeMultiplier, DamageMultiplier);
-=======
             var go = Instantiate(splitEnemyPrefab, (Vector2)transform.position + offset, Quaternion.identity, transform.parent);
-            if (go.TryGetComponent<EnemyBase>(out var eb))
-                eb.ApplyRuntimeScaling(splitHealthMultiplier, splitSizeMultiplier);
             if (go.TryGetComponent<SplittingEnemy>(out var childSplit))
             {
-                childSplit.SetSplitDepth(_splitDepth + 1);
-                childSplit.ConfigureAsSplitChild(this);
+                childSplit.AssignSlimeGroup(_killGroup, _splitDepth + 1);
+                childSplit.InheritKillXpFromParent(this);
             }
+            if (go.TryGetComponent<EnemyBase>(out var eb))
+                eb.ApplyRuntimeScaling(splitHealthMultiplier, splitSizeMultiplier, DamageMultiplier * splitDamageMultiplier);
             if (go.TryGetComponent<EnemyWorldVisuals>(out var visuals))
                 visuals.RebuildVisuals();
->>>>>>> Stashed changes
             EnsureSplitSpawnPhysics(go);
             spawned++;
         }
@@ -315,18 +318,6 @@ public class SplittingEnemy : MeleeEnemy
         return spawned;
     }
 
-<<<<<<< Updated upstream
-=======
-    private void ConfigureAsSplitChild(SplittingEnemy parent)
-    {
-        _killXpWeight = Mathf.Max(0f, parent._killXpWeight * parent.splitKillXpWeightMultiplier);
-        ApplyMeleeRuntimeScaling(parent.splitAttackRangeMultiplier, parent.splitDamageMultiplier);
-    }
-
-    /// <summary>
-    /// Split clones are scaled at runtime; ensure RB/colliders are simulated and physics state is current.
-    /// </summary>
->>>>>>> Stashed changes
     private static void EnsureSplitSpawnPhysics(GameObject go)
     {
         if (go.TryGetComponent<Rigidbody2D>(out var rb))

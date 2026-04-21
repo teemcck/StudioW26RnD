@@ -34,7 +34,6 @@ public class GameRules : MonoBehaviour
     public static GameRules Instance { get; private set; }
 
     [Header("Base Rule Values")]
-    [SerializeField] private float baseGoldDropRate         = 1f;
     [SerializeField] private float baseXPDropRate           = 1f;
     [SerializeField] private int   baseRoomCount            = 10;
     [SerializeField] private float baseEliteSpawnChance     = 0.1f;

@@ -1,40 +1,71 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public sealed class AppliedUpgradeStripUI : MonoBehaviour
 {
-<<<<<<< Updated upstream
     [SerializeField] private RectTransform stripRoot;
     [SerializeField] private GameObject iconPrefab;
     [SerializeField] private GameObject overflowChipPrefab;
     [SerializeField] private Vector2 iconSize = new(72f, 100f);
-=======
-    [Header("Layout")]
-    [SerializeField] private Vector2 anchorMin = new(1f, 1f);
-    [SerializeField] private Vector2 anchorMax = new(1f, 1f);
-    [SerializeField] private Vector2 pivot = new(1f, 1f);
-    [SerializeField] private Vector2 anchoredPosition = new(-28f, -24f);
-    [SerializeField] private Vector2 iconSize = new(140f, 196f);
-    [SerializeField] private float spacing = 30f;
-    [SerializeField] private float maxScreenWidthFraction = 0.5f;
-
-    [Header("Visual")]
->>>>>>> Stashed changes
     [SerializeField] private Color iconTint = Color.white;
-    [SerializeField] private float overflowFractionOfScreen = 0.6f;
+    [SerializeField] private float overflowFractionOfScreen = 0.42f;
+    [SerializeField] private int maxIconsBeforeOverflowChip = 5;
     [SerializeField] private bool showOnlyDuringGameplay = true;
 
     private readonly List<GameObject> _spawnedIcons = new();
-<<<<<<< Updated upstream
-=======
-
-    private Canvas _hudCanvas;
-    private RectTransform _stripRoot;
->>>>>>> Stashed changes
     private IEventBinding<UpgradeSelectedEvent> _upgradeSelectedBinding;
+    private bool _bossCutsceneSuppressStrip;
+
+    public void AssignDefaultPrefabsIfEmpty(GameObject iconPrefabOverride, GameObject overflowChipPrefabOverride)
+    {
+        if (iconPrefab == null && iconPrefabOverride != null)
+            iconPrefab = iconPrefabOverride;
+        if (overflowChipPrefab == null && overflowChipPrefabOverride != null)
+            overflowChipPrefab = overflowChipPrefabOverride;
+        if (stripRoot != null && iconPrefab != null)
+            RebuildIcons();
+    }
+
+    public void EnsureStripRootUnderCanvas(Canvas hostCanvas)
+    {
+        if (stripRoot != null || hostCanvas == null)
+            return;
+
+        var rootGo = new GameObject("StripRoot", typeof(RectTransform));
+        stripRoot = rootGo.GetComponent<RectTransform>();
+        stripRoot.SetParent(hostCanvas.transform, false);
+        stripRoot.anchorMin = new Vector2(1f, 1f);
+        stripRoot.anchorMax = new Vector2(1f, 1f);
+        stripRoot.pivot = new Vector2(1f, 1f);
+        // Sit just under typical top-right HUD chrome; overflow popout positions below this row.
+        stripRoot.anchoredPosition = new Vector2(-28f, -88f);
+        stripRoot.sizeDelta = Vector2.zero;
+        stripRoot.localScale = Vector3.one;
+
+        var hlg = rootGo.AddComponent<HorizontalLayoutGroup>();
+        hlg.childAlignment = TextAnchor.UpperRight;
+        hlg.spacing = 8f;
+        hlg.childControlWidth = false;
+        hlg.childControlHeight = false;
+        hlg.childForceExpandWidth = false;
+        hlg.childForceExpandHeight = false;
+
+        var fitter = rootGo.AddComponent<ContentSizeFitter>();
+        fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+        fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+        if (iconPrefab != null)
+            RebuildIcons();
+    }
+
+    public void SetBossCutsceneStripSuppressed(bool suppress)
+    {
+        _bossCutsceneSuppressStrip = suppress;
+    }
 
     private void OnEnable()
     {
@@ -49,51 +80,94 @@ public sealed class AppliedUpgradeStripUI : MonoBehaviour
 
     private void LateUpdate()
     {
-<<<<<<< Updated upstream
         if (!showOnlyDuringGameplay || stripRoot == null)
             return;
 
-        bool visible = GameplayHandler.Instance != null &&
-                       GameplayHandler.Instance.CurrentState == GameplayHandler.FloorState.Playing;
+        bool visible = ShouldShowStrip();
         if (stripRoot.gameObject.activeSelf != visible)
             stripRoot.gameObject.SetActive(visible);
-=======
-        if (_stripRoot == null)
-            return;
-
-        if (showOnlyDuringGameplay)
-            _stripRoot.gameObject.SetActive(ShouldShowHud());
-
-        RefreshLayout();
->>>>>>> Stashed changes
     }
 
-    private void OnUpgradeSelected(UpgradeSelectedEvent evt)
+    private bool ShouldShowStrip()
+    {
+        if (_bossCutsceneSuppressStrip)
+            return false;
+
+        if (SceneManager.GetActiveScene().name == "BossGameplay")
+            return true;
+
+        return GameplayHandler.Instance != null &&
+               GameplayHandler.Instance.CurrentState == GameplayHandler.FloorState.Playing;
+    }
+
+    public void RefreshFromManager()
     {
         RebuildIcons();
     }
 
-<<<<<<< Updated upstream
-=======
-    private void EnsureUi()
+    public RectTransform StripRoot => stripRoot;
+
+    public Vector2 IconSize => iconSize;
+
+    public float OverflowFractionOfScreen => overflowFractionOfScreen;
+
+    public int MaxIconsBeforeOverflowChip => maxIconsBeforeOverflowChip;
+
+    public GameObject StripIconPrefab => iconPrefab;
+
+    public GameObject StripOverflowChipPrefab => overflowChipPrefab;
+
+    /// <summary>Matches <see cref="RebuildIcons"/> so the overflow panel can mirror strip + overflow tail.</summary>
+    public static void ComputeStripVisibility(
+        Vector2 iconSize,
+        float overflowFractionOfScreen,
+        int maxIconsBeforeOverflowChip,
+        int appliedCount,
+        out int maxVisible,
+        out int visibleIconCount,
+        out int overflowBadgeCount)
     {
-        if (_hudCanvas == null)
-            _hudCanvas = GetComponentInChildren<Canvas>(true);
-
-        if (_hudCanvas == null || _stripRoot != null)
-            return;
-
-        var root = new GameObject("AppliedUpgradeStrip", typeof(RectTransform));
-        root.transform.SetParent(_hudCanvas.transform, false);
-        _stripRoot = root.GetComponent<RectTransform>();
-        _stripRoot.anchorMin = anchorMin;
-        _stripRoot.anchorMax = anchorMax;
-        _stripRoot.pivot = pivot;
-        _stripRoot.anchoredPosition = anchoredPosition;
-        _stripRoot.sizeDelta = Vector2.zero;
+        float maxWidth = Screen.width * Mathf.Clamp01(overflowFractionOfScreen);
+        float perIcon = iconSize.x + 8f;
+        int byScreen = Mathf.Max(1, Mathf.FloorToInt(maxWidth / perIcon));
+        int cap = Mathf.Max(1, maxIconsBeforeOverflowChip);
+        maxVisible = Mathf.Min(byScreen, cap);
+        int overflowCount = appliedCount > maxVisible ? appliedCount - (maxVisible - 1) : 0;
+        visibleIconCount = overflowCount > 0 ? maxVisible - 1 : appliedCount;
+        overflowBadgeCount = overflowCount;
     }
 
->>>>>>> Stashed changes
+    public void OpenOverflowAllListPanel()
+    {
+        if (stripRoot == null)
+            return;
+
+        var canvas = stripRoot.GetComponentInParent<Canvas>();
+        if (canvas == null)
+            return;
+
+        var panel = AppliedUpgradesOverflowListPanel.EnsureOnCanvas(canvas);
+        panel?.Show(stripRoot);
+    }
+
+    private void OnUpgradeSelected(UpgradeSelectedEvent evt)
+    {
+        HideOverflowListPanelIfOpen();
+        RebuildIcons();
+    }
+
+    private void HideOverflowListPanelIfOpen()
+    {
+        if (stripRoot == null)
+            return;
+        var canvas = stripRoot.GetComponentInParent<Canvas>();
+        if (canvas == null)
+            return;
+        var panel = canvas.GetComponentInChildren<AppliedUpgradesOverflowListPanel>(true);
+        if (panel != null && panel.IsOpen)
+            panel.Hide();
+    }
+
     private void RebuildIcons()
     {
         if (stripRoot == null || iconPrefab == null)
@@ -106,11 +180,8 @@ public sealed class AppliedUpgradeStripUI : MonoBehaviour
 
         List<UpgradeDisplaySO> applied = UpgradeManager.Instance.GetAppliedUpgradeDisplays();
 
-        float maxWidth = Screen.width * Mathf.Clamp01(overflowFractionOfScreen);
-        float perIcon = iconSize.x + 8f;
-        int maxVisible = Mathf.Max(1, Mathf.FloorToInt(maxWidth / perIcon));
-        int overflowCount = applied.Count > maxVisible ? applied.Count - (maxVisible - 1) : 0;
-        int visibleCount = overflowCount > 0 ? maxVisible - 1 : applied.Count;
+        ComputeStripVisibility(iconSize, overflowFractionOfScreen, maxIconsBeforeOverflowChip, applied.Count,
+            out int maxVisible, out int visibleCount, out int overflowCount);
 
         for (int i = 0; i < visibleCount; i++)
         {
@@ -118,7 +189,6 @@ public sealed class AppliedUpgradeStripUI : MonoBehaviour
             if (display == null || display.cardImage == null)
                 continue;
 
-<<<<<<< Updated upstream
             int stacks = UpgradeManager.Instance.GetStack(display.upgradeID);
             SpawnIcon(display, stacks);
         }
@@ -148,25 +218,12 @@ public sealed class AppliedUpgradeStripUI : MonoBehaviour
         var image = iconGo.GetComponent<Image>();
         if (image != null)
         {
-=======
-            GameObject iconGo = new GameObject($"{display.upgradeID}_Mini", typeof(RectTransform), typeof(Image));
-            iconGo.transform.SetParent(_stripRoot, false);
-
-            RectTransform rt = iconGo.GetComponent<RectTransform>();
-            rt.anchorMin = new Vector2(1f, 1f);
-            rt.anchorMax = new Vector2(1f, 1f);
-            rt.pivot = new Vector2(1f, 1f);
-            rt.sizeDelta = iconSize;
-
-            Image image = iconGo.GetComponent<Image>();
->>>>>>> Stashed changes
             image.sprite = display.cardImage;
             image.preserveAspect = false;
             image.color = iconTint;
             image.raycastTarget = true;
         }
 
-<<<<<<< Updated upstream
         var hover = iconGo.GetComponent<CardHover>() ?? iconGo.AddComponent<CardHover>();
         hover.Configure(display, stackCount);
         hover.ConfigureDetailPlacement(CardHover.DetailAnchor.BelowAnchor, compact: true);
@@ -205,57 +262,48 @@ public sealed class AppliedUpgradeStripUI : MonoBehaviour
         if (text != null)
             text.text = $"+{overflowCount}";
 
+        var chipImg = chipGo.GetComponent<Image>();
+        if (chipImg == null)
+        {
+            chipImg = chipGo.AddComponent<Image>();
+            chipImg.color = new Color(1f, 1f, 1f, 0.06f);
+        }
+        chipImg.raycastTarget = true;
+
+        var opener = chipGo.GetComponent<OverflowChipOpenAppliedList>();
+        if (opener == null)
+            opener = chipGo.AddComponent<OverflowChipOpenAppliedList>();
+        opener.Setup(this);
+
         _spawnedIcons.Add(chipGo);
-=======
-        RefreshLayout();
     }
 
-    private void RefreshLayout()
+    public sealed class OverflowChipOpenAppliedList : MonoBehaviour, IPointerClickHandler
     {
-        if (_stripRoot == null)
-            return;
+        private AppliedUpgradeStripUI _host;
 
-        int count = _spawnedIcons.Count;
-        if (count == 0)
+        public void Setup(AppliedUpgradeStripUI host) => _host = host;
+
+        public void OnPointerClick(PointerEventData eventData)
         {
-            _stripRoot.sizeDelta = Vector2.zero;
-            return;
+            if (eventData.button != PointerEventData.InputButton.Left)
+                return;
+            if (_host == null || _host.StripRoot == null)
+                return;
+
+            var canvas = _host.StripRoot.GetComponentInParent<Canvas>();
+            if (canvas == null)
+                return;
+
+            var panel = AppliedUpgradesOverflowListPanel.EnsureOnCanvas(canvas);
+            if (panel == null)
+                return;
+
+            if (panel.IsOpen)
+                panel.Hide();
+            else
+                _host.OpenOverflowAllListPanel();
         }
-
-        float fullStep = iconSize.x + spacing;
-        float maxWidth = Mathf.Max(iconSize.x, Screen.width * Mathf.Clamp01(maxScreenWidthFraction));
-        float step = fullStep;
-
-        if (count > 1)
-        {
-            float maxStepToFit = (maxWidth - iconSize.x) / (count - 1);
-            step = Mathf.Min(fullStep, Mathf.Max(0f, maxStepToFit));
-        }
-
-        float totalWidth = iconSize.x + Mathf.Max(0, count - 1) * step;
-        _stripRoot.sizeDelta = new Vector2(totalWidth, iconSize.y);
-
-        for (int i = 0; i < count; i++)
-        {
-            if (_spawnedIcons[i] == null)
-                continue;
-
-            RectTransform rt = _spawnedIcons[i].GetComponent<RectTransform>();
-            rt.sizeDelta = iconSize;
-            rt.anchoredPosition = new Vector2(-i * step, 0f);
-            rt.SetSiblingIndex(i);
-        }
-    }
-
-    private bool ShouldShowHud()
-    {
-        string sceneName = SceneManager.GetActiveScene().name;
-        if (sceneName == "BossGameplay")
-            return true;
-
-        return GameplayHandler.Instance != null &&
-               GameplayHandler.Instance.CurrentState == GameplayHandler.FloorState.Playing;
->>>>>>> Stashed changes
     }
 
     private void ClearIcons()

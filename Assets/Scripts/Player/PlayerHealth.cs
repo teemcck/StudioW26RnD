@@ -7,6 +7,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     [Header("Damage Tuning")]
     [Tooltip("Seconds of invulnerability after being hit.")]
     [SerializeField] private float invulnerableTime = 0.75f;
+    [Tooltip("Default duration for BeginTeleporterArrivalGrace when not passing an explicit value.")]
+    [SerializeField] private float defaultTeleporterArrivalGraceSeconds = 0.8f;
     [SerializeField] private float damageAnimationDuration = 0.46f;
     [SerializeField] private float damageStunDuration = 0.42f;
     [SerializeField] private float damageVisualKnockbackSpeed = 0.7f;
@@ -14,7 +16,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     [Header("Passive Regeneration")]
     [Tooltip("Seconds after taking damage before passive regeneration resumes.")]
-    [SerializeField] private float passiveRegenDelayAfterDamage = 4f;
+    [SerializeField] private float passiveRegenDelayAfterDamage = 10f;
 
     [Header("Hit Feedback")]
     [SerializeField] private float hitStopDuration = 0.05f;
@@ -47,6 +49,21 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     private float _invulnerableUntil;
     private float _passiveRegenBlockedUntil;
+    private float _teleportArrivalGraceUntil;
+
+    /// <summary>
+    /// After chunk teleports / floor start: brief window where enemy damage is ignored (contact, projectiles, etc.).
+    /// </summary>
+    public void BeginTeleporterArrivalGrace(float durationSeconds = -1f)
+    {
+        float d = durationSeconds >= 0f ? durationSeconds : defaultTeleporterArrivalGraceSeconds;
+        d = Mathf.Max(0f, d);
+        float until = Time.time + d;
+        if (until > _teleportArrivalGraceUntil)
+            _teleportArrivalGraceUntil = until;
+    }
+
+    public bool IsInTeleporterArrivalGrace => Time.time < _teleportArrivalGraceUntil;
 
     private void Start()
     {
@@ -59,7 +76,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         float maxHealth = playerStats.Get(PlayerStatType.MaxHealth);
         CurrentHealth = maxHealth;
         if (!damageFlash) damageFlash = GetComponent<DamageFlash>();
-        if (!cameraController) cameraController = FindObjectOfType<CameraController>();
+        if (!cameraController)
+            cameraController = Object.FindFirstObjectByType<CameraController>(FindObjectsInactive.Exclude);
     }
 
     private void OnDestroy()
@@ -72,6 +90,21 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         if (_dead || playerStats == null)
             return;
+
+        if (AudioManager.Instance == null)
+            return;
+
+        const float threshold = 0.25f;
+        float norm = HealthNormalized;
+        if (norm < threshold)
+        {
+            float t = 1f - Mathf.Clamp01(norm / threshold);
+            AudioManager.Instance.SetLowHpFilter(true, t);
+        }
+        else
+        {
+            AudioManager.Instance.SetLowHpFilter(false, 0f);
+        }
 
         float passiveRegenPerSecond = playerStats.HealthRegen;
         if (passiveRegenPerSecond <= 0f || Time.time < _passiveRegenBlockedUntil)
@@ -87,6 +120,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     public void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce, DamageContext context = default)
     {
         if (damage <= 0f) return;
+        if (Time.time < _teleportArrivalGraceUntil) return;
         if (Time.time < _invulnerableUntil) return;
         if (StartupUpgradeDebugState.InfiniteHealthEnabled)
             return;
@@ -185,6 +219,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         if (_dead || damage <= 0f)
             return;
+        if (Time.time < _teleportArrivalGraceUntil)
+            return;
         if (StartupUpgradeDebugState.InfiniteHealthEnabled)
             return;
 
@@ -224,23 +260,5 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             CurrentHealth += delta;
 
         CurrentHealth = Mathf.Clamp(CurrentHealth, 0f, newValue);
-    }
-
-    private void Update()
-    {
-        if (AudioManager.Instance == null)
-            return;
-
-        const float threshold = 0.25f;
-        float norm = HealthNormalized;
-        if (norm < threshold)
-        {
-            float t = 1f - Mathf.Clamp01(norm / threshold);
-            AudioManager.Instance.SetLowHpFilter(true, t);
-        }
-        else
-        {
-            AudioManager.Instance.SetLowHpFilter(false, 0f);
-        }
     }
 }

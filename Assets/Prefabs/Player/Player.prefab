@@ -27,6 +27,8 @@ GameObject:
   - component: {fileID: 5458744357695969264}
   - component: {fileID: 4979576639942348445}
   - component: {fileID: 8232608945522593496}
+  - component: {fileID: 7722334455667788991}
+  - component: {fileID: 7707313569087562549}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -79,7 +81,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -285,10 +287,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   invulnerableTime: 0.75
+  defaultTeleporterArrivalGraceSeconds: 0.8
   damageAnimationDuration: 0.46
   damageStunDuration: 0.42
   damageVisualKnockbackSpeed: 0.55
   deathAnimationDuration: 0.32
+  passiveRegenDelayAfterDamage: 4
   hitStopDuration: 0.05
   hitShakeIntensity: 0.2
   invulnerabilityBlinkCount: 5
@@ -332,6 +336,7 @@ MonoBehaviour:
   baseCritChance: 0.08
   baseCritMultiplier: 2.25
   baseMaxHealth: 10
+  baseHealthRegen: 2
   baseDamageReduction: 0
   baseDodgeChance: 0
   baseXPMultiplier: 1
@@ -368,6 +373,8 @@ MonoBehaviour:
   xpFillRect: {fileID: 9029260638031890599}
   xpValueText: {fileID: 3834820400951058600}
   fillLerpSpeed: 10
+  upgradeStripIconPrefab: {fileID: 385008437814755490, guid: 27616c8b19d11417ca970e2b81322624, type: 3}
+  upgradeStripOverflowChipPrefab: {fileID: 3901436802849276501, guid: 114d47a95e1134bd89d3db031b5662b8, type: 3}
 --- !u!114 &4344393513909202767
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -458,6 +465,106 @@ MonoBehaviour:
   ghostLifetime: 0.28
   startAlpha: 0.55
   tint: {r: 0, g: 0, b: 0, a: 0}
+--- !u!114 &7722334455667788991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 157006395687664069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03d73f36f479456d965416367b535f71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerVisualLights2D
+  enablePresenceLight: 0
+  presenceIntensity: 0.1
+  presenceOuterRadius: 1.85
+  presenceInnerRadius: 0.12
+  presenceColor: {r: 0.82, g: 0.93, b: 1, a: 1}
+  enableDashBurst: 1
+  dashPeakIntensity: 0.38
+  dashOuterRadius: 1.45
+  dashInnerRadius: 0.06
+  dashDuration: 0.12
+--- !u!114 &7707313569087562549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 157006395687664069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.ShadowCaster2D
+  m_ShadowGroup: 0
+  m_Priority: 0
+  m_ComponentVersion: 5
+  m_HasRenderer: 1
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 0
+  m_AlphaCutoff: 0.1
+  m_ApplyToSortingLayers: 5fa63c4f0000000021d65ffc9f489f0c4f9923bfdde40132
+  m_ShapePath:
+  - {x: -0.093728356, y: 0.057424292, z: 0}
+  - {x: -0.104512714, y: 0.09598985, z: 0}
+  - {x: -0.1445046, y: 0.11444765, z: 0}
+  - {x: -0.14553005, y: 0.24262686, z: 0}
+  - {x: -0.07990231, y: 0.28261882, z: 0}
+  - {x: -0.095283814, y: 0.34106848, z: 0}
+  - {x: -0.091182075, y: 0.38823846, z: 0}
+  - {x: -0.074245125, y: 0.4205249, z: 0}
+  - {x: -0.034783226, y: 0.4497645, z: 0}
+  - {x: 0.001106952, y: 0.46001878, z: 0}
+  - {x: 0.00315782, y: 0.47847658, z: 0}
+  - {x: 0.03186996, y: 0.4815529, z: 0}
+  - {x: 0.039047997, y: 0.46206966, z: 0}
+  - {x: 0.0575058, y: 0.46309507, z: 0}
+  - {x: 0.055454932, y: 0.47642574, z: 0}
+  - {x: 0.08757575, y: 0.4810255, z: 0}
+  - {x: 0.09031967, y: 0.44258645, z: 0}
+  - {x: 0.10980292, y: 0.41797602, z: 0}
+  - {x: 0.13133703, y: 0.39028934, z: 0}
+  - {x: 0.13543876, y: 0.28672048, z: 0}
+  - {x: 0.10877748, y: 0.25698292, z: 0}
+  - {x: 0.1272353, y: 0.20673667, z: 0}
+  - {x: 0.14364223, y: 0.1831517, z: 0}
+  - {x: 0.1333879, y: 0.12982917, z: 0}
+  - {x: 0.12108268, y: 0.058048815, z: 0}
+  - {x: 0.08449944, y: 0.02666126, z: 0}
+  - {x: 0.052378632, y: 0.034463834, z: 0}
+  - {x: 0.027768226, y: 0.013955168, z: 0}
+  - {x: -0.037859526, y: 0.0047262567, z: 0}
+  - {x: -0.0706734, y: 0.019082343, z: 0}
+  m_ShapePathHash: -1741423142
+  m_InstanceId: 0
+  m_ShadowShape2DComponent: {fileID: 0}
+  m_ShadowShape2DProvider:
+    rid: -2
+  m_ShadowCastingSource: 1
+  m_ShadowMesh:
+    m_Mesh: {fileID: 0}
+    m_LocalBounds:
+      m_Center: {x: -0.00094389915, y: 0.24313958, z: 0}
+      m_Extent: {x: 0.14458615, y: 0.23841332, z: 0}
+    m_EdgeProcessing: 1
+    m_TrimEdge: 0.02
+    m_FlipX: 0
+    m_FlipY: 0
+    m_InitialTrim: 0
+  m_CastingOption: 1
+  m_PreviousTrimEdge: 0.02
+  m_PreviousEdgeProcessing: 1
+  m_PreviousShadowCastingSource: 1
+  m_PreviousShadowShape2DSource: {fileID: 7126398141146133394}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!1 &1240368542618820286
 GameObject:
   m_ObjectHideFlags: 0
@@ -1138,7 +1245,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1158,7 +1265,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 838984925
-  m_SortingLayer: 3
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}

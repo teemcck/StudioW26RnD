@@ -8,6 +8,16 @@ public class CameraController : MonoBehaviour
     [SerializeField] private CinemachineImpulseSource impulseSource;
     [SerializeField] private Transform playerTransform;
 
+    [Header("Orthographic framing")]
+    [Tooltip("When switching from perspective to orthographic, the scene Lens orthographic size is often left too large (e.g. 10). Set this > 0 to force a baseline zoom level.")]
+    [SerializeField] private float orthographicSizeManualOverride;
+    [Tooltip("If no manual override: derive ortho size from the former perspective framing (vertical FOV + camera distance along view axis).")]
+    [SerializeField] private bool matchPerspectiveFraming = true;
+    [Tooltip("Approximate distance from camera to gameplay plane used with perspective (e.g. |Z| of camera for side-on 2.5D).")]
+    [SerializeField] private float perspectiveEquivalentDistance = 7.5f;
+    [Tooltip("Vertical field of view in degrees from your old perspective setup (GameplayLoop had ~40 on the vcam Lens).")]
+    [SerializeField] private float perspectiveEquivalentVerticalFovDegrees = 40f;
+
     [Header("Context Zoom")]
     [Tooltip("Enemy layer used by crowd-zoom polling.")]
     [SerializeField] private LayerMask crowdZoomEnemyLayer = ~0;
@@ -55,7 +65,48 @@ public class CameraController : MonoBehaviour
             TryGetComponent(out _confiner);
 
         if (cineCamera != null)
-            _orthoBaseline = cineCamera.Lens.OrthographicSize;
+            ApplyOrthographicBaseline();
+    }
+
+    private void Start()
+    {
+        // Cinemachine can refresh lens from serialized defaults after Awake; re-apply so boss / additive scenes match gameplay zoom.
+        if (cineCamera != null)
+            ApplyOrthographicBaseline();
+    }
+
+    /// <summary>
+    /// Orthographic half-height (Lens.OrthographicSize) that shows the same vertical world span
+    /// as perspective at <paramref name="distance"/> with vertical FOV <paramref name="verticalFovDegrees"/>:
+    /// half-height = distance * tan(fov/2).
+    /// </summary>
+    public static float OrthographicSizeMatchingPerspective(float distance, float verticalFovDegrees)
+    {
+        float halfVerticalExtent = distance * Mathf.Tan(verticalFovDegrees * 0.5f * Mathf.Deg2Rad);
+        return Mathf.Max(0.25f, halfVerticalExtent);
+    }
+
+    private void ApplyOrthographicBaseline()
+    {
+        if (orthographicSizeManualOverride > 0.01f)
+        {
+            _orthoBaseline = orthographicSizeManualOverride;
+            cineCamera.Lens.OrthographicSize = _orthoBaseline;
+            return;
+        }
+
+        if (matchPerspectiveFraming)
+        {
+            float fov = perspectiveEquivalentVerticalFovDegrees;
+            if (fov < 1f)
+                fov = 40f;
+            float d = Mathf.Max(0.01f, perspectiveEquivalentDistance);
+            _orthoBaseline = OrthographicSizeMatchingPerspective(d, fov);
+            cineCamera.Lens.OrthographicSize = _orthoBaseline;
+            return;
+        }
+
+        _orthoBaseline = cineCamera.Lens.OrthographicSize;
     }
 
     private void ApplyImpulseDefinitionDefaults()

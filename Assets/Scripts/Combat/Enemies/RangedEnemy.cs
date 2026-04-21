@@ -61,6 +61,11 @@ public class RangedEnemy : EnemyBase
         _baseScale = transform.localScale;
     }
 
+    protected override void OnRuntimeScalingApplied()
+    {
+        _baseScale = transform.localScale;
+    }
+
     private void OnEnable()
     {
         _facingSign = 1;
@@ -95,8 +100,11 @@ public class RangedEnemy : EnemyBase
 
         UpdateFacing(toPlayer, Rb.linearVelocity);
 
-        if (!IsPlayerInSameChunk())
+        if (!IsPlayerOnSameChunk())
+        {
+            Rb.linearVelocity = Vector2.zero;
             return;
+        }
 
         if (IsInHitReaction)
         {
@@ -176,14 +184,14 @@ public class RangedEnemy : EnemyBase
     private void TryFireLockedShot()
     {
         if (_firedThisAttack || !projectilePrefab) return;
-        if (!IsPlayerInSameChunk()) return;
+        if (!IsPlayerOnSameChunk()) return;
 
         _firedThisAttack = true;
         Vector2 fire = firePoint ? (Vector2)firePoint.position : (Vector2)transform.position;
         var proj = Instantiate(projectilePrefab, fire, Quaternion.identity);
         float scaledDamage = projectilePrefab.BaseDamage * DamageMultiplier;
         proj.Fire(_lockedShootDirection, scaledDamage, 0f, new DamageContext(gameObject, gameObject, AttackKind.Ranged, "enemy_projectile"));
-        AudioManager.Instance?.PlayUfoAttack();
+        AudioManager.Instance?.PlayUfoAttackAt(transform.position);
         SpawnMuzzleFlash(fire);
     }
 
@@ -321,12 +329,5 @@ public class RangedEnemy : EnemyBase
             _attackRoutine = null;
         }
         PlayState(idleStateName, forceRestart: true);
-    }
-
-    private bool IsPlayerInSameChunk()
-    {
-        if (!Player) return false;
-        if (MapSpawner.Instance == null) return true;
-        return MapSpawner.Instance.ArePositionsInSameChunk(transform.position, Player.position);
     }
 }

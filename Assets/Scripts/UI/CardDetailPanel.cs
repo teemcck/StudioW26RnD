@@ -125,6 +125,14 @@ public sealed class CardDetailPanel : MonoBehaviour
             _panelRt.gameObject.SetActive(false);
     }
 
+    /// <summary>Used by overflow UI so leaving the list does not hide tooltips anchored to the same area.</summary>
+    public bool ContainsScreenPoint(Vector2 screenPosition)
+    {
+        if (_panelRt == null || !_panelRt.gameObject.activeInHierarchy)
+            return false;
+        return RectTransformUtility.RectangleContainsScreenPoint(_panelRt, screenPosition, _canvas != null ? _canvas.worldCamera : null);
+    }
+
     private void Update()
     {
         if (_currentAnchor == null && _panelCg != null && _panelCg.alpha > 0f)

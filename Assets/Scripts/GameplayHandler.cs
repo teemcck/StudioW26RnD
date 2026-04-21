@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class GameplayHandler : MonoBehaviour
 {
     public static GameplayHandler Instance { get; private set; }
+    public static int LastPublishedXpPerFloor { get; private set; } = 1000;
     private static int? s_debugForcedFloorIndex;
     private static bool s_debugPreserveRunState;
 
@@ -14,7 +16,8 @@ public class GameplayHandler : MonoBehaviour
     [SerializeField] private MapSpawner mapSpawner;
     [SerializeField] private LevelUI floorUI;
     [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private CinemachineCamera camera;
+    [FormerlySerializedAs("camera")]
+    [SerializeField] private CinemachineCamera cinemachineCamera;
 
     [Header("XP Settings")]
     [SerializeField] private int baseXP = 100;
@@ -69,14 +72,8 @@ public class GameplayHandler : MonoBehaviour
     {
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
-<<<<<<< Updated upstream
-=======
+        LastPublishedXpPerFloor = Mathf.Max(1, xpPerFloor);
         ApplyDebugFloorOverrideIfPresent();
-
-        // Don't instantiate player here - wait for floor start
-        // _playerObject = Instantiate(playerPrefab);
-        // ChangeCameraTracking(_playerObject.transform);
->>>>>>> Stashed changes
     }
 
     private void OnEnable()
@@ -151,6 +148,9 @@ public class GameplayHandler : MonoBehaviour
         _floorStartTime = Time.time;
 
         _playerObject.transform.position = mapSpawner.SpawnPosition;
+        var spawnHealth = _playerObject.GetComponent<PlayerHealth>();
+        if (spawnHealth != null)
+            spawnHealth.BeginTeleporterArrivalGrace();
 
         yield return new WaitUntil(() => CurrentState == FloorState.FloorEnd);
 
@@ -171,12 +171,8 @@ public class GameplayHandler : MonoBehaviour
         }
 
         float elapsed = Time.time - _floorStartTime;
-<<<<<<< Updated upstream
         FloorXPBreakdown xpBreakdown = GetFloorXPBreakdown(_enemiesKilled, _totalEnemies, elapsed);
         int floorXP = xpBreakdown.TotalXP;
-=======
-        int floorXP = CalculateXP(_killXpWeightTotal, _enemiesKilled, _totalEnemies, elapsed);
->>>>>>> Stashed changes
 
         int previousTotalXP = RunStatsTracker.Instance.TotalXP;
 
@@ -252,12 +248,6 @@ public class GameplayHandler : MonoBehaviour
         _nextChunkCount = TriangularRoll(GameConstants.MinChunkCount, GameConstants.MaxChunkCount, mode: (GameConstants.MinChunkCount + GameConstants.MaxChunkCount) / 2);
     }
 
-<<<<<<< Updated upstream
-    /// <summary>
-    /// Samples an integer from a triangular distribution over [min, max] centered at mode.
-    /// The two U[0,1] samples follow a standard Irwin–Hall construction that reproduces
-    /// a triangular PDF without needing the more expensive continuous-distribution math.
-    /// </summary>
     private static int TriangularRoll(int min, int max, int mode)
     {
         int clampedMode = Mathf.Clamp(mode, min, max);
@@ -265,13 +255,6 @@ public class GameplayHandler : MonoBehaviour
         float range = max - min;
         if (range <= 0f)
             return min;
-=======
-    private int CalculateXP(float killXpWeightTotal, int killed, int total, float elapsed)
-    {
-        float killXP    = killXpWeightTotal * baseXP * killXPMultiplier;
-        float avoidXP   = (total - killed) * baseXP * avoidXPMultiplier;
-        float timeBonus = Mathf.Lerp(timeBonusMax, 0f, elapsed / timeBonusWindow);
->>>>>>> Stashed changes
 
         float modeT = (clampedMode - min) / range;
         float sample;
@@ -391,7 +374,7 @@ public class GameplayHandler : MonoBehaviour
                 newTracking = lookahead.Anchor;
         }
 
-        camera.Follow = newTracking;
+        cinemachineCamera.Follow = newTracking;
     }
 
     private void EnsurePlayerHud()

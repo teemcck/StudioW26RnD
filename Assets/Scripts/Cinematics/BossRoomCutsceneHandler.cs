@@ -21,6 +21,8 @@ public sealed class BossRoomCutsceneHandler : MonoBehaviour
     [SerializeField] private float panBackSeconds = 1.25f;
     [SerializeField] private float healthBarFadeSeconds = 1f;
     [SerializeField] private float bossIdleBeforeFightSeconds = 0.5f;
+    [Tooltip("Must match CinematicBars.Hide duration so letterbox finishes retracting before the boss bar fades in.")]
+    [SerializeField] private float cinematicBarHideDuration = 0.25f;
 
     [Header("Growl")]
     [SerializeField] private float growlShakeIntensity = 0.34f;
@@ -91,6 +93,8 @@ public sealed class BossRoomCutsceneHandler : MonoBehaviour
 
     private IEnumerator RunIntroRoutine()
     {
+        yield return null;
+
         if (!boss)
             boss = FindFirstObjectByType<WormBossController>();
 
@@ -142,11 +146,12 @@ public sealed class BossRoomCutsceneHandler : MonoBehaviour
                 cameraController.LockToPlayer();
             yield return new WaitForSeconds(panBackSeconds);
             boss.BindHealthBarForFightStart();
-            if (healthBar)
-                yield return healthBar.FadeInFromIntro(healthBarFadeSeconds);
             if (CinematicBars.Instance != null)
-                CinematicBars.Instance.Hide(0.25f);
-            SetPlayerHudVisible(true);
+            {
+                CinematicBars.Instance.Hide(cinematicBarHideDuration);
+                yield return new WaitForSecondsRealtime(Mathf.Max(0.01f, cinematicBarHideDuration));
+            }
+            yield return CoFadeBossBarAndPlayerHud(healthBarFadeSeconds);
             yield return WaitBossIdleThenStartCombat();
             _routine = null;
             yield break;
@@ -208,34 +213,69 @@ public sealed class BossRoomCutsceneHandler : MonoBehaviour
         }
 
         boss.BindHealthBarForFightStart();
-        if (healthBar)
-            yield return healthBar.FadeInFromIntro(healthBarFadeSeconds);
-
         if (CinematicBars.Instance != null)
-            CinematicBars.Instance.Hide(0.25f);
-        SetPlayerHudVisible(true);
+        {
+            CinematicBars.Instance.Hide(cinematicBarHideDuration);
+            yield return new WaitForSecondsRealtime(Mathf.Max(0.01f, cinematicBarHideDuration));
+        }
+        yield return CoFadeBossBarAndPlayerHud(healthBarFadeSeconds);
 
         yield return WaitBossIdleThenStartCombat();
         _routine = null;
     }
 
-    private void SetPlayerHudVisible(bool visible)
+    private PlayerHudUI ResolvePlayerHud()
     {
-        var hud = FindFirstObjectByType<PlayerHudUI>(FindObjectsInactive.Include);
-        if (hud != null)
+        if (player != null)
+            return player.GetComponent<PlayerHudUI>() ?? player.GetComponentInChildren<PlayerHudUI>(true);
+        return FindFirstObjectByType<PlayerHudUI>(FindObjectsInactive.Include);
+    }
+
+    private AppliedUpgradeStripUI ResolveUpgradeStrip()
+    {
+        if (UpgradeManager.Instance != null && UpgradeManager.Instance.PersistentAppliedUpgradeStrip != null)
+            return UpgradeManager.Instance.PersistentAppliedUpgradeStrip;
+
+        if (player != null)
+            return player.GetComponent<AppliedUpgradeStripUI>() ?? player.GetComponentInChildren<AppliedUpgradeStripUI>(true);
+        return FindFirstObjectByType<AppliedUpgradeStripUI>(FindObjectsInactive.Include);
+    }
+
+    private void PreparePlayerHudAndStripForCoordinatedFade()
+    {
+        ResolvePlayerHud()?.SetBossCutsceneHudSuppressed(false);
+        ResolveUpgradeStrip()?.SetBossCutsceneStripSuppressed(false);
+        ResolvePlayerHud()?.SetBossHudIntroFade(0f);
+    }
+
+    private IEnumerator CoFadeBossBarAndPlayerHud(float duration)
+    {
+        float dur = Mathf.Max(0.01f, duration);
+        PreparePlayerHudAndStripForCoordinatedFade();
+
+        float t = 0f;
+        while (t < dur)
         {
-            var cg = hud.GetComponent<CanvasGroup>() ?? hud.gameObject.AddComponent<CanvasGroup>();
-            cg.alpha = visible ? 1f : 0f;
-            cg.blocksRaycasts = visible;
+            t += Time.deltaTime;
+            float u = Mathf.Clamp01(t / dur);
+            if (healthBar)
+                healthBar.SetIntroFadeAlpha(u);
+            ResolvePlayerHud()?.SetBossHudIntroFade(u);
+            yield return null;
         }
 
-        var strip = FindFirstObjectByType<AppliedUpgradeStripUI>(FindObjectsInactive.Include);
-        if (strip != null)
-        {
-            var cg = strip.GetComponent<CanvasGroup>() ?? strip.gameObject.AddComponent<CanvasGroup>();
-            cg.alpha = visible ? 1f : 0f;
-            cg.blocksRaycasts = visible;
-        }
+        if (healthBar)
+            healthBar.ShowBar();
+        ResolvePlayerHud()?.ClearBossHudIntroFade();
+        SetPlayerHudVisible(true);
+    }
+
+    private void SetPlayerHudVisible(bool visible)
+    {
+        // Drive visibility via PlayerHudUI / AppliedUpgradeStripUI so we do not stack CanvasGroups on
+        // the player root (that hid the HUD canvas even when gameplay LateUpdate forced alpha to 1).
+        ResolvePlayerHud()?.SetBossCutsceneHudSuppressed(!visible);
+        ResolveUpgradeStrip()?.SetBossCutsceneStripSuppressed(!visible);
     }
 
     private IEnumerator WaitBossIdleThenStartCombat()

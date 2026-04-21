@@ -91,6 +91,7 @@ public class MapSpawner : MonoBehaviour
             GameObject chunk = Instantiate(prefab, chunkContainer);
             chunk.name = prefab.name;
             chunk.transform.position = new Vector3(_chunkOffset, 0, 0);
+            Physics2D.SyncTransforms();
             _chunks.Add(chunk);
 
             Tilemap tm = chunk.GetComponentInChildren<Tilemap>();
@@ -154,15 +155,37 @@ public class MapSpawner : MonoBehaviour
     {
         var tp = lastChunk.GetComponentInChildren<Teleporter>();
         Vector3 center = tp != null ? tp.transform.position : lastChunk.transform.position;
+        Vector2 teleRef = (Vector2)center;
 
-        Vector2 offset = Random.insideUnitCircle.normalized * 1.35f + Random.insideUnitCircle * 0.4f;
-        if (indexInGroup > 0)
-            offset += new Vector2(1.6f, 0f);
+        Vector3 spawnWorld = default;
+        bool placedOnTilemap = false;
+        var spawners = lastChunk.GetComponentsInChildren<SpawnEnemies>(true);
+        foreach (var spawner in spawners)
+        {
+            if (spawner == null)
+                continue;
+            if (spawner.TryPickSpawnWorldPositionNear(teleRef, 0.35f, 11f, out spawnWorld))
+            {
+                placedOnTilemap = true;
+                break;
+            }
+        }
+
+        if (!placedOnTilemap)
+            spawnWorld = FindEliteSpawnOnGroundNear(teleRef, lastChunk.transform.position.z, indexInGroup);
 
         GameObject prefab = weightedPool[Random.Range(0, weightedPool.Count)].prefab;
         if (prefab == null) return;
 
-        var go = Instantiate(prefab, center + new Vector3(offset.x, offset.y, 0f), Quaternion.identity, lastChunk.transform);
+        var go = Instantiate(prefab, spawnWorld, Quaternion.identity, lastChunk.transform);
+        if (go.TryGetComponent<Rigidbody2D>(out var rb))
+        {
+            rb.simulated = true;
+            rb.WakeUp();
+        }
+
+        Physics2D.SyncTransforms();
+
         var enemy = go.GetComponent<EnemyBase>();
         if (enemy != null)
             enemy.ApplyRuntimeScaling(healthMult, 1f, damageMult);
@@ -171,6 +194,39 @@ public class MapSpawner : MonoBehaviour
             go.AddComponent<EliteModifier>();
 
         LastSpawnedEnemyCount++;
+    }
+
+    /// <summary>
+    /// Last resort: raycast down from above the teleporter — requires a hit (solid ground), never "empty air".
+    /// </summary>
+    private static Vector3 FindEliteSpawnOnGroundNear(Vector2 teleporterWorld, float chunkZ, int indexInGroup)
+    {
+        int mask = LayerMask.GetMask("Ground", "Default", "Obstacles");
+        if (mask == 0)
+            mask = Physics2D.DefaultRaycastLayers;
+
+        float baseAngle = indexInGroup * 77.3f;
+        for (int ring = 0; ring < 14; ring++)
+        {
+            float r = 0.35f + ring * 0.42f;
+            int spokes = 8 + ring / 2;
+            for (int s = 0; s < spokes; s++)
+            {
+                float ang = (baseAngle + s * (360f / spokes)) * Mathf.Deg2Rad;
+                Vector2 horizontal = teleporterWorld + new Vector2(Mathf.Cos(ang), Mathf.Sin(ang)) * r;
+                Vector2 origin = horizontal + Vector2.up * 14f;
+                var hit = Physics2D.Raycast(origin, Vector2.down, 28f, mask);
+                if (hit.collider != null)
+                    return new Vector3(hit.point.x, hit.point.y + 0.12f, chunkZ);
+            }
+        }
+
+        Vector2 up = teleporterWorld + Vector2.up * 14f;
+        var lastHit = Physics2D.Raycast(up, Vector2.down, 28f, mask);
+        if (lastHit.collider != null)
+            return new Vector3(lastHit.point.x, lastHit.point.y + 0.12f, chunkZ);
+
+        return new Vector3(teleporterWorld.x, teleporterWorld.y, chunkZ);
     }
 
     float DifficultyToFillFraction(int difficulty)
@@ -276,10 +332,9 @@ public class MapSpawner : MonoBehaviour
             GameObject chunk = _chunks[i];
             if (!chunk) continue;
 
-            Tilemap tm = chunk.GetComponentInChildren<Tilemap>();
-            if (!tm) continue;
+            if (!TryGetMergedTilemapWorldBounds(chunk, out Bounds worldBounds))
+                continue;
 
-            Bounds worldBounds = GetTilemapWorldBounds(tm);
             Vector3 p = new Vector3(worldPos.x, worldPos.y, worldBounds.center.z);
             if (worldBounds.Contains(p))
             {
@@ -299,10 +354,9 @@ public class MapSpawner : MonoBehaviour
             GameObject chunk = _chunks[i];
             if (!chunk) continue;
 
-            Tilemap tm = chunk.GetComponentInChildren<Tilemap>();
-            if (!tm) continue;
+            if (!TryGetMergedTilemapWorldBounds(chunk, out Bounds worldBounds))
+                continue;
 
-            Bounds worldBounds = GetTilemapWorldBounds(tm);
             Vector3 p = new Vector3(worldPos.x, worldPos.y, worldBounds.center.z);
             if (!worldBounds.Contains(p))
                 continue;
@@ -312,6 +366,19 @@ public class MapSpawner : MonoBehaviour
         }
 
         return false;
+    }
+
+    private static bool TryGetMergedTilemapWorldBounds(GameObject chunk, out Bounds merged)
+    {
+        merged = default;
+        Tilemap[] maps = chunk.GetComponentsInChildren<Tilemap>(true);
+        if (maps == null || maps.Length == 0)
+            return false;
+
+        merged = GetTilemapWorldBounds(maps[0]);
+        for (int i = 1; i < maps.Length; i++)
+            merged.Encapsulate(GetTilemapWorldBounds(maps[i]));
+        return true;
     }
 
     private static Bounds GetTilemapWorldBounds(Tilemap tilemap)

@@ -275,7 +275,7 @@ public class LevelUI : MonoBehaviour
         if (killsRt != null)
         {
             yield return SlamRect(killsRt, _killsAnchoredRest + off, _killsAnchoredRest, summarySlamDuration);
-            AudioManager.Instance?.PlayXpSummaryBlockLand();
+            AudioManager.Instance?.PlayXpSummaryBlockLand(1.5f);
             yield return ScalePunchRect(killsRt, _killsScaleRest);
             yield return ShakeSummaryPanel(panelRt);
             yield return CountEnemyXp(killed, avoided, xp);
@@ -287,7 +287,7 @@ public class LevelUI : MonoBehaviour
         {
             summaryTimeText.text = FormatTimeBonusBlock(floorTimeHms, 0);
             yield return SlamRect(timeRt, _timeAnchoredRest + off, _timeAnchoredRest, summarySlamDuration);
-            AudioManager.Instance?.PlayXpSummaryBlockLand();
+            AudioManager.Instance?.PlayXpSummaryBlockLand(1.5f);
             yield return ScalePunchRect(timeRt, _timeScaleRest);
             yield return ShakeSummaryPanel(panelRt);
             yield return CountTimeXp(floorTimeHms, xp);
@@ -299,7 +299,7 @@ public class LevelUI : MonoBehaviour
         {
             summaryXPText.text = FormatTotalXpBlock(0);
             yield return SlamRect(xpRt, _xpAnchoredRest + off, _xpAnchoredRest, summarySlamDuration);
-            AudioManager.Instance?.PlayXpSummaryBlockLand();
+            AudioManager.Instance?.PlayXpSummaryBlockLand(1.5f);
             yield return ScalePunchRect(xpRt, _xpScaleRest);
             yield return ShakeSummaryPanel(panelRt);
             yield return CountTotalXp(xp);
@@ -359,7 +359,7 @@ public class LevelUI : MonoBehaviour
         if (Time.unscaledTime - _nextSummaryCountTickUnscaled < interval)
             return;
         _nextSummaryCountTickUnscaled = Time.unscaledTime;
-        float pitch = Mathf.Lerp(0.95f, 1.45f, Mathf.Clamp01(progress01));
+        float pitch = Mathf.Lerp(1.25f, 2.25f, Mathf.Clamp01(progress01));
         AudioManager.Instance?.PlayXpSummaryCountTick(pitch: pitch);
     }
 

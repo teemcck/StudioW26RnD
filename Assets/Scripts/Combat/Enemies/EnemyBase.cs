@@ -28,14 +28,13 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
     [SerializeField] private int hitPulseSortingOrderBoost = 2;
 
     protected Rigidbody2D Rb { get; private set; }
-<<<<<<< Updated upstream
-    protected Transform Player { get; private set; }
-    private PlayerCombatAnchor _playerCombatAnchor;
 
     [Header("Spawn Safety")]
     [Tooltip("Seconds after spawn during which this enemy will not deal contact damage. Gives the player a moment to orient.")]
     [SerializeField] private float postSpawnGracePeriod = 0.6f;
-=======
+
+    private PlayerCombatAnchor _playerCombatAnchor;
+
     protected Transform Player
     {
         get
@@ -46,7 +45,6 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         }
         private set => _player = value;
     }
->>>>>>> Stashed changes
 
     private float _health;
     private bool _isDead;
@@ -71,7 +69,11 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
 
     public virtual bool UsesWorldFloatingHealthBar => true;
     public virtual bool CountsTowardEnemyStats => true;
-    public virtual float KillXpWeight => 1f;
+    public virtual float KillXpWeight => EliteXpFactor();
+
+    private const float EliteKillXpMultiplier = 1.55f;
+
+    protected float EliteXpFactor() => GetComponent<EliteModifier>() != null ? EliteKillXpMultiplier : 1f;
     public EnemyStatusEffectController StatusEffects => _statusEffects;
     protected bool IsInHitReaction => Time.time < _hitReactionUntil;
     protected float EffectiveMoveSpeed => moveSpeed * (_statusEffects ? _statusEffects.GetMoveSpeedMultiplier() : 1f);
@@ -94,6 +96,14 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
             DamageMultiplier *= damageMultiplier;
     }
 
+    /// <summary>Called after <see cref="ApplyRuntimeScaling"/> (e.g. elite size) so subclasses can refresh cached scale for animation pulses.</summary>
+    public void NotifyRuntimeScalingApplied()
+    {
+        OnRuntimeScalingApplied();
+    }
+
+    protected virtual void OnRuntimeScalingApplied() { }
+
     protected virtual void Awake()
     {
         Rb = GetComponent<Rigidbody2D>();
@@ -104,11 +114,13 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         _statusEffects = GetComponent<EnemyStatusEffectController>() ?? gameObject.AddComponent<EnemyStatusEffectController>();
         _ = GetComponent<EnemyWorldVisuals>() ?? gameObject.AddComponent<EnemyWorldVisuals>();
 
-<<<<<<< Updated upstream
-        var playerGo = GameObject.FindGameObjectWithTag("Player");
-        Player = playerGo ? playerGo.transform : null;
+        TryResolvePlayer();
+        GameObject playerGo = _player != null ? _player.gameObject : GameObject.FindGameObjectWithTag("Player");
         if (playerGo != null)
+        {
+            Player = playerGo.transform;
             _playerCombatAnchor = playerGo.GetComponent<PlayerCombatAnchor>() ?? playerGo.GetComponentInChildren<PlayerCombatAnchor>();
+        }
     }
 
     protected Vector2 GetPlayerCombatWorldPoint()
@@ -128,9 +140,6 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         if (col != null)
             return col.ClosestPoint(fromWorld);
         return (Vector2)Player.position;
-=======
-        TryResolvePlayer();
->>>>>>> Stashed changes
     }
 
     public virtual void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce, DamageContext context = default)
@@ -139,13 +148,15 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         if (damage <= 0f) return;
 
         var elite = GetComponent<EliteModifier>();
+        elite?.NotifyHitReceived();
+
         if (elite != null && elite.HasShield)
         {
             damage = elite.AbsorbDamage(damage);
             if (damage <= 0f)
             {
                 if (HitSparkSpawner.Instance != null)
-                    HitSparkSpawner.Instance.Spawn(transform.position, GameColors.HitShield, emphasized: true);
+                    HitSparkSpawner.Instance.Spawn(transform.position, GameColors.HitShield, HitSparkCategory.Shield);
                 return;
             }
         }
@@ -228,6 +239,16 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
     {
         if (_isDead || damage <= 0f)
             return;
+
+        var eliteStatus = GetComponent<EliteModifier>();
+        eliteStatus?.NotifyHitReceived();
+
+        if (eliteStatus != null && eliteStatus.HasShield)
+        {
+            damage = eliteStatus.AbsorbDamage(damage);
+            if (damage <= 0f)
+                return;
+        }
 
         _health -= damage;
         EventBus<EnemyDamagedEvent>.Raise(new EnemyDamagedEvent
@@ -352,5 +373,17 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         PlayerController[] players = FindObjectsByType<PlayerController>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         _player = players.Length > 0 ? players[0].transform : null;
         return _player != null;
+    }
+
+    /// <summary>
+    /// Used to gate movement/attacks until the player is in the same map chunk (see <see cref="MapSpawner"/>).
+    /// </summary>
+    protected bool IsPlayerOnSameChunk()
+    {
+        if (Player == null)
+            return false;
+        if (MapSpawner.Instance == null)
+            return true;
+        return MapSpawner.Instance.ArePositionsInSameChunk(transform.position, Player.position);
     }
 }
