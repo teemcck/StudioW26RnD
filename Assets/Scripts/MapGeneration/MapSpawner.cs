@@ -30,14 +30,9 @@ public class MapSpawner : MonoBehaviour
     public int MinNumChunks => GameConstants.MinChunkCount;
     public int MaxNumChunks => GameConstants.MaxChunkCount;
 
-    /// <summary>Total enemies spawned in the last <see cref="GenerateRandomSequence"/> call.</summary>
     public int LastSpawnedEnemyCount { get; private set; }
 
-    /// <summary>
-    /// Referenced by GameplayHandler.cs.
-    /// Used to place player object at the beginning of the level.
-    /// </summary>
-    public Vector2 SpawnPosition {get; private set;}
+    public Vector2 SpawnPosition { get; private set; }
 
     private void Awake()
     {
@@ -71,7 +66,6 @@ public class MapSpawner : MonoBehaviour
 
         float fillFraction = DifficultyToFillFraction(difficulty);
         var weightedPool = BuildWeightedPool(band);
-        Debug.Log($"Generating {numChunks} chunks; difficulty {difficulty} → fill {fillFraction:P0}.");
 
         int floorIndex = GameplayHandler.Instance != null ? GameplayHandler.Instance.CurrentFloorIndex : 0;
         float healthMult = FloorScalingCurve.GetHealthMult(floorIndex);

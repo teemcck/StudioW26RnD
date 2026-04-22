@@ -35,6 +35,23 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public float CurrentHealth { get; private set; }
 
+    /// <summary>
+    /// Sets HP after cross-scene stat import (boss transition). Does not raise heal/damage events.
+    /// </summary>
+    public void ApplyBossTransitionPreserve(float absoluteHealth)
+    {
+        if (_dead)
+            return;
+
+        if (playerStats == null)
+            playerStats = GetComponent<PlayerStats>();
+        if (playerStats == null)
+            return;
+
+        float max = playerStats.MaxHealth;
+        CurrentHealth = Mathf.Clamp(absoluteHealth, 0f, max);
+    }
+
     /// <summary>CurrentHealth / MaxHealth, clamped to [0, 1]. Drives low-HP music/vignette.</summary>
     public float HealthNormalized
     {
@@ -155,9 +172,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             damageFlash.PlayInvulnerabilityBlink(totalInvulnerability, invulnerabilityBlinkCount, 0.08f);
         }
 
-        Debug.Log($"Player hit for {adjustedDamage}. HP: {CurrentHealth}/{playerStats.MaxHealth}");
-        EventBus<PlayerDamagedEvent>.Raise(new PlayerDamagedEvent {Amount = adjustedDamage, RemainingHP = CurrentHealth, HitPosition = transform.position, Source = context.SourceId ?? "enemy"}); 
-        
+        EventBus<PlayerDamagedEvent>.Raise(new PlayerDamagedEvent { Amount = adjustedDamage, RemainingHP = CurrentHealth, HitPosition = transform.position, Source = context.SourceId ?? "enemy" });
+
         if (CurrentHealth <= 0f)
             Die();
     }
@@ -166,8 +182,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         if (_dead) return;
         _dead = true;
-        
-        Debug.Log("Player died.");
+
         if (_playerController)
             _playerController.PlayDeathAnimation(_playerController.LastMoveDirection);
 

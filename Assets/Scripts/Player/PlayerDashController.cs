@@ -63,8 +63,6 @@ public class PlayerDashController : MonoBehaviour
         {
             Position = transform.position
         });
-
-        Debug.Log($"Player dashed. Direction: {dashDirection}, Speed: {dashSpeed}, Distance: {dashDistance}");
     }
 
     public void ReduceRemainingCooldown(float seconds)

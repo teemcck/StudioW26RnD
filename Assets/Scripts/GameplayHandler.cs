@@ -198,22 +198,16 @@ public class GameplayHandler : MonoBehaviour
             {
                 floorUI.ResetRewardConfirmed();
 
-                Debug.Log($"[GameplayHandler] XP bar filled {upgradeSelectionsEarned} time(s). Opening upgrade selection {i + 1}/{upgradeSelectionsEarned}...");
-
                 EventBus<UpgradeScreenOpenedEvent>.Raise(new UpgradeScreenOpenedEvent
                 {
                     OfferedCount = 3
                 });
 
                 UpgradeManager.Instance.OpenUpgradeSelection(3);
-                Debug.Log("[GameplayHandler] Waiting for upgrade selection...");
                 yield return new WaitUntil(() =>
                 {
                     if (floorUI.RewardConfirmed)
-                    {
-                        Debug.Log("[GameplayHandler] Upgrade selected!");
                         return true;
-                    }
                     return false;
                 });
             }
@@ -221,12 +215,15 @@ public class GameplayHandler : MonoBehaviour
         else
         {
             CurrentState = FloorState.Idle;
-            Debug.Log("[GameplayHandler] XP threshold not reached, skipping upgrade selection.");
         }
 
-        Debug.Log("[GameplayHandler] Rolling next floor and looping...");
         if (WorldProgression.IsBossFloor(_floorIndex))
         {
+            var ph = _playerObject != null ? _playerObject.GetComponent<PlayerHealth>() : null;
+            var pst = _playerObject != null ? _playerObject.GetComponent<PlayerStats>() : null;
+            if (pst != null && ph != null)
+                PlayerCombatTransitionState.Capture(pst, ph, Mathf.Max(1, xpPerFloor));
+
             SceneManager.LoadScene(bossSceneName);
             yield break;
         }
@@ -314,7 +311,6 @@ public class GameplayHandler : MonoBehaviour
         if (drift != 0)
             rt += drift;
 
-        Debug.Log($"XP - Kills: {killXP}, Avoided: {avoidXP}, Time bonus: {timeBonus} (par {parSeconds:F0}s, quality {quality:F2}), Total: {totalXP}");
         return new FloorXPBreakdown(rk, ra, rt, totalXP);
     }
 
@@ -322,6 +318,7 @@ public class GameplayHandler : MonoBehaviour
 
     public static void DebugJumpToGameplayFloor(int floorIndex, bool preserveRunState = true)
     {
+        PlayerCombatTransitionState.Clear();
         s_debugForcedFloorIndex = Mathf.Max(0, floorIndex);
         s_debugPreserveRunState = preserveRunState;
         SceneManager.LoadScene("GameplayLoop");
@@ -329,6 +326,7 @@ public class GameplayHandler : MonoBehaviour
 
     public static void DebugJumpToBoss(bool preserveRunState = true)
     {
+        PlayerCombatTransitionState.Clear();
         s_debugForcedFloorIndex = WorldProgression.BossFloorIndex;
         s_debugPreserveRunState = preserveRunState;
         SceneManager.LoadScene("BossGameplay");
@@ -394,6 +392,7 @@ public class GameplayHandler : MonoBehaviour
         if (ConsumeDebugPreserveRunState())
             return;
 
+        PlayerCombatTransitionState.Clear();
         UpgradeManager.Instance?.ResetRun(playerController);
         RunStatsTracker.Instance?.ResetRunStats();
         ApplyStartupDebugUpgrades(playerController);

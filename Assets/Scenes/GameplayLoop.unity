@@ -339,7 +339,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8a61c1d4e50f4b7fb0e71cb832d6710c, type: 2}
   - {fileID: 11400000, guid: 8a61c1d4e50f4b7fb0e71cb832d6710b, type: 2}
   - {fileID: 11400000, guid: 8a61c1d4e50f4b7fb0e71cb832d67105, type: 2}
-  - {fileID: 11400000, guid: 8a61c1d4e50f4b7fb0e71cb832d67112, type: 2}
   - {fileID: 11400000, guid: 8a61c1d4e50f4b7fb0e71cb832d67104, type: 2}
   allEffects:
   - {fileID: 11400000, guid: ea3bf257c932bfc40b56f10fcd5186fe, type: 2}
@@ -364,7 +363,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7b878f3b9cbf4cf4878dd6b477d74a08, type: 2}
   - {fileID: 11400000, guid: 7b878f3b9cbf4cf4878dd6b477d74a07, type: 2}
   - {fileID: 11400000, guid: 041df08fb3225d345b69829939a945fe, type: 2}
-  - {fileID: 11400000, guid: 7b878f3b9cbf4cf4878dd6b477d74a0e, type: 2}
   - {fileID: 11400000, guid: af62bb792d491094aa8dd53d7765b5e9, type: 2}
   upgradeUIHandler: {fileID: 626842123}
   appliedUpgradeStripIconPrefab: {fileID: 0}

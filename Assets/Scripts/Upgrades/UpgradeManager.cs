@@ -5,16 +5,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-/// <summary>
-/// Central registry and runtime coordinator for the upgrade system.
-///
-/// Responsibilities:
-///   1. Build lookup dictionaries at startup.
-///   2. Apply upgrades to the player via UpgradeContext.
-///   3. Drive per-frame Tick on any active ticking effects.
-///   4. Serve randomized card selections to the upgrade screen UI.
-///   5. Track per-upgrade stack counts for the current run.
-/// </summary>
 public class UpgradeManager : MonoBehaviour
 {
     public static UpgradeManager Instance { get; private set; }
@@ -31,16 +21,13 @@ public class UpgradeManager : MonoBehaviour
 
     private AppliedUpgradeStripUI _persistentAppliedUpgradeStrip;
 
-    private PlayerController playerController; // Set at runtime.
+    private PlayerController playerController;
 
-    /// <summary>DontDestroyOnLoad strip UI — survives into BossGameplay and stays in sync via <see cref="RefreshAppliedUpgradeStripUi"/>.</summary>
     public AppliedUpgradeStripUI PersistentAppliedUpgradeStrip => _persistentAppliedUpgradeStrip;
 
-    // Lookup maps built once at Awake.
     private Dictionary<string, UpgradeEffectsSO>  _effectMap  = new();
     private Dictionary<string, UpgradeDisplaySO>  _displayMap = new();
 
-    // Runtime run state.
     private Dictionary<string, int> _stacks = new();
     private List<(UpgradeEffect effect, UpgradeContext ctx)> _tickingEffects = new();
 
@@ -48,8 +35,6 @@ public class UpgradeManager : MonoBehaviour
     private PlayerController _trackedPlayer;
     private Coroutine _deferredRebindRoutine;
     private IEventBinding<PlayerDiedEvent> _playerDiedBinding;
-
-    // Manager lifecycle.
 
     private void Awake()
     {
@@ -90,9 +75,6 @@ public class UpgradeManager : MonoBehaviour
             ClearStacksWithoutEffectRemoval();
     }
 
-    /// <summary>
-    /// Clears upgrade stacks when no player exists to run effect Remove() (edge case after scene tear-down).
-    /// </summary>
     private void ClearStacksWithoutEffectRemoval()
     {
         _stacks.Clear();
@@ -123,11 +105,7 @@ public class UpgradeManager : MonoBehaviour
             if (!_displayMap.TryAdd(so.upgradeID, so))
                 Debug.LogWarning($"[UpgradeManager] Duplicate display ID: '{so.upgradeID}'");
         }
-
-        Debug.Log($"[UpgradeManager] Registered {_effectMap.Count} effects / {_displayMap.Count} displays.");
     }
-
-    // Public API (lookup)
 
     public bool TryGetEffect(string id, out UpgradeEffectsSO so)  => _effectMap.TryGetValue(id, out so);
     public bool TryGetDisplay(string id, out UpgradeDisplaySO so) => _displayMap.TryGetValue(id, out so);
@@ -160,10 +138,6 @@ public class UpgradeManager : MonoBehaviour
             strip.RefreshFromManager();
     }
 
-    /// <summary>
-    /// Creates a screen-space overlay strip under this DDOL object (once) and removes legacy scene strips
-    /// so only one strip exists. Call from <see cref="PlayerHudUI"/> with the same prefabs as the player HUD.
-    /// </summary>
     public void EnsurePersistentAppliedUpgradeStrip(GameObject iconPrefab, GameObject chipPrefab)
     {
         if (iconPrefab != null)
@@ -203,10 +177,6 @@ public class UpgradeManager : MonoBehaviour
         DestroyLegacyAppliedUpgradeStripRoots(host);
     }
 
-    /// <summary>
-    /// Rebinds <see cref="_persistentAppliedUpgradeStrip"/> when the field was cleared but a strip still exists
-    /// (e.g. scene change / debug jump to World 2 while DDOL manager keeps running).
-    /// </summary>
     private void TryRebindExistingAppliedUpgradeStrip()
     {
         var underManager = GetComponentsInChildren<AppliedUpgradeStripUI>(true);
@@ -336,12 +306,6 @@ public class UpgradeManager : MonoBehaviour
         return true;
     }
 
-    // Public API (upgrade screen)
-
-    /// <summary>
-    /// Called by GameplayHandler to open the upgrade screen with n choices.
-    /// Passes the choices to UpgradeUIHandler for display.
-    /// </summary>
     public void OpenUpgradeSelection(int count)
     {
         ResolveUpgradeUiHandler();
@@ -355,16 +319,10 @@ public class UpgradeManager : MonoBehaviour
         upgradeUIHandler.DisplayUpgrades(choices);
     }
 
-    /// <summary>
-    /// Called by UpgradeUIHandler when the player clicks a card.
-    /// Applies the upgrade and returns true on success.
-    /// </summary>
     public bool ApplyUpgradeFromDisplay(UpgradeDisplaySO display)
     {
         return ApplyUpgrade(display.upgradeID, playerController);
     }
-
-    // Public API (apply/revoke)
 
     public bool ApplyUpgrade(string id, PlayerController player)
     {
@@ -413,8 +371,6 @@ public class UpgradeManager : MonoBehaviour
         StartupUpgradeDebugState.AlignWithUpgradeManager(this);
     }
 
-    // Public API
-
     public List<UpgradeDisplaySO> GetRandomUpgradeChoices(int count, bool rarityWeighted = true)
     {
         var pool = new List<(UpgradeDisplaySO display, float weight)>();
@@ -442,8 +398,6 @@ public class UpgradeManager : MonoBehaviour
         return result;
     }
 
-    // Run lifecycle.
-
     public void ResetRun(PlayerController player)
     {
         var ctx = GetOrBuildContext(player);
@@ -462,8 +416,6 @@ public class UpgradeManager : MonoBehaviour
         PlayerHudUI.InvalidateAllDisplayedValues();
         StartupUpgradeDebugState.AlignWithUpgradeManager(this);
     }
-
-    // Helpers
 
     private UpgradeContext GetOrBuildContext(PlayerController player)
     {
@@ -562,6 +514,15 @@ public class UpgradeManager : MonoBehaviour
         RefreshAppliedUpgradeStripUi();
         PlayerHudUI.InvalidateAllDisplayedValues();
         StartupUpgradeDebugState.AlignWithUpgradeManager(this);
+
+        if (_trackedPlayer != null
+            && PlayerCombatTransitionState.TryConsumeAfterUpgradeReapply(
+                _trackedPlayer.GetComponent<PlayerStats>(),
+                _trackedPlayer.GetComponent<PlayerHealth>()))
+        {
+            _cachedContext.Runtime?.RefreshDynamicModifiers(this);
+            PlayerHudUI.InvalidateAllDisplayedValues();
+        }
     }
 
     private void ResolveUpgradeUiHandler()

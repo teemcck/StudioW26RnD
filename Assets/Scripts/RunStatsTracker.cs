@@ -7,14 +7,15 @@ public class RunStatsTracker : MonoBehaviour
     public int TotalKillsThisRun     { get; private set; }
     public float TotalTimeSeconds    { get; private set; }
     public int TotalXP               { get; private set; }
+    // HUD XP bar divisor override when GameplayHandler is not loaded (e.g. boss scene).
+    public int XpPerFloorHudOverride { get; private set; }
+
     public int HighestFloorIndex     { get; private set; } = -1;
     public float BiggestHit          { get; private set; }
 
-    private IEventBinding<EnemyKilledEvent>     _killBinding;
-    private IEventBinding<FloorCompletedEvent>  _floorBinding;
-    private IEventBinding<PlayerDiedEvent>      _deathBinding;
-    private IEventBinding<FloorLoadedEvent>     _floorLoadedBinding;
-    private IEventBinding<EnemyDamagedEvent>    _enemyDamagedBinding;
+    private IEventBinding<EnemyKilledEvent>  _killBinding;
+    private IEventBinding<FloorLoadedEvent>  _floorLoadedBinding;
+    private IEventBinding<EnemyDamagedEvent> _enemyDamagedBinding;
 
     private void Awake()
     {
@@ -25,9 +26,7 @@ public class RunStatsTracker : MonoBehaviour
 
     private void OnEnable()
     {
-        _killBinding  = EventBus<EnemyKilledEvent>.Register(OnEnemyKilled);
-        _floorBinding = EventBus<FloorCompletedEvent>.Register(OnFloorCompleted);
-        _deathBinding = EventBus<PlayerDiedEvent>.Register(OnPlayerDied);
+        _killBinding = EventBus<EnemyKilledEvent>.Register(OnEnemyKilled);
         _floorLoadedBinding = EventBus<FloorLoadedEvent>.Register(OnFloorLoaded);
         _enemyDamagedBinding = EventBus<EnemyDamagedEvent>.Register(OnEnemyDamaged);
     }
@@ -35,8 +34,6 @@ public class RunStatsTracker : MonoBehaviour
     private void OnDisable()
     {
         EventBus<EnemyKilledEvent>.Unsubscribe(_killBinding);
-        EventBus<FloorCompletedEvent>.Unsubscribe(_floorBinding);
-        EventBus<PlayerDiedEvent>.Unsubscribe(_deathBinding);
         EventBus<FloorLoadedEvent>.Unsubscribe(_floorLoadedBinding);
         EventBus<EnemyDamagedEvent>.Unsubscribe(_enemyDamagedBinding);
     }
@@ -57,8 +54,6 @@ public class RunStatsTracker : MonoBehaviour
 
     private void Update()
     {
-        // Only tracks time while alive.
-        // Pause awareness can be added later by listening to GamePausedEvent.
         TotalTimeSeconds += Time.deltaTime;
     }
 
@@ -71,7 +66,16 @@ public class RunStatsTracker : MonoBehaviour
     public void AddXP(int amount)
     {
         TotalXP += amount;
-        Debug.Log($"XP added: {amount}, Total XP: {TotalXP}");
+    }
+
+    public void SetXpPerFloorHudOverride(int value)
+    {
+        XpPerFloorHudOverride = Mathf.Max(1, value);
+    }
+
+    public void ClearXpPerFloorHudOverride()
+    {
+        XpPerFloorHudOverride = 0;
     }
 
     public void ResetRunStats()
@@ -79,17 +83,6 @@ public class RunStatsTracker : MonoBehaviour
         TotalKillsThisRun = 0;
         TotalTimeSeconds = 0f;
         TotalXP = 0;
-    }
-
-    private void OnFloorCompleted(FloorCompletedEvent evt)
-    {
-        Debug.Log($"Floor complete - kills this run: {TotalKillsThisRun}, " +
-                  $"time: {TotalTimeSeconds:F1}s, total XP: {TotalXP}");
-    }
-
-    private void OnPlayerDied(PlayerDiedEvent evt)
-    {
-        Debug.Log($"Run ended - kills: {TotalKillsThisRun}, " +
-                  $"survived: {evt.SurvivedForSeconds:F1}s");
+        ClearXpPerFloorHudOverride();
     }
 }

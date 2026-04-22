@@ -1,10 +1,14 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public sealed class BossRoomCutsceneHandler : MonoBehaviour
 {
     [Header("Enable")]
     [SerializeField] private bool playOnStart = true;
+
+    [Header("Run end (matches GameplayHandler)")]
+    [SerializeField] private string deathSceneName = "DeathScene";
 
     [Header("References")]
     [SerializeField] private WormBossController boss;
@@ -31,6 +35,27 @@ public sealed class BossRoomCutsceneHandler : MonoBehaviour
 
     private Coroutine _routine;
     private Transform _panProxy;
+
+    private IEventBinding<PlayerDiedEvent> _playerDiedBinding;
+
+    private void OnEnable()
+    {
+        _playerDiedBinding = EventBus<PlayerDiedEvent>.Register(OnPlayerDiedDuringBoss);
+    }
+
+    private void OnDisable()
+    {
+        EventBus<PlayerDiedEvent>.Unsubscribe(_playerDiedBinding);
+    }
+
+    private void OnPlayerDiedDuringBoss(PlayerDiedEvent evt)
+    {
+        if (SceneManager.GetActiveScene().name != "BossGameplay")
+            return;
+
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(deathSceneName);
+    }
 
     private void OnDestroy()
     {

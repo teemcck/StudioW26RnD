@@ -10285,6 +10285,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Teleporter
   destination: {fileID: 0}
   arrivalEnemyDamageGraceSeconds: 0.8
+  loadSceneWhenNoDestination: 
 --- !u!19719996 &1381558501708907724
 TilemapCollider2D:
   m_ObjectHideFlags: 0
@@ -12302,6 +12303,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Teleporter
   destination: {fileID: 0}
   arrivalEnemyDamageGraceSeconds: 0.8
+  loadSceneWhenNoDestination: 
 --- !u!19719996 &9040969903380546745
 TilemapCollider2D:
   m_ObjectHideFlags: 0

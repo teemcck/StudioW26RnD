@@ -1,6 +1,7 @@
 using System.Collections;
-using UnityEngine;
 using Unity.Cinemachine;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Placed on every chunk.
@@ -17,6 +18,10 @@ public class Teleporter : MonoBehaviour
     [Tooltip("After arriving on the next chunk, the player ignores damage from enemies for this long.")]
     [SerializeField] private float arrivalEnemyDamageGraceSeconds = 0.8f;
 
+    [Header("Custom exit (e.g. boss teleporter)")]
+    [Tooltip("When destination is null, load this scene instead of raising the level-end event. Leave empty for normal endpoint behavior.")]
+    [SerializeField] private string loadSceneWhenNoDestination = "";
+
     private bool _transitioning;
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -32,6 +37,12 @@ public class Teleporter : MonoBehaviour
         else
         {
             AudioManager.Instance?.PlayTeleporterEntered();
+            if (!string.IsNullOrEmpty(loadSceneWhenNoDestination))
+            {
+                SceneManager.LoadScene(loadSceneWhenNoDestination);
+                return;
+            }
+
             EventBus<PlayerReachedEndpointEvent>.Raise(new PlayerReachedEndpointEvent());
         }
     }

@@ -63,6 +63,16 @@ public class Stat
 
     /// <summary>Clamp helpers, call after all modifications if needed.</summary>
     public float ValueClamped(float min, float max) => Mathf.Clamp(Value, min, max);
+
+    public (float baseValue, float flatBonus, float multBonus) GetLayerTuple() =>
+        (_baseValue, _flatBonus, _multiplierBonus);
+
+    public void SetLayerTuple(float baseValue, float flatBonus, float multBonus)
+    {
+        _baseValue = baseValue;
+        _flatBonus = flatBonus;
+        _multiplierBonus = multBonus;
+    }
 }
 
 // PlayerStats, owns all stats, exposes typed accessors
@@ -119,6 +129,9 @@ public class PlayerStats : MonoBehaviour
         if (_stats == null)
             InitStats();
     }
+
+    /// <summary>Used when copying stats across scenes (e.g. gameplay → boss).</summary>
+    public void EnsureStatsInitializedPublic() => EnsureStatsInitialized();
 
     private Stat GetStat(PlayerStatType type)
     {
@@ -181,6 +194,34 @@ public class PlayerStats : MonoBehaviour
         EnsureStatsInitialized();
         return _stats.TryGetValue(type, out var s) ? s.Value : 0f;
     }
+
+    /// <summary>Full per-stat layers for cross-scene continuity (base + flat + additive mult chain).</summary>
+    public Dictionary<PlayerStatType, (float baseValue, float flatBonus, float multBonus)> ExportStatLayerDictionary()
+    {
+        EnsureStatsInitialized();
+        var d = new Dictionary<PlayerStatType, (float, float, float)>();
+        foreach (PlayerStatType t in Enum.GetValues(typeof(PlayerStatType)))
+        {
+            if (!_stats.TryGetValue(t, out var st))
+                continue;
+            d[t] = st.GetLayerTuple();
+        }
+
+        return d;
+    }
+
+    /// <summary>Replaces stat layers from a prior capture (after upgrade reapply, to correct prefab base drift).</summary>
+    public void ImportStatLayers(Dictionary<PlayerStatType, (float baseValue, float flatBonus, float multBonus)> layers)
+    {
+        EnsureStatsInitialized();
+        foreach (var kvp in layers)
+        {
+            if (!_stats.TryGetValue(kvp.Key, out var st))
+                continue;
+            var L = kvp.Value;
+            st.SetLayerTuple(L.baseValue, L.flatBonus, L.multBonus);
+        }
+    }
     
     // Typed property accessors - use these to improve code clarity elsewhere
 
@@ -203,3 +244,4 @@ public class PlayerStats : MonoBehaviour
     /// <summary>Wipes all bonuses - call at run start.</summary>
     public void ResetToBase() => InitStats();
 }
+

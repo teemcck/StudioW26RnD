@@ -347,7 +347,7 @@ public sealed class AudioManager : MonoBehaviour
         if (mode == LoadSceneMode.Additive)
             return;
 
-        if (scene.name == "GameplayLoop" || scene.name == "MenuScene" || scene.name == "DeathScene")
+        if (scene.name == "GameplayLoop" || scene.name == "MenuScene" || scene.name == "DeathScene" || scene.name == "RunCompletedScene")
             _worldTwoPlaybackStarted = false;
 
         StartCoroutine(RefreshAfterSceneLoad());
@@ -448,7 +448,7 @@ public sealed class AudioManager : MonoBehaviour
         string sceneName = SceneManager.GetActiveScene().name;
         if (sceneName == "MenuScene" || sceneName == "Menu")
             return MusicState.Menu;
-        if (sceneName == "DeathScene")
+        if (sceneName == "DeathScene" || sceneName == "RunCompletedScene")
             return MusicState.Death;
         if (sceneName == "BossGameplay")
             return MusicState.None;

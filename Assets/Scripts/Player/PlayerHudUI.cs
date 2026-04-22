@@ -171,9 +171,7 @@ public sealed class PlayerHudUI : MonoBehaviour
         EnsureUi();
 
         int totalXp = RunStatsTracker.Instance != null ? Mathf.Max(0, RunStatsTracker.Instance.TotalXP) : 0;
-        int xpThreshold = GameplayHandler.Instance != null
-            ? Mathf.Max(1, GameplayHandler.Instance.XPPerFloor)
-            : Mathf.Max(1, GameplayHandler.LastPublishedXpPerFloor);
+        int xpThreshold = ResolveXpBarThreshold();
         int displayXp = totalXp % xpThreshold;
         float xpNormalized = (float)displayXp / xpThreshold;
         _displayedXpNormalized = Mathf.Lerp(_displayedXpNormalized, xpNormalized, Time.deltaTime * fillLerpSpeed);
@@ -287,9 +285,7 @@ public sealed class PlayerHudUI : MonoBehaviour
             _displayedHealthNormalized = Mathf.Clamp01(_playerHealth.CurrentHealth / maxHealth);
 
             int totalXp = RunStatsTracker.Instance != null ? Mathf.Max(0, RunStatsTracker.Instance.TotalXP) : 0;
-            int xpThreshold = GameplayHandler.Instance != null
-                ? Mathf.Max(1, GameplayHandler.Instance.XPPerFloor)
-                : Mathf.Max(1, GameplayHandler.LastPublishedXpPerFloor);
+            int xpThreshold = ResolveXpBarThreshold();
             _displayedXpNormalized = Mathf.Clamp01((float)(totalXp % xpThreshold) / xpThreshold);
             _initializedDisplayedValues = true;
         }
@@ -299,6 +295,17 @@ public sealed class PlayerHudUI : MonoBehaviour
 
         if (healthFillRect == null || healthValueText == null || xpFillRect == null || xpValueText == null)
             Debug.LogWarning("[PlayerHudUI] Missing HUD references. Expected child objects named HealthFill, HealthText, XPFill, and XPText.");
+    }
+
+    private static int ResolveXpBarThreshold()
+    {
+        if (GameplayHandler.Instance != null)
+            return Mathf.Max(1, GameplayHandler.Instance.XPPerFloor);
+
+        if (RunStatsTracker.Instance != null && RunStatsTracker.Instance.XpPerFloorHudOverride > 0)
+            return RunStatsTracker.Instance.XpPerFloorHudOverride;
+
+        return Mathf.Max(1, GameplayHandler.LastPublishedXpPerFloor);
     }
 
     private void FixHudCanvasScaleIfBroken()

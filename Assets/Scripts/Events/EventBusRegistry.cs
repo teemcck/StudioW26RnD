@@ -4,10 +4,6 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-/// <summary>
-/// Tracks every EventBus<T> type that has been used this session
-/// and clears them all when a new scene loads.
-/// </summary>
 public class EventBusRegistry : MonoBehaviour
 {
     public static EventBusRegistry Instance { get; private set; }
@@ -49,7 +45,7 @@ public class EventBusRegistry : MonoBehaviour
             foreach (var type in assembly.GetTypes())
             {
                 if (!type.IsGenericType) continue;
-                if (type.ContainsGenericParameters) continue; // skip open generics like EventBus<T> itself
+                if (type.ContainsGenericParameters) continue;
                 if (type.GetGenericTypeDefinition() != busGenericType) continue;
 
                 var clearMethod = type.GetMethod("Clear", BindingFlags.Public | BindingFlags.Static);
@@ -57,15 +53,11 @@ public class EventBusRegistry : MonoBehaviour
                     _clearMethods.Add(clearMethod);
             }
         }
-
-        Debug.Log($"[EventBusRegistry] Discovered {_clearMethods.Count} event buses.");
     }
 
     public static void ClearAll()
     {
         foreach (var method in _clearMethods)
             method.Invoke(null, null);
-
-        Debug.Log("[EventBusRegistry] All event buses cleared.");
     }
 }
