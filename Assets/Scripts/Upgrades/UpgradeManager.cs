@@ -50,7 +50,7 @@ public class UpgradeManager : MonoBehaviour
     {
         if (_tickingEffects.Count == 0) return;
         float dt = Time.deltaTime;
-        foreach (var (effect, ctx) in _tickingEffects)
+        foreach ((UpgradeEffect effect, UpgradeContext ctx) in _tickingEffects)
             effect.Tick(ctx, dt);
     }
 
@@ -68,7 +68,7 @@ public class UpgradeManager : MonoBehaviour
 
     private void OnPlayerDied(PlayerDiedEvent evt)
     {
-        var pc = FindPreferredPlayerController();
+        PlayerController pc = FindPreferredPlayerController();
         if (pc != null)
             ResetRun(pc);
         else
@@ -92,14 +92,14 @@ public class UpgradeManager : MonoBehaviour
         _effectMap.Clear();
         _displayMap.Clear();
 
-        foreach (var so in allEffects)
+        foreach (UpgradeEffectsSO so in allEffects)
         {
             if (so == null) continue;
             if (!_effectMap.TryAdd(so.upgradeID, so))
                 Debug.LogWarning($"[UpgradeManager] Duplicate effect ID: '{so.upgradeID}'");
         }
 
-        foreach (var so in allDisplays)
+        foreach (UpgradeDisplaySO so in allDisplays)
         {
             if (so == null) continue;
             if (!_displayMap.TryAdd(so.upgradeID, so))
@@ -113,8 +113,8 @@ public class UpgradeManager : MonoBehaviour
     public PlayerController CurrentPlayer => playerController;
     public List<UpgradeDisplaySO> GetAppliedUpgradeDisplays()
     {
-        var results = new List<UpgradeDisplaySO>();
-        foreach (var display in allDisplays)
+        List<UpgradeDisplaySO> results = new List<UpgradeDisplaySO>();
+        foreach (UpgradeDisplaySO display in allDisplays)
         {
             if (display == null || string.IsNullOrEmpty(display.upgradeID))
                 continue;
@@ -134,7 +134,7 @@ public class UpgradeManager : MonoBehaviour
             return;
         }
 
-        foreach (var strip in Object.FindObjectsByType<AppliedUpgradeStripUI>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        foreach (AppliedUpgradeStripUI strip in Object.FindObjectsByType<AppliedUpgradeStripUI>(FindObjectsInactive.Include, FindObjectsSortMode.None))
             strip.RefreshFromManager();
     }
 
@@ -156,15 +156,15 @@ public class UpgradeManager : MonoBehaviour
             return;
         }
 
-        var host = new GameObject("PersistentAppliedUpgradeStrip");
+        GameObject host = new GameObject("PersistentAppliedUpgradeStrip");
         host.transform.SetParent(transform, false);
 
-        var canvas = host.AddComponent<Canvas>();
+        Canvas canvas = host.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 400;
         host.AddComponent<GraphicRaycaster>();
 
-        var scaler = host.AddComponent<CanvasScaler>();
+        CanvasScaler scaler = host.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920f, 1080f);
         scaler.matchWidthOrHeight = 0.5f;
@@ -179,7 +179,7 @@ public class UpgradeManager : MonoBehaviour
 
     private void TryRebindExistingAppliedUpgradeStrip()
     {
-        var underManager = GetComponentsInChildren<AppliedUpgradeStripUI>(true);
+        AppliedUpgradeStripUI[] underManager = GetComponentsInChildren<AppliedUpgradeStripUI>(true);
         if (underManager != null && underManager.Length > 0)
         {
             for (int i = 0; i < underManager.Length; i++)
@@ -193,10 +193,10 @@ public class UpgradeManager : MonoBehaviour
             }
         }
 
-        var all = Object.FindObjectsByType<AppliedUpgradeStripUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        AppliedUpgradeStripUI[] all = Object.FindObjectsByType<AppliedUpgradeStripUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         for (int i = 0; i < all.Length; i++)
         {
-            var s = all[i];
+            AppliedUpgradeStripUI s = all[i];
             if (s == null)
                 continue;
             if (!s.gameObject.name.StartsWith("PersistentAppliedUpgradeStrip"))
@@ -224,8 +224,8 @@ public class UpgradeManager : MonoBehaviour
 
     static void DestroyLegacyAppliedUpgradeStripRoots(GameObject keepHost)
     {
-        var strips = Object.FindObjectsByType<AppliedUpgradeStripUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-        foreach (var strip in strips)
+        AppliedUpgradeStripUI[] strips = Object.FindObjectsByType<AppliedUpgradeStripUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (AppliedUpgradeStripUI strip in strips)
         {
             if (strip == null)
                 continue;
@@ -238,7 +238,7 @@ public class UpgradeManager : MonoBehaviour
     public int GetTotalUpgradeCount()
     {
         int total = 0;
-        foreach (var pair in _stacks)
+        foreach (KeyValuePair<string, int> pair in _stacks)
             total += pair.Value;
         return total;
     }
@@ -255,16 +255,16 @@ public class UpgradeManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(id))
             return 0;
-        return _effectMap.TryGetValue(id, out var effect) ? effect.maxStacks : 0;
+        return _effectMap.TryGetValue(id, out UpgradeEffectsSO effect) ? effect.maxStacks : 0;
     }
 
     public int CountUpgradesByMinimumRarity(UpgradeRarity minimumRarity)
     {
         int count = 0;
-        foreach (var pair in _stacks)
+        foreach (KeyValuePair<string, int> pair in _stacks)
         {
             if (pair.Value <= 0) continue;
-            if (!_displayMap.TryGetValue(pair.Key, out var display)) continue;
+            if (!_displayMap.TryGetValue(pair.Key, out UpgradeDisplaySO display)) continue;
             if (display.rarity < minimumRarity) continue;
             count += pair.Value;
         }
@@ -275,14 +275,14 @@ public class UpgradeManager : MonoBehaviour
     public int CountUpgradesWithTrait(UpgradeTrait trait, string excludeUpgradeId = null)
     {
         int count = 0;
-        foreach (var pair in _stacks)
+        foreach (KeyValuePair<string, int> pair in _stacks)
         {
             if (pair.Value <= 0) continue;
             if (pair.Key == excludeUpgradeId) continue;
-            if (!_effectMap.TryGetValue(pair.Key, out var effect)) continue;
+            if (!_effectMap.TryGetValue(pair.Key, out UpgradeEffectsSO effect)) continue;
             if (effect.traits == null) continue;
 
-            foreach (var candidate in effect.traits)
+            foreach (UpgradeTrait candidate in effect.traits)
             {
                 if (candidate != trait) continue;
                 count += pair.Value;
@@ -295,11 +295,11 @@ public class UpgradeManager : MonoBehaviour
 
     public bool AreOnlyOtherUpgradesCommon(string excludeUpgradeId = null)
     {
-        foreach (var pair in _stacks)
+        foreach (KeyValuePair<string, int> pair in _stacks)
         {
             if (pair.Value <= 0) continue;
             if (pair.Key == excludeUpgradeId) continue;
-            if (!_displayMap.TryGetValue(pair.Key, out var display)) continue;
+            if (!_displayMap.TryGetValue(pair.Key, out UpgradeDisplaySO display)) continue;
             if (display.rarity != UpgradeRarity.Common) return false;
         }
 
@@ -326,7 +326,7 @@ public class UpgradeManager : MonoBehaviour
 
     public bool ApplyUpgrade(string id, PlayerController player)
     {
-        if (!_effectMap.TryGetValue(id, out var effectSO))
+        if (!_effectMap.TryGetValue(id, out UpgradeEffectsSO effectSO))
         {
             Debug.LogError($"[UpgradeManager] No effect found for ID '{id}'.");
             return false;
@@ -341,11 +341,11 @@ public class UpgradeManager : MonoBehaviour
 
         _stacks[id] = currentStack + 1;
 
-        var ctx = GetOrBuildContext(player);
+        UpgradeContext ctx = GetOrBuildContext(player);
         effectSO.Apply(ctx);
         ctx?.Runtime?.RefreshDynamicModifiers(this);
 
-        foreach (var effect in effectSO.effects)
+        foreach (UpgradeEffect effect in effectSO.effects)
             if (effect != null && effect.NeedsTick)
                 _tickingEffects.Add((effect, ctx));
 
@@ -357,11 +357,11 @@ public class UpgradeManager : MonoBehaviour
 
     public void RevokeUpgrade(string id, PlayerController player)
     {
-        if (!_effectMap.TryGetValue(id, out var effectSO)) return;
+        if (!_effectMap.TryGetValue(id, out UpgradeEffectsSO effectSO)) return;
         if (GetStack(id) <= 0) return;
 
         _stacks[id]--;
-        var ctx = GetOrBuildContext(player);
+        UpgradeContext ctx = GetOrBuildContext(player);
         effectSO.Remove(ctx);
         ctx?.Runtime?.RefreshDynamicModifiers(this);
 
@@ -373,11 +373,11 @@ public class UpgradeManager : MonoBehaviour
 
     public List<UpgradeDisplaySO> GetRandomUpgradeChoices(int count, bool rarityWeighted = true)
     {
-        var pool = new List<(UpgradeDisplaySO display, float weight)>();
+        List<(UpgradeDisplaySO display, float weight)> pool = new List<(UpgradeDisplaySO display, float weight)>();
 
-        foreach (var display in allDisplays)
+        foreach (UpgradeDisplaySO display in allDisplays)
         {
-            if (!_effectMap.TryGetValue(display.upgradeID, out var effect)) continue;
+            if (!_effectMap.TryGetValue(display.upgradeID, out UpgradeEffectsSO effect)) continue;
             int stacks = GetStack(display.upgradeID);
             if (effect.maxStacks != -1 && stacks >= effect.maxStacks) continue;
 
@@ -385,7 +385,7 @@ public class UpgradeManager : MonoBehaviour
             pool.Add((display, w));
         }
 
-        var result = new List<UpgradeDisplaySO>();
+        List<UpgradeDisplaySO> result = new List<UpgradeDisplaySO>();
         int picks = Mathf.Min(count, pool.Count);
 
         for (int i = 0; i < picks; i++)
@@ -400,10 +400,10 @@ public class UpgradeManager : MonoBehaviour
 
     public void ResetRun(PlayerController player)
     {
-        var ctx = GetOrBuildContext(player);
-        foreach (var kvp in _stacks)
+        UpgradeContext ctx = GetOrBuildContext(player);
+        foreach (KeyValuePair<string, int> kvp in _stacks)
         {
-            if (!_effectMap.TryGetValue(kvp.Key, out var so)) continue;
+            if (!_effectMap.TryGetValue(kvp.Key, out UpgradeEffectsSO so)) continue;
             for (int i = 0; i < kvp.Value; i++)
                 so.Remove(ctx);
         }
@@ -452,7 +452,7 @@ public class UpgradeManager : MonoBehaviour
     {
         yield return null;
 
-        var nextPlayer = FindPreferredPlayerController();
+        PlayerController nextPlayer = FindPreferredPlayerController();
         if (nextPlayer == null)
         {
             _deferredRebindRoutine = null;
@@ -474,15 +474,15 @@ public class UpgradeManager : MonoBehaviour
 
     private static PlayerController FindPreferredPlayerController()
     {
-        var tagged = GameObject.FindGameObjectWithTag("Player");
+        GameObject tagged = GameObject.FindGameObjectWithTag("Player");
         if (tagged != null)
         {
-            var pc = tagged.GetComponent<PlayerController>() ?? tagged.GetComponentInChildren<PlayerController>(true);
+            PlayerController pc = tagged.GetComponent<PlayerController>() ?? tagged.GetComponentInChildren<PlayerController>(true);
             if (pc != null)
                 return pc;
         }
 
-        var found = Object.FindObjectsByType<PlayerController>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        PlayerController[] found = Object.FindObjectsByType<PlayerController>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         return found.Length > 0 ? found[0] : null;
     }
 
@@ -493,16 +493,16 @@ public class UpgradeManager : MonoBehaviour
 
         _tickingEffects.Clear();
 
-        foreach (var kvp in _stacks)
+        foreach (KeyValuePair<string, int> kvp in _stacks)
         {
-            if (!_effectMap.TryGetValue(kvp.Key, out var effectSO))
+            if (!_effectMap.TryGetValue(kvp.Key, out UpgradeEffectsSO effectSO))
                 continue;
 
             for (int i = 0; i < kvp.Value; i++)
             {
                 effectSO.Apply(_cachedContext);
 
-                foreach (var effect in effectSO.effects)
+                foreach (UpgradeEffect effect in effectSO.effects)
                 {
                     if (effect != null && effect.NeedsTick)
                         _tickingEffects.Add((effect, _cachedContext));
@@ -548,7 +548,7 @@ public class UpgradeManager : MonoBehaviour
     private static int WeightedRandom(List<(UpgradeDisplaySO d, float w)> pool)
     {
         float total = 0f;
-        foreach (var (_, w) in pool) total += w;
+        foreach ((UpgradeDisplaySO _, float w) in pool) total += w;
         float roll = Random.Range(0f, total);
         float cum  = 0f;
         for (int i = 0; i < pool.Count; i++)

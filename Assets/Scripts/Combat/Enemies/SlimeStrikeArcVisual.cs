@@ -21,13 +21,13 @@ public sealed class SlimeStrikeArcVisual : MonoBehaviour
         if (followParent == null || arcRadiusLocal <= 0.01f)
             return;
 
-        var go = new GameObject("SlimeStrikeArc");
+        GameObject go = new GameObject("SlimeStrikeArc");
         go.transform.SetParent(followParent, false);
         go.transform.localPosition = Vector3.zero;
         float ang = Mathf.Atan2(worldForward.y, worldForward.x) * Mathf.Rad2Deg;
         go.transform.localRotation = Quaternion.Euler(0f, 0f, ang);
 
-        var lr = go.AddComponent<LineRenderer>();
+        LineRenderer lr = go.AddComponent<LineRenderer>();
         lr.loop = false;
         lr.useWorldSpace = false;
         lr.widthCurve = AnimationCurve.Constant(0f, 1f, 0.055f);
@@ -55,12 +55,12 @@ public sealed class SlimeStrikeArcVisual : MonoBehaviour
             lr.SetPosition(i, new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0f) * arcRadiusLocal);
         }
 
-        var rgb0 = new Color(1f, 0.42f, 0.32f, 1f);
-        var rgb1 = new Color(1f, 0.55f, 0.42f, 1f);
+        Color rgb0 = new Color(1f, 0.42f, 0.32f, 1f);
+        Color rgb1 = new Color(1f, 0.55f, 0.42f, 1f);
         lr.startColor = new Color(rgb0.r, rgb0.g, rgb0.b, 0.01f);
         lr.endColor = new Color(rgb1.r, rgb1.g, rgb1.b, 0.01f);
 
-        var view = go.AddComponent<SlimeStrikeArcVisual>();
+        SlimeStrikeArcVisual view = go.AddComponent<SlimeStrikeArcVisual>();
         view._line = lr;
         view._baseWidth = 0.055f;
         view._rgb0 = rgb0;

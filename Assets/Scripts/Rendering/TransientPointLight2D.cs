@@ -26,10 +26,10 @@ public sealed class TransientPointLight2D : MonoBehaviour
         float duration,
         bool useUnscaledTime = true)
     {
-        var go = new GameObject("TransientPointLight2D");
+        GameObject go = new GameObject("TransientPointLight2D");
         go.transform.position = worldPosition;
 
-        var light = go.AddComponent<Light2D>();
+        Light2D light = go.AddComponent<Light2D>();
         light.lightType = Light2D.LightType.Point;
         light.blendStyleIndex = AdditiveBlendStyleIndex;
         light.overlapOperation = Light2D.OverlapOperation.Additive;
@@ -41,7 +41,7 @@ public sealed class TransientPointLight2D : MonoBehaviour
         Light2DGameplayTargets.ApplyLocalAccentWithoutMapLayer(light);
         Light2DGameplayTargets.EnableAccentLightShadows(light, shadowIntensity: 0.42f, shadowSoftness: 0.24f);
 
-        var t = go.AddComponent<TransientPointLight2D>();
+        TransientPointLight2D t = go.AddComponent<TransientPointLight2D>();
         t._light = light;
         t._peakIntensity = peakIntensity;
         t._duration = Mathf.Max(0.02f, duration);

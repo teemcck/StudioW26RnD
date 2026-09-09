@@ -29,6 +29,7 @@ GameObject:
   - component: {fileID: 8232608945522593496}
   - component: {fileID: 7722334455667788991}
   - component: {fileID: 7707313569087562549}
+  - component: {fileID: 4470912583366120071}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -398,7 +399,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a020c4fca3c1e1b41a3865fc54d61a2c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerUpgradeRuntime
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerUpgradeManager
 --- !u!114 &7612849362051847295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -565,6 +566,22 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+--- !u!114 &4470912583366120071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 157006395687664069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eb97a1650133441eb1b4c3ce4d76603, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraLookaheadTarget
+  lookaheadDistance: 1.6
+  smoothTime: 0.22
+  deadzoneSpeed: 0.2
+  anchorChildName: FollowAnchor
 --- !u!1 &1240368542618820286
 GameObject:
   m_ObjectHideFlags: 0

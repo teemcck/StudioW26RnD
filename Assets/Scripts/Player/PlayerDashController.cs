@@ -55,7 +55,7 @@ public class PlayerDashController : MonoBehaviour
         _nextDashTime = Time.time + dashCooldown;
         _dodgeEnds = Time.time + Mathf.Max(0f, dashInvulnWindow);
 
-        var cam = Object.FindFirstObjectByType<CameraController>();
+        CameraController cam = Object.FindFirstObjectByType<CameraController>();
         if (cam != null)
             cam.BreathIn();
 

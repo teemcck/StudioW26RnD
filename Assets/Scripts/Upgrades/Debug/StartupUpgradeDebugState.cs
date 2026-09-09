@@ -42,8 +42,8 @@ public static class StartupUpgradeDebugState
 
     public static List<ConfiguredUpgrade> GetConfiguredUpgrades()
     {
-        var configured = new List<ConfiguredUpgrade>(CountsByUpgradeId.Count);
-        foreach (var pair in CountsByUpgradeId)
+        List<ConfiguredUpgrade> configured = new List<ConfiguredUpgrade>(CountsByUpgradeId.Count);
+        foreach (KeyValuePair<string, int> pair in CountsByUpgradeId)
             configured.Add(new ConfiguredUpgrade(pair.Key, pair.Value));
         return configured;
     }
@@ -53,7 +53,7 @@ public static class StartupUpgradeDebugState
         if (manager == null)
             return;
 
-        foreach (var display in manager.GetAllUpgradeDisplays())
+        foreach (UpgradeDisplaySO display in manager.GetAllUpgradeDisplays())
         {
             if (display == null || string.IsNullOrEmpty(display.upgradeID))
                 continue;

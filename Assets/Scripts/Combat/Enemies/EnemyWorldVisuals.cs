@@ -1,25 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+/// <summary>
+/// Owns the code-spawned visual root under an enemy: the floating health bar (delegated to
+/// <see cref="EnemyHealthBarVisual"/>) and the status-applied burst sprites. Bounds and sorting come from the
+/// enemy's own sprite renderers.
+/// </summary>
 [DisallowMultipleComponent]
 [RequireComponent(typeof(EnemyBase))]
 public sealed class EnemyWorldVisuals : MonoBehaviour
 {
     private sealed class VisualRootMarker : MonoBehaviour { }
 
-    private const float HealthBarScale = 0.8f;
-    private const float MinBarWidth = 0.6f;
-    private const float MaxBarWidth = 1.8f;
-    private const float BarHeight = 0.09f;
-    private const float BarYOffset = 0.22f;
-    private const float FramePadding = 0.03f;
-
-    private static Sprite s_unitSprite;
-
     private readonly List<SpriteRenderer> _trackedRenderers = new();
-    private readonly Dictionary<string, Coroutine> _activeStatusAnimations = new();
-
-    private static readonly Color BaseHealthBarColor = new(0.96f, 0.22f, 0.22f, 0.98f);
+    private readonly Dictionary<StatusEffectId, Coroutine> _activeStatusAnimations = new();
 
     [Header("Status Burst Sprites")]
     [SerializeField] private List<Sprite> poisonAppliedFrames = new();
@@ -37,12 +32,7 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
     private EliteModifier _elite;
     private bool _worldHealthBarEnabled = true;
     private Transform _visualRoot;
-    private Transform _barRoot;
-    private SpriteRenderer _barFrameRenderer;
-    private SpriteRenderer _barBackgroundRenderer;
-    private SpriteRenderer _barFillRenderer;
-    /// <summary>Yellow overlay on the frame: same outer size as <see cref="_barFrameRenderer"/>, width scales from the left with shield.</summary>
-    private SpriteRenderer _eliteShieldFrameOverlay;
+    private EnemyHealthBarVisual _healthBar;
 
     private void Awake()
     {
@@ -74,25 +64,21 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
         if (_elite == null)
         {
             _elite = GetComponent<EliteModifier>();
-            if (_elite != null && _worldHealthBarEnabled && _barRoot != null && _eliteShieldFrameOverlay == null)
+            if (_elite != null && _worldHealthBarEnabled && _healthBar != null && !_healthBar.HasEliteOverlay)
                 NotifyEliteAttached();
         }
 
-        if (!_worldHealthBarEnabled || _barRoot == null)
+        if (!_worldHealthBarEnabled || _healthBar == null)
             return;
 
         if (_enemy.CurrentHealth <= 0f)
         {
-            if (_barRoot.gameObject.activeSelf)
-                _barRoot.gameObject.SetActive(false);
+            _healthBar.SetVisible(false);
             return;
         }
 
-        if (!_barRoot.gameObject.activeSelf)
-            _barRoot.gameObject.SetActive(true);
-
-        Bounds bounds = GetVisualBounds();
-        UpdateHealthBar(bounds);
+        _healthBar.SetVisible(true);
+        _healthBar.UpdateLayout(GetVisualBounds(), _enemy.HealthNormalized, GetHealthBarColor(), _elite);
     }
 
     private void OnDisable()
@@ -108,7 +94,7 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
     private void CacheTrackedRenderers()
     {
         _trackedRenderers.Clear();
-        foreach (var sr in GetComponentsInChildren<SpriteRenderer>(true))
+        foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>(true))
         {
             if (sr != null && ShouldTrackRenderer(sr))
                 _trackedRenderers.Add(sr);
@@ -120,17 +106,17 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
         if (!skipReuseExisting && TryReuseExistingVisualRoot())
             return;
 
-        var root = new GameObject($"{name}_WorldVisuals");
+        GameObject root = new GameObject($"{name}_WorldVisuals");
         _visualRoot = root.transform;
         _visualRoot.SetParent(transform, false);
         _visualRoot.localPosition = Vector3.zero;
         _visualRoot.gameObject.AddComponent<VisualRootMarker>();
 
         if (_worldHealthBarEnabled)
-            CreateHealthBar();
+            _healthBar = EnemyHealthBarVisual.Create(_visualRoot, GetSortingLayerName(), GetBaseSortingOrder(), _elite != null);
     }
 
-    public void NotifyStatusApplied(string effectId)
+    public void NotifyStatusApplied(StatusEffectId effectId)
     {
         if (_enemy == null || _enemy.IsDead || _visualRoot == null)
             return;
@@ -139,7 +125,7 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
         if (frames == null || frames.Count == 0)
             return;
 
-        if (_activeStatusAnimations.TryGetValue(effectId, out var running) && running != null)
+        if (_activeStatusAnimations.TryGetValue(effectId, out Coroutine running) && running != null)
             StopCoroutine(running);
 
         _activeStatusAnimations[effectId] = StartCoroutine(PlayStatusAnimation(effectId, frames));
@@ -149,19 +135,9 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
     {
         Transform oldRoot = _visualRoot;
         _visualRoot = null;
-        _barRoot = null;
-        _barFrameRenderer = null;
-        _barBackgroundRenderer = null;
-        _barFillRenderer = null;
-        _eliteShieldFrameOverlay = null;
+        _healthBar = null;
 
-        foreach (var running in _activeStatusAnimations.Values)
-        {
-            if (running != null)
-                StopCoroutine(running);
-        }
-
-        _activeStatusAnimations.Clear();
+        StopStatusAnimations();
 
         if (oldRoot != null)
             Destroy(oldRoot.gameObject);
@@ -182,18 +158,6 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
         RebuildVisuals();
     }
 
-    private void CreateHealthBar()
-    {
-        _barRoot = new GameObject("HealthBar").transform;
-        _barRoot.SetParent(_visualRoot, false);
-
-        _barFrameRenderer = CreateSpriteRenderer("Frame", _barRoot, new Color(0.04f, 0.04f, 0.04f, 0.95f), 10);
-        if (_elite != null)
-            CreateEliteShieldFrameOverlay();
-        _barBackgroundRenderer = CreateSpriteRenderer("Background", _barRoot, new Color(0.18f, 0.08f, 0.08f, 0.95f), 12);
-        _barFillRenderer = CreateSpriteRenderer("Fill", _barRoot, BaseHealthBarColor, 13);
-    }
-
     private bool TryReuseExistingVisualRoot()
     {
         VisualRootMarker[] markers = GetComponentsInChildren<VisualRootMarker>(true);
@@ -207,86 +171,32 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
                 Destroy(markers[i].gameObject);
         }
 
-        CacheHealthBarReferences();
+        _healthBar = EnemyHealthBarVisual.TryReuse(_visualRoot, GetSortingLayerName(), GetBaseSortingOrder());
         if (_worldHealthBarEnabled)
         {
-            if (_barRoot == null)
-                CreateHealthBar();
+            if (_healthBar == null)
+                _healthBar = EnemyHealthBarVisual.Create(_visualRoot, GetSortingLayerName(), GetBaseSortingOrder(), _elite != null);
         }
-        else if (_barRoot != null)
+        else if (_healthBar != null)
         {
-            Destroy(_barRoot.gameObject);
-            _barRoot = null;
-            _barFrameRenderer = null;
-            _barBackgroundRenderer = null;
-            _barFillRenderer = null;
-            _eliteShieldFrameOverlay = null;
+            _healthBar.Destroy();
+            _healthBar = null;
         }
 
         return true;
     }
 
-    private void CacheHealthBarReferences()
-    {
-        _barRoot = _visualRoot != null ? _visualRoot.Find("HealthBar") : null;
-        _barFrameRenderer = FindBarRenderer("Frame");
-        _barBackgroundRenderer = FindBarRenderer("Background");
-        _barFillRenderer = FindBarRenderer("Fill");
-        Transform eliteOverlay = _barRoot != null ? _barRoot.Find("EliteShieldFrameOverlay") : null;
-        _eliteShieldFrameOverlay = eliteOverlay ? eliteOverlay.GetComponent<SpriteRenderer>() : null;
-    }
-
-    private SpriteRenderer FindBarRenderer(string childName)
-    {
-        if (_barRoot == null)
-            return null;
-
-        Transform child = _barRoot.Find(childName);
-        return child ? child.GetComponent<SpriteRenderer>() : null;
-    }
-
-    private SpriteRenderer CreateSpriteRenderer(string objectName, Transform parent, Color color, int sortingOrder)
-    {
-        var go = new GameObject(objectName);
-        go.transform.SetParent(parent, false);
-
-        var sr = go.AddComponent<SpriteRenderer>();
-        sr.sprite = GetUnitSprite();
-        sr.color = color;
-        sr.sortingLayerName = GetSortingLayerName();
-        sr.sortingOrder = GetBaseSortingOrder() + sortingOrder;
-        return sr;
-    }
-
-    private void UpdateHealthBar(Bounds bounds)
-    {
-        float barWidth = Mathf.Clamp(bounds.size.x * 0.95f, MinBarWidth, MaxBarWidth) * HealthBarScale;
-        float fillNorm = _enemy.HealthNormalized;
-        float fillWidth = Mathf.Max(0.0001f, barWidth * fillNorm);
-        float y = bounds.max.y + BarYOffset;
-        float barHeight = BarHeight * HealthBarScale;
-        float framePadding = FramePadding * HealthBarScale;
-
-        _barRoot.position = new Vector3(bounds.center.x, y, bounds.center.z);
-        _barFrameRenderer.transform.localScale = new Vector3(barWidth + framePadding, barHeight + framePadding, 1f);
-        _barBackgroundRenderer.transform.localScale = new Vector3(barWidth, barHeight, 1f);
-        _barFillRenderer.transform.localScale = new Vector3(fillWidth, barHeight * 0.82f, 1f);
-        _barFillRenderer.color = GetHealthBarColor();
-
-        _barFrameRenderer.color = new Color(0.04f, 0.04f, 0.04f, 0.95f);
-
-        if (_elite != null)
-            UpdateEliteShieldFrameOverlay(barWidth, barHeight, framePadding);
-
-        float leftEdge = -barWidth * 0.5f;
-        _barFillRenderer.transform.localPosition = new Vector3(leftEdge + fillWidth * 0.5f, 0f, 0f);
-    }
-
-    private IEnumerator PlayStatusAnimation(string effectId, List<Sprite> frames)
+    private IEnumerator PlayStatusAnimation(StatusEffectId effectId, List<Sprite> frames)
     {
         Bounds bounds = GetVisualBounds();
-        var sr = CreateSpriteRenderer($"{effectId}_AppliedFx", _visualRoot, Color.white, 14);
+
+        GameObject go = new GameObject($"{effectId}_AppliedFx");
+        go.transform.SetParent(_visualRoot, false);
+        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = RuntimeSprites.UnitWhite;
+        sr.color = Color.white;
         sr.drawMode = SpriteDrawMode.Simple;
+        sr.sortingLayerName = GetSortingLayerName();
         sr.sortingOrder = GetBaseSortingOrder() + 14;
         sr.transform.position = new Vector3(bounds.center.x, bounds.max.y + statusYOffset, bounds.center.z - 0.003f);
         sr.transform.localScale = Vector3.one * Mathf.Max(0.01f, statusScaleMultiplier);
@@ -341,7 +251,7 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
 
     private string GetSortingLayerName()
     {
-        foreach (var sr in _trackedRenderers)
+        foreach (SpriteRenderer sr in _trackedRenderers)
         {
             if (sr != null)
                 return sr.sortingLayerName;
@@ -353,7 +263,7 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
     private int GetBaseSortingOrder()
     {
         int highest = 0;
-        foreach (var sr in _trackedRenderers)
+        foreach (SpriteRenderer sr in _trackedRenderers)
         {
             if (sr != null)
                 highest = Mathf.Max(highest, sr.sortingOrder);
@@ -362,90 +272,36 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
         return highest;
     }
 
-    private void CleanupVisualRoot()
+    private void StopStatusAnimations()
     {
-        foreach (var running in _activeStatusAnimations.Values)
+        foreach (Coroutine running in _activeStatusAnimations.Values)
         {
             if (running != null)
                 StopCoroutine(running);
         }
 
         _activeStatusAnimations.Clear();
+    }
+
+    private void CleanupVisualRoot()
+    {
+        StopStatusAnimations();
 
         if (_visualRoot != null)
             Destroy(_visualRoot.gameObject);
 
         _visualRoot = null;
-        _barRoot = null;
-        _barFrameRenderer = null;
-        _barBackgroundRenderer = null;
-        _barFillRenderer = null;
-        _eliteShieldFrameOverlay = null;
+        _healthBar = null;
     }
 
-    private void CreateEliteShieldFrameOverlay()
-    {
-        if (_elite == null || _barRoot == null)
-            return;
-
-        var go = new GameObject("EliteShieldFrameOverlay");
-        go.transform.SetParent(_barRoot, false);
-        go.transform.localPosition = Vector3.zero;
-
-        var sr = go.AddComponent<SpriteRenderer>();
-        sr.sprite = GetUnitSprite();
-        Color y = GameColors.EliteAccent;
-        y.a = 1f;
-        sr.color = y;
-        sr.sortingLayerName = GetSortingLayerName();
-        sr.sortingOrder = GetBaseSortingOrder() + 11;
-        _eliteShieldFrameOverlay = sr;
-    }
-
-    /// <summary>
-    /// Same outer rect as the dark frame; width = full width × shield (left edge fixed, shrinks toward the right).
-    /// </summary>
-    private void UpdateEliteShieldFrameOverlay(float barWidth, float barHeight, float framePadding)
-    {
-        if (_elite == null || _barRoot == null)
-            return;
-
-        if (_eliteShieldFrameOverlay == null)
-            CreateEliteShieldFrameOverlay();
-        if (_eliteShieldFrameOverlay == null)
-            return;
-
-        float shieldFrac = _elite.HasShield ? Mathf.Clamp01(_elite.ShieldNormalized) : 0f;
-        if (!_elite.HasShield || shieldFrac <= 0.001f)
-        {
-            _eliteShieldFrameOverlay.gameObject.SetActive(false);
-            return;
-        }
-
-        float outerW = barWidth + framePadding;
-        float outerH = barHeight + framePadding;
-        float halfW = outerW * 0.5f;
-        float w = outerW * shieldFrac;
-
-        _eliteShieldFrameOverlay.gameObject.SetActive(true);
-        _eliteShieldFrameOverlay.transform.localScale = new Vector3(w, outerH, 1f);
-        _eliteShieldFrameOverlay.transform.localPosition = new Vector3(-halfW + w * 0.5f, 0f, -0.002f);
-
-        Color y = GameColors.EliteAccent;
-        y.a = 1f;
-        if (_elite.IsShieldRegenerating)
-            y = Color.Lerp(y, new Color(1f, 0.98f, 0.45f, 1f), 0.4f);
-        _eliteShieldFrameOverlay.color = y;
-    }
-
-    private List<Sprite> GetStatusFrames(string effectId)
+    private List<Sprite> GetStatusFrames(StatusEffectId effectId)
     {
         return effectId switch
         {
-            StatusEffectIds.Poison => poisonAppliedFrames,
-            StatusEffectIds.Confusion => confusionAppliedFrames,
-            StatusEffectIds.Swiftness => swiftnessAppliedFrames,
-            StatusEffectIds.Frailty => frailtyAppliedFrames,
+            StatusEffectId.Poison => poisonAppliedFrames,
+            StatusEffectId.Confusion => confusionAppliedFrames,
+            StatusEffectId.Swiftness => swiftnessAppliedFrames,
+            StatusEffectId.Frailty => frailtyAppliedFrames,
             _ => null
         };
     }
@@ -453,51 +309,41 @@ public sealed class EnemyWorldVisuals : MonoBehaviour
     private Color GetHealthBarColor()
     {
         if (_statusEffects == null)
-            return BaseHealthBarColor;
+            return EnemyHealthBarVisual.BaseColor;
 
-        var activeColors = new List<Color>(4);
-        AddStatusColorIfActive(activeColors, StatusEffectIds.Poison);
-        AddStatusColorIfActive(activeColors, StatusEffectIds.Confusion);
-        AddStatusColorIfActive(activeColors, StatusEffectIds.Swiftness);
-        AddStatusColorIfActive(activeColors, StatusEffectIds.Frailty);
+        List<Color> activeColors = new List<Color>(4);
+        AddStatusColorIfActive(activeColors, StatusEffectId.Poison);
+        AddStatusColorIfActive(activeColors, StatusEffectId.Confusion);
+        AddStatusColorIfActive(activeColors, StatusEffectId.Swiftness);
+        AddStatusColorIfActive(activeColors, StatusEffectId.Frailty);
 
         if (activeColors.Count == 0)
-            return BaseHealthBarColor;
+            return EnemyHealthBarVisual.BaseColor;
 
         Color mixed = Color.black;
-        foreach (var c in activeColors)
+        foreach (Color c in activeColors)
             mixed += c;
 
         mixed /= activeColors.Count;
-        mixed.a = BaseHealthBarColor.a;
+        mixed.a = EnemyHealthBarVisual.BaseColor.a;
         return mixed;
     }
 
-    private void AddStatusColorIfActive(List<Color> colors, string effectId)
+    private void AddStatusColorIfActive(List<Color> colors, StatusEffectId effectId)
     {
         if (_statusEffects != null && _statusEffects.Has(effectId))
             colors.Add(GetStatusColor(effectId));
     }
 
-    private static Color GetStatusColor(string effectId)
+    private static Color GetStatusColor(StatusEffectId effectId)
     {
         return effectId switch
         {
-            StatusEffectIds.Poison => new Color(0.3f, 0.95f, 0.35f, 1f),
-            StatusEffectIds.Confusion => new Color(0.75f, 0.35f, 1f, 1f),
-            StatusEffectIds.Swiftness => new Color(0.25f, 0.9f, 1f, 1f),
-            StatusEffectIds.Frailty => new Color(1f, 0.2f, 0.35f, 1f),
-            _ => BaseHealthBarColor
+            StatusEffectId.Poison => new Color(0.3f, 0.95f, 0.35f, 1f),
+            StatusEffectId.Confusion => new Color(0.75f, 0.35f, 1f, 1f),
+            StatusEffectId.Swiftness => new Color(0.25f, 0.9f, 1f, 1f),
+            StatusEffectId.Frailty => new Color(1f, 0.2f, 0.35f, 1f),
+            _ => EnemyHealthBarVisual.BaseColor
         };
-    }
-
-    private static Sprite GetUnitSprite()
-    {
-        if (s_unitSprite != null)
-            return s_unitSprite;
-
-        var texture = Texture2D.whiteTexture;
-        s_unitSprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), texture.width);
-        return s_unitSprite;
     }
 }

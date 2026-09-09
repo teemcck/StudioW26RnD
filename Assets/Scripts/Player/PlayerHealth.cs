@@ -31,7 +31,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     private bool _dead;
     private PlayerController _playerController;
     private PlayerDashController _dashController;
-    private PlayerUpgradeRuntime _upgradeRuntime;
+    private PlayerUpgradeManager _upgradeRuntime;
 
     public float CurrentHealth { get; private set; }
 
@@ -88,7 +88,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         playerStats = GetComponent<PlayerStats>();
         _playerController = GetComponent<PlayerController>();
         _dashController = GetComponent<PlayerDashController>();
-        _upgradeRuntime = GetComponent<PlayerUpgradeRuntime>();
+        _upgradeRuntime = GetComponent<PlayerUpgradeManager>();
         playerStats.StatChanged += OnStatChanged;
         float maxHealth = playerStats.Get(PlayerStatType.MaxHealth);
         CurrentHealth = maxHealth;
@@ -134,6 +134,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         Heal(passiveRegenPerSecond * Time.deltaTime);
     }
 
+    // IDamageable
     public void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce, DamageContext context = default)
     {
         if (damage <= 0f) return;
@@ -161,8 +162,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             _playerController.PlayDamageAnimation(knockbackDirection, damageAnimationDuration);
             _playerController.ApplyDamageStun(knockbackDirection, stunDuration, damageVisualKnockbackSpeed);
         }
-        if (Hitstop.Instance != null)
-            Hitstop.Instance.Freeze(hitStopDuration, priority: 5);
+        if (HitstopController.Instance != null)
+            HitstopController.Instance.Freeze(hitStopDuration, priority: 5);
 
         if (cameraController) cameraController.Shake(hitShakeIntensity);
 
@@ -186,9 +187,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (_playerController)
             _playerController.PlayDeathAnimation(_playerController.LastMoveDirection);
 
-        var weapons = GetComponent<PlayerWeaponController>();
+        PlayerWeaponController weapons = GetComponent<PlayerWeaponController>();
         if (weapons) weapons.enabled = false;
-        var dashes = GetComponent<PlayerDashController>();
+        PlayerDashController dashes = GetComponent<PlayerDashController>();
         if (dashes) dashes.enabled = false;
 
         EventBus<PlayerDiedEvent>.Raise(new PlayerDiedEvent
@@ -207,8 +208,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayPerfectDodge();
 
-        if (Hitstop.Instance != null)
-            Hitstop.Instance.Freeze(0.08f, priority: 3);
+        if (HitstopController.Instance != null)
+            HitstopController.Instance.Freeze(0.08f, priority: 3);
 
         if (damageFlash != null)
             damageFlash.Play(GameColors.PerfectDodge);

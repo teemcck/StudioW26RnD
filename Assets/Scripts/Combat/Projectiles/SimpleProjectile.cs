@@ -63,11 +63,11 @@ public class SimpleProjectile : MonoBehaviour
         if (!enableFlightPointLight)
             return;
 
-        var go = new GameObject("ProjectileFlightLight2D");
+        GameObject go = new GameObject("ProjectileFlightLight2D");
         go.transform.SetParent(transform, false);
         go.transform.localPosition = Vector3.zero;
 
-        var light = go.AddComponent<Light2D>();
+        Light2D light = go.AddComponent<Light2D>();
         light.lightType = Light2D.LightType.Point;
         light.blendStyleIndex = TransientPointLight2D.AdditiveBlendStyleIndex;
         light.overlapOperation = Light2D.OverlapOperation.Additive;
@@ -86,7 +86,7 @@ public class SimpleProjectile : MonoBehaviour
 
     private void TintTrailForSource(DamageContext context)
     {
-        var trail = GetComponent<TrailRenderer>();
+        TrailRenderer trail = GetComponent<TrailRenderer>();
         if (trail == null)
             return;
 
@@ -154,7 +154,7 @@ public class SimpleProjectile : MonoBehaviour
         if (((1 << other.gameObject.layer) & hitMask.value) == 0)
             return;
 
-        var dmg = other.GetComponentInParent<IDamageable>();
+        IDamageable dmg = other.GetComponentInParent<IDamageable>();
         if (dmg != null)
             dmg.TakeHit(_runtimeDamage > 0f ? _runtimeDamage : damage, _dir, _runtimeKnockback > 0f ? _runtimeKnockback : knockbackForce, _damageContext);
         

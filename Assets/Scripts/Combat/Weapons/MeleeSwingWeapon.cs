@@ -35,12 +35,12 @@ public class MeleeSwingWeapon : WeaponBase
         Collider2D[] candidates = Physics2D.OverlapCircleAll(hitAnchor, queryRadius, enemyLayer);
 
         float cosThreshold = Mathf.Cos((coneAngle * 0.5f) * Mathf.Deg2Rad);
-        var landed = new Dictionary<int, Component>(8);
-        foreach (var h in candidates)
+        Dictionary<int, Component> landed = new Dictionary<int, Component>(8);
+        foreach (Collider2D h in candidates)
         {
             if (!h)
                 continue;
-            var rootDamageable = h.GetComponentInParent<IDamageable>();
+            IDamageable rootDamageable = h.GetComponentInParent<IDamageable>();
             if (rootDamageable is not Component comp)
                 continue;
             int id = comp.GetInstanceID();
@@ -51,20 +51,20 @@ public class MeleeSwingWeapon : WeaponBase
             landed[id] = comp;
         }
 
-        var runtime = GetComponentInParent<PlayerUpgradeRuntime>();
+        PlayerUpgradeManager runtime = GetComponentInParent<PlayerUpgradeManager>();
         EnemyBase primaryTarget = target ? target.GetComponentInParent<EnemyBase>() : null;
-        var snapshot = runtime != null
+        AttackDamageSnapshot snapshot = runtime != null
             ? runtime.BuildAttackSnapshot(AttackKind.Melee, hitAnchor, primaryTarget, landed.Count)
             : default;
 
-        var playerStats = GetComponentInParent<PlayerStats>();
+        PlayerStats playerStats = GetComponentInParent<PlayerStats>();
         bool isCrit = CombatRoll.TryRollCrit(playerStats, out float critMult);
 
         float dmg = snapshot.ApplyTo(GetDamage()) * critMult;
         float kb = GetKnockback();
         int hitCount = 0;
 
-        foreach (var comp in landed.Values)
+        foreach (Component comp in landed.Values)
         {
             if (comp is not IDamageable damageable)
                 continue;
@@ -79,10 +79,10 @@ public class MeleeSwingWeapon : WeaponBase
             hitCount++;
         }
 
-        if (hitCount > 0 && Hitstop.Instance != null)
+        if (hitCount > 0 && HitstopController.Instance != null)
         {
             float freeze = isCrit ? 0.065f : 0.05f;
-            Hitstop.Instance.Freeze(freeze, priority: 1);
+            HitstopController.Instance.Freeze(freeze, priority: 1);
         }
 
         runtime?.NotifyAttackPerformed(AttackKind.Melee, snapshot);
@@ -157,7 +157,7 @@ public class MeleeSwingWeapon : WeaponBase
     private Transform GetPivotRoot()
     {
         Transform t = transform;
-        var rb = GetComponentInParent<Rigidbody2D>();
+        Rigidbody2D rb = GetComponentInParent<Rigidbody2D>();
         if (rb != null)
             return rb.transform;
         return t.root;
@@ -165,7 +165,7 @@ public class MeleeSwingWeapon : WeaponBase
 
     private Vector2 GetHitAnchorWorld(Transform pivotRoot)
     {
-        var anchor = pivotRoot.GetComponent<PlayerCombatAnchor>() ?? pivotRoot.GetComponentInChildren<PlayerCombatAnchor>();
+        PlayerCombatAnchor anchor = pivotRoot.GetComponent<PlayerCombatAnchor>() ?? pivotRoot.GetComponentInChildren<PlayerCombatAnchor>();
         if (anchor != null)
             return anchor.WorldHitAnchor;
         Vector3 w = pivotRoot.TransformPoint(new Vector3(FallbackAnchorLocal.x, FallbackAnchorLocal.y, 0f));

@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour
             animator = GetComponent<Animator>();
             if (!animator)
             {
-                foreach (var candidate in GetComponentsInChildren<Animator>(true))
+                foreach (Animator candidate in GetComponentsInChildren<Animator>(true))
                 {
                     if (candidate.runtimeAnimatorController != null &&
                         candidate.runtimeAnimatorController.name == "Player")

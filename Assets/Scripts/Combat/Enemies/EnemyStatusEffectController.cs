@@ -4,8 +4,8 @@ using UnityEngine;
 [RequireComponent(typeof(EnemyBase))]
 public class EnemyStatusEffectController : MonoBehaviour
 {
-    private readonly Dictionary<string, StatusEffect> _activeEffects = new();
-    private readonly Dictionary<string, DamageContext> _effectContexts = new();
+    private readonly Dictionary<StatusEffectId, StatusEffect> _activeEffects = new();
+    private readonly Dictionary<StatusEffectId, DamageContext> _effectContexts = new();
 
     private EnemyBase _enemy;
     private EnemyWorldVisuals _worldVisuals;
@@ -17,15 +17,12 @@ public class EnemyStatusEffectController : MonoBehaviour
         _worldVisuals = GetComponent<EnemyWorldVisuals>();
     }
 
-    public void Apply(string effectId, float duration, int maxStacks = 1, bool isPermanent = false, DamageContext context = default)
+    public void Apply(StatusEffectId effectId, float duration, int maxStacks = 1, bool isPermanent = false, DamageContext context = default)
     {
-        if (string.IsNullOrWhiteSpace(effectId))
-            return;
-
         if (context.Source != null || context.Instigator != null)
             _effectContexts[effectId] = context;
 
-        if (_activeEffects.TryGetValue(effectId, out var existing))
+        if (_activeEffects.TryGetValue(effectId, out StatusEffect existing))
         {
             existing.maxStacks = Mathf.Max(existing.maxStacks, maxStacks);
             existing.isPermanent |= isPermanent;
@@ -39,16 +36,16 @@ public class EnemyStatusEffectController : MonoBehaviour
 
         _worldVisuals?.NotifyStatusApplied(effectId);
 
-        if (effectId == StatusEffectIds.Frailty)
+        if (effectId == StatusEffectId.Frailty)
             TryExecuteFrailty();
     }
 
     public void ApplyTransferredEffect(StatusEffect effect, DamageContext context)
     {
-        if (effect == null || string.IsNullOrWhiteSpace(effect.id))
+        if (effect == null)
             return;
 
-        var copy = effect.Clone();
+        StatusEffect copy = effect.Clone();
         _activeEffects[copy.id] = copy;
 
         if (context.Source != null || context.Instigator != null)
@@ -56,33 +53,33 @@ public class EnemyStatusEffectController : MonoBehaviour
 
         _worldVisuals?.NotifyStatusApplied(copy.id);
 
-        if (copy.id == StatusEffectIds.Frailty)
+        if (copy.id == StatusEffectId.Frailty)
             TryExecuteFrailty();
     }
 
-    public bool Has(string effectId) => _activeEffects.ContainsKey(effectId);
+    public bool Has(StatusEffectId effectId) => _activeEffects.ContainsKey(effectId);
 
-    public int GetStackCount(string effectId)
-        => _activeEffects.TryGetValue(effectId, out var effect) ? effect.currentStacks : 0;
+    public int GetStackCount(StatusEffectId effectId)
+        => _activeEffects.TryGetValue(effectId, out StatusEffect effect) ? effect.currentStacks : 0;
 
     public float GetMoveSpeedMultiplier()
     {
-        float confusionPenalty = Mathf.Min(2, GetStackCount(StatusEffectIds.Confusion)) * 0.4f;
+        float confusionPenalty = Mathf.Min(2, GetStackCount(StatusEffectId.Confusion)) * 0.4f;
         return Mathf.Max(0.1f, 1f - confusionPenalty);
     }
 
     public float GetAttackSpeedMultiplier()
     {
-        float confusionPenalty = Mathf.Min(2, GetStackCount(StatusEffectIds.Confusion)) * 0.4f;
+        float confusionPenalty = Mathf.Min(2, GetStackCount(StatusEffectId.Confusion)) * 0.4f;
         return Mathf.Max(0.1f, 1f - confusionPenalty);
     }
 
     public IReadOnlyCollection<StatusEffect> GetNegativeEffects()
     {
-        var results = new List<StatusEffect>();
-        foreach (var effect in _activeEffects.Values)
+        List<StatusEffect> results = new List<StatusEffect>();
+        foreach (StatusEffect effect in _activeEffects.Values)
         {
-            if (!StatusEffectIds.IsNegative(effect.id))
+            if (!effect.id.IsNegative())
                 continue;
 
             results.Add(effect.Clone());
@@ -96,7 +93,7 @@ public class EnemyStatusEffectController : MonoBehaviour
         if (!target)
             return;
 
-        foreach (var effect in GetNegativeEffects())
+        foreach (StatusEffect effect in GetNegativeEffects())
             target.ApplyTransferredEffect(effect, GetEffectContext(effect.id));
     }
 
@@ -112,7 +109,7 @@ public class EnemyStatusEffectController : MonoBehaviour
 
     private void TickPoison()
     {
-        int poisonStacks = GetStackCount(StatusEffectIds.Poison);
+        int poisonStacks = GetStackCount(StatusEffectId.Poison);
         if (poisonStacks <= 0)
         {
             _poisonTickTimer = 0f;
@@ -124,7 +121,7 @@ public class EnemyStatusEffectController : MonoBehaviour
         {
             _poisonTickTimer -= 1f;
             float damage = poisonStacks * 2f;
-            _enemy.ApplyStatusDamage(damage, BuildStatusEffectContext(StatusEffectIds.Poison));
+            _enemy.ApplyStatusDamage(damage, BuildStatusEffectContext(StatusEffectId.Poison));
             if (_enemy.IsDead)
                 return;
         }
@@ -132,10 +129,10 @@ public class EnemyStatusEffectController : MonoBehaviour
 
     private void ExpireEffects()
     {
-        List<string> expired = null;
-        foreach (var pair in _activeEffects)
+        List<StatusEffectId> expired = null;
+        foreach (KeyValuePair<StatusEffectId, StatusEffect> pair in _activeEffects)
         {
-            var effect = pair.Value;
+            StatusEffect effect = pair.Value;
             if (effect.isPermanent)
                 continue;
 
@@ -143,14 +140,14 @@ public class EnemyStatusEffectController : MonoBehaviour
             if (!effect.IsExpired)
                 continue;
 
-            expired ??= new List<string>();
+            expired ??= new List<StatusEffectId>();
             expired.Add(pair.Key);
         }
 
         if (expired == null)
             return;
 
-        foreach (var id in expired)
+        foreach (StatusEffectId id in expired)
         {
             _activeEffects.Remove(id);
             _effectContexts.Remove(id);
@@ -159,27 +156,27 @@ public class EnemyStatusEffectController : MonoBehaviour
 
     private void TryExecuteFrailty()
     {
-        if (!Has(StatusEffectIds.Frailty))
+        if (!Has(StatusEffectId.Frailty))
             return;
 
         float threshold = _enemy.MaxHealth * 0.15f;
         if (_enemy.CurrentHealth <= threshold)
-            _enemy.ExecuteFrailty(BuildStatusEffectContext(StatusEffectIds.Frailty));
+            _enemy.ExecuteFrailty(BuildStatusEffectContext(StatusEffectId.Frailty));
     }
 
-    private DamageContext BuildStatusEffectContext(string effectId)
+    private DamageContext BuildStatusEffectContext(StatusEffectId effectId)
     {
         DamageContext baseContext = GetEffectContext(effectId);
         return new DamageContext(
             baseContext.Source,
             baseContext.Instigator,
             AttackKind.StatusEffect,
-            effectId,
+            effectId.ToKey(),
             isStatusEffect: true);
     }
 
-    private DamageContext GetEffectContext(string effectId)
+    private DamageContext GetEffectContext(StatusEffectId effectId)
     {
-        return _effectContexts.TryGetValue(effectId, out var context) ? context : default;
+        return _effectContexts.TryGetValue(effectId, out DamageContext context) ? context : default;
     }
 }

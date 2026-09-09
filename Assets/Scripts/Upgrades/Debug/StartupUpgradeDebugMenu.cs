@@ -49,7 +49,7 @@ public sealed class StartupUpgradeDebugMenu : MonoBehaviour
         if (_instance != null)
             return;
 
-        var go = new GameObject(nameof(StartupUpgradeDebugMenu));
+        GameObject go = new GameObject(nameof(StartupUpgradeDebugMenu));
         DontDestroyOnLoad(go);
         _instance = go.AddComponent<StartupUpgradeDebugMenu>();
     }
@@ -357,7 +357,7 @@ public sealed class StartupUpgradeDebugMenu : MonoBehaviour
             return;
 
         List<UpgradeDisplaySO> displays = manager.GetAllUpgradeDisplays();
-        foreach (var display in displays)
+        foreach (UpgradeDisplaySO display in displays)
         {
             if (display == null || string.IsNullOrEmpty(display.upgradeID))
                 continue;

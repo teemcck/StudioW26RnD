@@ -48,7 +48,6 @@ public class RangedEnemy : EnemyBase
     private float _lastFlipTime = -999f;
     private Color _baseColor = Color.white;
     private Vector3 _baseScale = Vector3.one;
-    private static Sprite _whiteSprite;
 
     protected override void Awake()
     {
@@ -188,7 +187,7 @@ public class RangedEnemy : EnemyBase
 
         _firedThisAttack = true;
         Vector2 fire = firePoint ? (Vector2)firePoint.position : (Vector2)transform.position;
-        var proj = Instantiate(projectilePrefab, fire, Quaternion.identity);
+        SimpleProjectile proj = Instantiate(projectilePrefab, fire, Quaternion.identity);
         float scaledDamage = projectilePrefab.BaseDamage * DamageMultiplier;
         proj.Fire(_lockedShootDirection, scaledDamage, 0f, new DamageContext(gameObject, gameObject, AttackKind.Ranged, "enemy_projectile"));
         AudioManager.Instance?.PlayUfoAttackAt(transform.position);
@@ -198,7 +197,7 @@ public class RangedEnemy : EnemyBase
     private Vector2 GetPlayerAimWorldPoint(Transform player)
     {
         if (!player) return transform.position;
-        var col = player.GetComponent<Collider2D>();
+        Collider2D col = player.GetComponent<Collider2D>();
         if (col != null)
             return (Vector2)col.bounds.center + playerAimOffset;
         return (Vector2)player.position + playerAimOffset;
@@ -274,10 +273,10 @@ public class RangedEnemy : EnemyBase
     {
         if (!showMuzzleFlash || muzzleFlashDuration <= 0f) return;
 
-        var go = new GameObject("UfoStraightShooterMuzzleFlash");
+        GameObject go = new GameObject("UfoStraightShooterMuzzleFlash");
         go.transform.position = new Vector3(worldPos.x, worldPos.y, 0f);
-        var sr = go.AddComponent<SpriteRenderer>();
-        sr.sprite = GetWhiteSprite();
+        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = RuntimeSprites.White;
         sr.color = muzzleFlashColor;
         sr.sortingOrder = spriteRenderer ? spriteRenderer.sortingOrder + muzzleFlashSortingOrderOffset : 10;
         if (spriteRenderer) sr.sortingLayerID = spriteRenderer.sortingLayerID;
@@ -285,13 +284,6 @@ public class RangedEnemy : EnemyBase
         StartCoroutine(FadeAndDestroy(sr, Mathf.Max(0.02f, muzzleFlashDuration)));
     }
 
-    private static Sprite GetWhiteSprite()
-    {
-        if (_whiteSprite) return _whiteSprite;
-        Texture2D texture = Texture2D.whiteTexture;
-        _whiteSprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
-        return _whiteSprite;
-    }
 
     private static IEnumerator FadeAndDestroy(SpriteRenderer sr, float duration)
     {

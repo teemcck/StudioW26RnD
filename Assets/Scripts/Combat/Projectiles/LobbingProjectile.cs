@@ -63,7 +63,7 @@ public class LobbingProjectile : AOEProjectile
 
     private void RestrictColliderToPlayerOnly()
     {
-        var c = GetComponent<Collider2D>();
+        Collider2D c = GetComponent<Collider2D>();
         if (!c) return;
         LayerMask playerOnly = LayerMask.GetMask("Player");
         c.includeLayers = playerOnly;
@@ -217,9 +217,9 @@ public class LobbingProjectile : AOEProjectile
 
         float ringScale = LandingTelegraphScale;
 
-        var go = new GameObject("LobLandingTelegraph");
+        GameObject go = new GameObject("LobLandingTelegraph");
         go.transform.position = new Vector3(worldCenter.x, worldCenter.y, 0f);
-        var sr = go.AddComponent<SpriteRenderer>();
+        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
         sr.sprite = sprite;
         sr.sortingOrder = landingTelegraphSortingOrder;
         if (LandingTelegraphSortingLayerId != 0)
@@ -227,7 +227,7 @@ public class LobbingProjectile : AOEProjectile
 
         _landingTelegraphGo = go;
 
-        var fx = go.AddComponent<LobLandingTelegraph>();
+        LobLandingTelegraph fx = go.AddComponent<LobLandingTelegraph>();
         fx.StartRun(sr, landingTelegraphColor, ringScale, flightDuration, telegraphPulseSpeed);
     }
 
@@ -243,9 +243,9 @@ public class LobbingProjectile : AOEProjectile
         float endScale = baseScale * Mathf.Max(impactBurstStartScaleMultiplier + 0.05f, impactBurstEndScaleMultiplier);
         float duration = Mathf.Max(0.05f, impactBurstDuration);
 
-        var go = new GameObject("LobImpactBurst");
+        GameObject go = new GameObject("LobImpactBurst");
         go.transform.position = new Vector3(center.x, center.y, 0f);
-        var sr = go.AddComponent<SpriteRenderer>();
+        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
         sr.sprite = sprite;
         sr.color = impactBurstColor;
         sr.sortingOrder = impactBurstSortingOrder;
@@ -284,7 +284,7 @@ public sealed class LobLandingTelegraph : MonoBehaviour
             float endRamp = progress >= 0.8f ? Mathf.InverseLerp(0.8f, 1f, progress) : 0f;
             float speed = Mathf.Lerp(pulseSpeed, pulseSpeed * 2.3f, endRamp);
             float pulse = 0.82f + 0.18f * Mathf.Sin(t * speed);
-            var c = baseColor;
+            Color c = baseColor;
             c.a = baseColor.a * pulse * Mathf.Lerp(1f, 1.35f, endRamp);
             sr.color = c;
             float scale = worldScale * pulse * Mathf.Lerp(1f, 1.12f, endRamp);

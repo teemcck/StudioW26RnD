@@ -52,7 +52,6 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
     private readonly Dictionary<int, float> _contactDamageCooldownByTarget = new();
     private float _hitReactionUntil;
     private float _spawnTime;
-    private static Sprite _whiteSprite;
     private EnemyStatusEffectController _statusEffects;
 
     public float CurrentHealth => _health;
@@ -136,18 +135,19 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
             return _playerCombatAnchor.ClosestCombatPoint(fromWorld);
         if (Player == null)
             return fromWorld;
-        var col = Player.GetComponent<Collider2D>() ?? Player.GetComponentInChildren<Collider2D>();
+        Collider2D col = Player.GetComponent<Collider2D>() ?? Player.GetComponentInChildren<Collider2D>();
         if (col != null)
             return col.ClosestPoint(fromWorld);
         return (Vector2)Player.position;
     }
 
+    // IDamageable
     public virtual void TakeHit(float damage, Vector2 knockbackDirection, float knockbackForce, DamageContext context = default)
     {
         if (_isDead) return;
         if (damage <= 0f) return;
 
-        var elite = GetComponent<EliteModifier>();
+        EliteModifier elite = GetComponent<EliteModifier>();
         elite?.NotifyHitReceived();
 
         if (elite != null && elite.HasShield)
@@ -203,15 +203,15 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         bool isElite = GetComponent<EliteModifier>() != null;
         bool isBoss = GetType().Name.Contains("Boss");
 
-        if (context.WasCausedByPlayer && Hitstop.Instance != null)
+        if (context.WasCausedByPlayer && HitstopController.Instance != null)
         {
             float freeze = isBoss ? 0.14f : (isElite ? 0.11f : 0.08f);
-            Hitstop.Instance.Freeze(freeze, priority: isBoss ? 6 : (isElite ? 4 : 2));
+            HitstopController.Instance.Freeze(freeze, priority: isBoss ? 6 : (isElite ? 4 : 2));
         }
 
         if (isElite)
         {
-            var cam = Object.FindFirstObjectByType<CameraController>();
+            CameraController cam = Object.FindFirstObjectByType<CameraController>();
             if (cam != null)
                 cam.ShakeMedium();
         }
@@ -240,7 +240,7 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         if (_isDead || damage <= 0f)
             return;
 
-        var eliteStatus = GetComponent<EliteModifier>();
+        EliteModifier eliteStatus = GetComponent<EliteModifier>();
         eliteStatus?.NotifyHitReceived();
 
         if (eliteStatus != null && eliteStatus.HasShield)
@@ -322,10 +322,10 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         SpriteRenderer sourceRenderer = GetComponentInChildren<SpriteRenderer>();
         if (!sourceRenderer) return;
 
-        var go = new GameObject("EnemyHitPulseFx");
+        GameObject go = new GameObject("EnemyHitPulseFx");
         go.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 0.001f);
-        var sr = go.AddComponent<SpriteRenderer>();
-        sr.sprite = GetWhiteSprite();
+        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = RuntimeSprites.White;
         sr.color = hitPulseColor;
         sr.sortingOrder = sourceRenderer.sortingOrder + hitPulseSortingOrderBoost;
         sr.sortingLayerID = sourceRenderer.sortingLayerID;
@@ -360,13 +360,6 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
             Destroy(sr.gameObject);
     }
 
-    private static Sprite GetWhiteSprite()
-    {
-        if (_whiteSprite) return _whiteSprite;
-        Texture2D texture = Texture2D.whiteTexture;
-        _whiteSprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
-        return _whiteSprite;
-    }
 
     protected bool TryResolvePlayer()
     {

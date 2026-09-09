@@ -34,17 +34,17 @@ public class ProjectileWeapon : WeaponBase
 
     private void FireConfiguredProjectile(Vector2 position, Vector2 direction, EnemyBase target, AttackKind attackKind, string sourceId, bool triggerOnHitEffects)
     {
-        var projObject = Instantiate(projectilePrefab, position, Quaternion.identity);
-        var projectile = projObject.GetComponent<SimpleProjectile>();
+        GameObject projObject = Instantiate(projectilePrefab, position, Quaternion.identity);
+        SimpleProjectile projectile = projObject.GetComponent<SimpleProjectile>();
         if (!projectile)
             return;
 
-        var runtime = GetComponentInParent<PlayerUpgradeRuntime>();
-        var snapshot = runtime != null
+        PlayerUpgradeManager runtime = GetComponentInParent<PlayerUpgradeManager>();
+        AttackDamageSnapshot snapshot = runtime != null
             ? runtime.BuildAttackSnapshot(attackKind, position, target, 0)
             : default;
 
-        var playerStats = GetComponentInParent<PlayerStats>();
+        PlayerStats playerStats = GetComponentInParent<PlayerStats>();
         bool isCrit = CombatRoll.TryRollCrit(playerStats, out float critMult);
 
         float damageValue = snapshot.ApplyTo(GetDamage()) * critMult;

@@ -2,8 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Base for projectiles that explode in a radius on hit or expiry. It is never placed on a prefab directly;
+/// <see cref="LobbingProjectile"/> is its only subclass today and adds the ballistic arc and landing telegraph.
+/// Kept separate so a straight-flying AOE shot can reuse the explosion, damage-mask, and ring-visual logic.
+/// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
-public class AOEProjectile : MonoBehaviour
+public abstract class AOEProjectile : MonoBehaviour
 {
     [SerializeField] private float travelSpeed = 5f;
     [SerializeField] private float lifetime = 4f;
@@ -109,7 +114,7 @@ public class AOEProjectile : MonoBehaviour
 
         if (dealDirectDamage)
         {
-            var dmg = other.GetComponentInParent<IDamageable>();
+            IDamageable dmg = other.GetComponentInParent<IDamageable>();
             if (dmg != null)
                 dmg.TakeHit(directDamage, FlightDirection, explosionKnockback * 0.35f);
         }
@@ -146,12 +151,12 @@ public class AOEProjectile : MonoBehaviour
         }
 
         float damageRadius = GetExplosionDamageRadius(ringScale);
-        var hits = Physics2D.OverlapCircleAll(center, damageRadius, explosionDamageMask);
-        var damagedRoots = new HashSet<GameObject>();
-        foreach (var h in hits)
+        Collider2D[] hits = Physics2D.OverlapCircleAll(center, damageRadius, explosionDamageMask);
+        HashSet<GameObject> damagedRoots = new HashSet<GameObject>();
+        foreach (Collider2D h in hits)
         {
             if (!h) continue;
-            var dmg = h.GetComponentInParent<IDamageable>();
+            IDamageable dmg = h.GetComponentInParent<IDamageable>();
             if (dmg is not MonoBehaviour mb) continue;
             if (!damagedRoots.Add(mb.gameObject)) continue;
 
@@ -184,9 +189,9 @@ public class ExplosionGroundFx : MonoBehaviour
     {
         if (!ringSprite || duration <= 0f) return;
 
-        var go = new GameObject("GroundExplosionFx");
+        GameObject go = new GameObject("GroundExplosionFx");
         go.transform.position = new Vector3(worldCenter.x, worldCenter.y, 0f);
-        var sr = go.AddComponent<SpriteRenderer>();
+        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
         sr.sprite = ringSprite;
         sr.sortingOrder = sortingOrder;
         if (sortingLayerId != 0)
@@ -194,7 +199,7 @@ public class ExplosionGroundFx : MonoBehaviour
         sr.color = color;
         go.transform.localScale = Vector3.one * ringWorldScale;
 
-        var fx = go.AddComponent<ExplosionGroundFx>();
+        ExplosionGroundFx fx = go.AddComponent<ExplosionGroundFx>();
         fx._spriteRenderer = sr;
         fx._duration = duration;
         fx._startColor = color;
@@ -216,7 +221,7 @@ public class ExplosionGroundFx : MonoBehaviour
             float u = Mathf.Clamp01(t / _duration);
             if (!_spriteRenderer) yield break;
 
-            var c = _startColor;
+            Color c = _startColor;
             c.a = _startColor.a * (1f - u);
             _spriteRenderer.color = c;
             transform.localScale = Vector3.one * Mathf.Lerp(_startScale, _startScale * 1.2f, u);

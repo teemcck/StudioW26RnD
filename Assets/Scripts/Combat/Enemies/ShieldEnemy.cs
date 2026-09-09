@@ -30,7 +30,7 @@ public class ShieldEnemy : MeleeEnemy
 
         if (!shieldPivot)
         {
-            var found = transform.Find("ShieldPivot");
+            Transform found = transform.Find("ShieldPivot");
             if (found) shieldPivot = found;
         }
 
@@ -64,7 +64,7 @@ public class ShieldEnemy : MeleeEnemy
     private void ApplyShieldOrbitOffset()
     {
         if (!shieldSprite) return;
-        var visual = shieldSprite.transform;
+        Transform visual = shieldSprite.transform;
         visual.localPosition = new Vector3(shieldOrbitRadius, 0f, 0f);
         visual.localScale = new Vector3(shieldVisualThickness, shieldVisualHeight, 1f);
     }

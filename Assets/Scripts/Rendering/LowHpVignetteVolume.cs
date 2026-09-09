@@ -19,7 +19,7 @@ public sealed class LowHpVignetteVolume : MonoBehaviour
     {
         if (_playerHealth == null)
         {
-            var player = GameObject.FindGameObjectWithTag("Player");
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
             if (player != null) _playerHealth = player.GetComponent<PlayerHealth>();
         }
 

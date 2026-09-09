@@ -24,14 +24,14 @@ public class PlayerWeaponController : MonoBehaviour
 
     private float _nextAttackTime;
     private PlayerStats _playerStats;
-    private PlayerUpgradeRuntime _upgradeRuntime;
+    private PlayerUpgradeManager _upgradeRuntime;
     private PlayerCombatAnchor _combatAnchor;
 
     private void Awake()
     {
         if (!playerController) playerController = GetComponent<PlayerController>();
         _playerStats = GetComponent<PlayerStats>();
-        _upgradeRuntime = GetComponent<PlayerUpgradeRuntime>();
+        _upgradeRuntime = GetComponent<PlayerUpgradeManager>();
         _combatAnchor = GetComponent<PlayerCombatAnchor>() ?? GetComponentInChildren<PlayerCombatAnchor>();
     }
 
@@ -73,7 +73,7 @@ public class PlayerWeaponController : MonoBehaviour
         float best = float.PositiveInfinity;
         Transform bestT = null;
 
-        foreach (var h in hits)
+        foreach (Collider2D h in hits)
         {
             if (!h) continue;
             float d = ((Vector2)h.transform.position - origin).sqrMagnitude;
@@ -130,7 +130,7 @@ public class PlayerWeaponController : MonoBehaviour
         direction.Normalize();
 
         SimpleProjectile projectile = Instantiate(rangedUpgradeProjectilePrefab, spawnPosition, Quaternion.identity);
-        var snapshot = _upgradeRuntime != null
+        AttackDamageSnapshot snapshot = _upgradeRuntime != null
             ? _upgradeRuntime.BuildAttackSnapshot(attackKind, spawnPosition, target, 0)
             : default;
 
@@ -153,11 +153,11 @@ public class PlayerWeaponController : MonoBehaviour
             Mathf.Max(rangeFromStats, rangeFromWeapon) * Mathf.Max(1f, rangedProjectileSearchRadiusMultiplier));
         float radiusSq = radius * radius;
 
-        var enemies = FindObjectsByType<EnemyBase>(FindObjectsSortMode.None);
-        var nearby = new List<EnemyBase>();
+        EnemyBase[] enemies = FindObjectsByType<EnemyBase>(FindObjectsSortMode.None);
+        List<EnemyBase> nearby = new List<EnemyBase>();
         Vector2 origin = GetAttackSearchOrigin();
 
-        foreach (var enemy in enemies)
+        foreach (EnemyBase enemy in enemies)
         {
             if (enemy == null || enemy.IsDead)
                 continue;

@@ -57,7 +57,7 @@ public class CameraController : MonoBehaviour
 
         if (playerTransform == null)
         {
-            var p = GameObject.FindGameObjectWithTag("Player");
+            GameObject p = GameObject.FindGameObjectWithTag("Player");
             if (p) playerTransform = p.transform;
         }
 
@@ -113,7 +113,7 @@ public class CameraController : MonoBehaviour
     {
         if (impulseSource == null || impulseSource.ImpulseDefinition == null)
             return;
-        var def = impulseSource.ImpulseDefinition;
+        CinemachineImpulseDefinition def = impulseSource.ImpulseDefinition;
         def.ImpulseType = CinemachineImpulseDefinition.ImpulseTypes.Uniform;
         def.ImpulseShape = CinemachineImpulseDefinition.ImpulseShapes.Bump;
         def.ImpulseDuration = 0.11f;
@@ -125,8 +125,8 @@ public class CameraController : MonoBehaviour
     {
         if (cineCamera == null)
             return;
-        var go = cineCamera.gameObject;
-        var listener = go.GetComponent<CinemachineImpulseListener>();
+        GameObject go = cineCamera.gameObject;
+        CinemachineImpulseListener listener = go.GetComponent<CinemachineImpulseListener>();
         if (listener == null)
             listener = go.AddComponent<CinemachineImpulseListener>();
 
@@ -177,7 +177,7 @@ public class CameraController : MonoBehaviour
             return;
         }
 
-        var hits = Physics2D.OverlapCircleAll(playerTransform.position, crowdZoomRadius, crowdZoomEnemyLayer);
+        Collider2D[] hits = Physics2D.OverlapCircleAll(playerTransform.position, crowdZoomRadius, crowdZoomEnemyLayer);
         int enemyCount = 0;
         for (int i = 0; i < hits.Length; i++)
         {
@@ -256,10 +256,10 @@ public class CameraController : MonoBehaviour
         if (impulseSource == null || impulseSource.ImpulseDefinition == null)
             return;
 
-        var def = impulseSource.ImpulseDefinition;
+        CinemachineImpulseDefinition def = impulseSource.ImpulseDefinition;
         float prevDur = def.ImpulseDuration;
-        var prevShape = def.ImpulseShape;
-        var prevType = def.ImpulseType;
+        CinemachineImpulseDefinition.ImpulseShapes prevShape = def.ImpulseShape;
+        CinemachineImpulseDefinition.ImpulseTypes prevType = def.ImpulseType;
 
         def.ImpulseShape = shape;
         def.ImpulseType = CinemachineImpulseDefinition.ImpulseTypes.Uniform;
@@ -281,10 +281,10 @@ public class CameraController : MonoBehaviour
     {
         if (impulseSource == null || impulseSource.ImpulseDefinition == null)
             return;
-        var def = impulseSource.ImpulseDefinition;
+        CinemachineImpulseDefinition def = impulseSource.ImpulseDefinition;
         float prevDur = def.ImpulseDuration;
-        var prevShape = def.ImpulseShape;
-        var prevType = def.ImpulseType;
+        CinemachineImpulseDefinition.ImpulseShapes prevShape = def.ImpulseShape;
+        CinemachineImpulseDefinition.ImpulseTypes prevType = def.ImpulseType;
 
         float t = Mathf.Clamp(intensity, 0.02f, 2f);
         def.ImpulseShape = CinemachineImpulseDefinition.ImpulseShapes.Rumble;

@@ -166,7 +166,7 @@ public class PlayerStats : MonoBehaviour
     public void AddFlat(PlayerStatType type, float delta)
     {
         EnsureStatsInitialized();
-        if (_stats.TryGetValue(type, out var stat))
+        if (_stats.TryGetValue(type, out Stat stat))
         {
             float before = stat.Value;
             stat.AddFlat(delta);
@@ -179,7 +179,7 @@ public class PlayerStats : MonoBehaviour
     public void AddMultiplier(PlayerStatType type, float delta)
     {
         EnsureStatsInitialized();
-        if (_stats.TryGetValue(type, out var stat))
+        if (_stats.TryGetValue(type, out Stat stat))
         {
             float before = stat.Value;
             stat.AddMultiplier(delta);
@@ -192,7 +192,7 @@ public class PlayerStats : MonoBehaviour
     public float Get(PlayerStatType type)
     {
         EnsureStatsInitialized();
-        return _stats.TryGetValue(type, out var s) ? s.Value : 0f;
+        return _stats.TryGetValue(type, out Stat s) ? s.Value : 0f;
     }
 
     /// <summary>Full per-stat layers for cross-scene continuity (base + flat + additive mult chain).</summary>
@@ -202,7 +202,7 @@ public class PlayerStats : MonoBehaviour
         var d = new Dictionary<PlayerStatType, (float, float, float)>();
         foreach (PlayerStatType t in Enum.GetValues(typeof(PlayerStatType)))
         {
-            if (!_stats.TryGetValue(t, out var st))
+            if (!_stats.TryGetValue(t, out Stat st))
                 continue;
             d[t] = st.GetLayerTuple();
         }
@@ -216,9 +216,9 @@ public class PlayerStats : MonoBehaviour
         EnsureStatsInitialized();
         foreach (var kvp in layers)
         {
-            if (!_stats.TryGetValue(kvp.Key, out var st))
+            if (!_stats.TryGetValue(kvp.Key, out Stat st))
                 continue;
-            var L = kvp.Value;
+            (float baseValue, float flatBonus, float multBonus) L = kvp.Value;
             st.SetLayerTuple(L.baseValue, L.flatBonus, L.multBonus);
         }
     }

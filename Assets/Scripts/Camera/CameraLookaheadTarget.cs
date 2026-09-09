@@ -20,14 +20,14 @@ public sealed class CameraLookaheadTarget : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
 
-        var existing = transform.Find(anchorChildName);
+        Transform existing = transform.Find(anchorChildName);
         if (existing != null)
         {
             _anchor = existing;
         }
         else
         {
-            var go = new GameObject(anchorChildName);
+            GameObject go = new GameObject(anchorChildName);
             go.transform.SetParent(transform, worldPositionStays: false);
             _anchor = go.transform;
         }

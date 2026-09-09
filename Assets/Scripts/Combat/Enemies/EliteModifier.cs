@@ -3,6 +3,8 @@ using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(EnemyBase))]
+// Runs after EnemyBase and EnemyWorldVisuals (default order) so ApplyRuntimeScaling sees initialised base stats
+// and NotifyEliteAttached can rebuild a health bar that already exists.
 [DefaultExecutionOrder(20)]
 public sealed class EliteModifier : MonoBehaviour
 {
@@ -28,7 +30,6 @@ public sealed class EliteModifier : MonoBehaviour
     private float _lastHitTime = -999f;
     private readonly List<SpriteRenderer> _bodySprites = new List<SpriteRenderer>(8);
 
-    public bool IsElite => true;
     public float ShieldNormalized => shieldReserve > 0f ? Mathf.Clamp01(_currentShield / shieldReserve) : 0f;
     public bool HasShield => _currentShield > 0f;
     public float OutgoingDamageMultiplier => damageMultiplier;
@@ -54,7 +55,7 @@ public sealed class EliteModifier : MonoBehaviour
             _enemy.NotifyRuntimeScalingApplied();
         }
 
-        if (TryGetComponent<Rigidbody2D>(out var rb))
+        if (TryGetComponent<Rigidbody2D>(out Rigidbody2D rb))
         {
             rb.simulated = true;
             rb.WakeUp();
@@ -65,7 +66,7 @@ public sealed class EliteModifier : MonoBehaviour
         CacheBodySprites();
         ApplyStaticBodyTint();
 
-        if (TryGetComponent<EnemyWorldVisuals>(out var visuals))
+        if (TryGetComponent<EnemyWorldVisuals>(out EnemyWorldVisuals visuals))
             visuals.NotifyEliteAttached();
 
         AudioManager.Instance?.PlayEliteSpawn();
@@ -98,7 +99,7 @@ public sealed class EliteModifier : MonoBehaviour
     private void CacheBodySprites()
     {
         _bodySprites.Clear();
-        foreach (var sr in GetComponentsInChildren<SpriteRenderer>(true))
+        foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>(true))
         {
             if (sr == null || sr.sprite == null)
                 continue;
@@ -122,7 +123,7 @@ public sealed class EliteModifier : MonoBehaviour
 
         for (int i = 0; i < _bodySprites.Count; i++)
         {
-            var sr = _bodySprites[i];
+            SpriteRenderer sr = _bodySprites[i];
             if (sr == null)
                 continue;
 

@@ -57,9 +57,9 @@ public sealed class VolumeSwitcher : MonoBehaviour
 
     private Volume CreateSubVolume(string name, VolumeProfile profile)
     {
-        var go = new GameObject(name);
+        GameObject go = new GameObject(name);
         go.transform.SetParent(transform, false);
-        var v = go.AddComponent<Volume>();
+        Volume v = go.AddComponent<Volume>();
         v.isGlobal = _hostVolume.isGlobal;
         v.priority = _hostVolume.priority;
         v.sharedProfile = profile;

@@ -52,7 +52,6 @@ public class LobbingEnemy : EnemyBase
     private Color _baseColor = Color.white;
     private Vector3 _baseScale = Vector3.one;
     private GameObject _preShotIndicatorGo;
-    private static Sprite _whiteSprite;
 
     protected override void Awake()
     {
@@ -190,7 +189,7 @@ public class LobbingEnemy : EnemyBase
         DestroyPreShotIndicator();
 
         Vector2 fire = firePoint ? (Vector2)firePoint.position : (Vector2)transform.position;
-        var proj = Instantiate(projectilePrefab, fire, Quaternion.identity);
+        LobbingProjectile proj = Instantiate(projectilePrefab, fire, Quaternion.identity);
         proj.ScaleDamage(DamageMultiplier);
         proj.FireBallistic(fire, _lockedTargetPoint, horizontalShotSpeed);
         AudioManager.Instance?.PlayUfoAttackAt(transform.position);
@@ -271,16 +270,16 @@ public class LobbingEnemy : EnemyBase
         Sprite indicatorSprite = projectilePrefab.LandingTelegraphSpriteResolved;
         if (!indicatorSprite || duration <= 0.01f) return;
 
-        var go = new GameObject("UfoLobberPreShotIndicator");
+        GameObject go = new GameObject("UfoLobberPreShotIndicator");
         go.transform.position = new Vector3(_lockedTargetPoint.x, _lockedTargetPoint.y, 0f);
-        var sr = go.AddComponent<SpriteRenderer>();
+        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
         sr.sprite = indicatorSprite;
         sr.sortingOrder = projectilePrefab.LandingTelegraphSortingOrder;
         if (projectilePrefab.LandingTelegraphSortingLayerId != 0)
             sr.sortingLayerID = projectilePrefab.LandingTelegraphSortingLayerId;
 
         _preShotIndicatorGo = go;
-        var fx = go.AddComponent<LobLandingTelegraph>();
+        LobLandingTelegraph fx = go.AddComponent<LobLandingTelegraph>();
         fx.StartRun(sr, projectilePrefab.LandingTelegraphColor, projectilePrefab.LandingTelegraphScale, duration, projectilePrefab.LandingTelegraphPulseSpeed);
     }
 
@@ -297,10 +296,10 @@ public class LobbingEnemy : EnemyBase
     {
         if (!showMuzzleFlash || muzzleFlashDuration <= 0f) return;
 
-        var go = new GameObject("UfoLobberMuzzleFlash");
+        GameObject go = new GameObject("UfoLobberMuzzleFlash");
         go.transform.position = new Vector3(worldPos.x, worldPos.y, 0f);
-        var sr = go.AddComponent<SpriteRenderer>();
-        sr.sprite = GetWhiteSprite();
+        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = RuntimeSprites.White;
         sr.color = muzzleFlashColor;
         sr.sortingOrder = spriteRenderer ? spriteRenderer.sortingOrder + muzzleFlashSortingOrderOffset : 10;
         if (spriteRenderer) sr.sortingLayerID = spriteRenderer.sortingLayerID;
@@ -309,13 +308,6 @@ public class LobbingEnemy : EnemyBase
         StartCoroutine(FadeAndDestroy(sr, Mathf.Max(0.02f, muzzleFlashDuration)));
     }
 
-    private static Sprite GetWhiteSprite()
-    {
-        if (_whiteSprite) return _whiteSprite;
-        Texture2D texture = Texture2D.whiteTexture;
-        _whiteSprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
-        return _whiteSprite;
-    }
 
     private static IEnumerator FadeAndDestroy(SpriteRenderer sr, float duration)
     {
@@ -359,7 +351,7 @@ public class LobbingEnemy : EnemyBase
 
     private static Vector2 GetPlayerFeetWorld(Transform player)
     {
-        var col = player.GetComponent<Collider2D>();
+        Collider2D col = player.GetComponent<Collider2D>();
         if (col == null)
             return player.position;
 

@@ -15,8 +15,8 @@ public static class Light2DGameplayTargets
         if (light == null)
             return;
 
-        var ids = new List<int>(SortingLayer.layers.Length);
-        foreach (var sl in SortingLayer.layers)
+        List<int> ids = new List<int>(SortingLayer.layers.Length);
+        foreach (SortingLayer sl in SortingLayer.layers)
             ids.Add(sl.id);
 
         if (ids.Count > 0)
@@ -35,8 +35,8 @@ public static class Light2DGameplayTargets
         if (light == null)
             return;
 
-        var ids = new List<int>(SortingLayer.layers.Length);
-        foreach (var sl in SortingLayer.layers)
+        List<int> ids = new List<int>(SortingLayer.layers.Length);
+        foreach (SortingLayer sl in SortingLayer.layers)
         {
             if (sl.name == "Map")
                 continue;

@@ -251,7 +251,7 @@ public class SplittingEnemy : MeleeEnemy
             Rb.simulated = false;
         }
 
-        foreach (var col in GetComponents<Collider2D>())
+        foreach (Collider2D col in GetComponents<Collider2D>())
             col.enabled = false;
 
         PlayAnimatorState(splitStateName, forceRestart: true);
@@ -273,7 +273,7 @@ public class SplittingEnemy : MeleeEnemy
             yield return new WaitForSeconds(remainder);
 
         _splitDeathRoutine = null;
-        var ctx = _pendingDeathContext;
+        DamageContext ctx = _pendingDeathContext;
         _splitDeathRunning = false;
 
         if (_killGroup == null)
@@ -301,15 +301,15 @@ public class SplittingEnemy : MeleeEnemy
         {
             float rad = step * i * Mathf.Deg2Rad;
             Vector2 offset = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * splitSpawnRadius;
-            var go = Instantiate(splitEnemyPrefab, (Vector2)transform.position + offset, Quaternion.identity, transform.parent);
-            if (go.TryGetComponent<SplittingEnemy>(out var childSplit))
+            GameObject go = Instantiate(splitEnemyPrefab, (Vector2)transform.position + offset, Quaternion.identity, transform.parent);
+            if (go.TryGetComponent<SplittingEnemy>(out SplittingEnemy childSplit))
             {
                 childSplit.AssignSlimeGroup(_killGroup, _splitDepth + 1);
                 childSplit.InheritKillXpFromParent(this);
             }
-            if (go.TryGetComponent<EnemyBase>(out var eb))
+            if (go.TryGetComponent<EnemyBase>(out EnemyBase eb))
                 eb.ApplyRuntimeScaling(splitHealthMultiplier, splitSizeMultiplier, DamageMultiplier * splitDamageMultiplier);
-            if (go.TryGetComponent<EnemyWorldVisuals>(out var visuals))
+            if (go.TryGetComponent<EnemyWorldVisuals>(out EnemyWorldVisuals visuals))
                 visuals.RebuildVisuals();
             EnsureSplitSpawnPhysics(go);
             spawned++;
@@ -320,14 +320,14 @@ public class SplittingEnemy : MeleeEnemy
 
     private static void EnsureSplitSpawnPhysics(GameObject go)
     {
-        if (go.TryGetComponent<Rigidbody2D>(out var rb))
+        if (go.TryGetComponent<Rigidbody2D>(out Rigidbody2D rb))
         {
             rb.simulated = true;
             rb.WakeUp();
             rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         }
 
-        foreach (var col in go.GetComponents<Collider2D>())
+        foreach (Collider2D col in go.GetComponents<Collider2D>())
             col.enabled = true;
 
         Physics2D.SyncTransforms();
