@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80d2b54fefacae94d9e920bfe3f41ae3, type: 3}
+  m_Name: Epidemic
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeDisplaySO
+  upgradeID: Epidemic
+  upgradeName: Epidemic
+  upgradeDescription: After killing an enemy, its negative status effects are transferred
+    to its closest ally.
+  cardImage: {fileID: -7371509505491802261, guid: ae8b065a74785ec4681d9843e98fe401, type: 3}
+  rarity: 3
+  category: 4
