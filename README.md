@@ -17,7 +17,6 @@ Open this folder as a project in **Unity 6000.3.6f1**. Start with `Assets/Scenes
 | `Assets/Settings` | Input, render pipeline, volume, and UI Toolkit configuration |
 | `Assets/Resources` | Assets deliberately loaded through Unity's `Resources` API |
 | `Assets/TextMesh Pro` | Imported TMP resources, retained in their existing location |
-| `Docs` | Code guides and project context |
 | `Packages`, `ProjectSettings` | Unity dependencies and project configuration |
 
 Tile palettes stay with their tiles under `Assets/Art/Tiles/Main` and `Legacy`. The legacy tiles, sandbox scenes, and recovery scene remain available; moving them does not imply they are unused.
